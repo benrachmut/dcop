@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Dcop {
@@ -7,6 +8,8 @@ public abstract class Dcop {
 	protected AgentField[] agents;
 	protected int cost;
 	protected AgentZero agentZero;
+	protected List<Integer>realtCost;
+	protected List<Integer>agentThinkCost;
 
 	public Dcop (Dcsp dcsp,AgentField[]agents,AgentZero aZ ) {
 		this.dcsp = dcsp;
@@ -14,20 +17,29 @@ public abstract class Dcop {
 		this.agents = agents;
 		this.cost = 0;
 		this.agentZero = aZ;
+		
+		this.realtCost = new ArrayList<Integer>();
+		this.agentThinkCost = new ArrayList<Integer>();
+
 	}
 
 	public int calRealCost() {
 		return dcsp.calRealCost();
 	}
 	
-	public int calThoughtCost() {
-		int ans = 0;
-		for (int i = 0; i < agents.length; i++) {
-			ans+=agents[i].getCurrentCost();
+	public void addCostToList() {
+		this.realtCost.add(dcsp.calRealCost());
+		
+		
+		
+		int temp = 0;
+		for (AgentField a : this.agents) {
+			temp+=a.getCurrentThinkCost();
 		}
-		return ans; 
+		this.agentThinkCost.add(temp);
 	}
 	
-	public abstract List<Integer> solve();
+	public abstract void solve();
+	public abstract void agentDecide();
 	
 }

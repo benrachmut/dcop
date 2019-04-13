@@ -1,5 +1,8 @@
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,6 +26,7 @@ public class AgentField extends Agent {
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, Integer>();
+		
 		
 		//fdf
 		// neigbors = new HashSet<Agent>();
@@ -58,7 +62,7 @@ public class AgentField extends Agent {
 		return this.domain;
 	}
 
-	public int getCurrentCost() {
+	public int getCurrentThinkCost() {
 		int ans = 0;
 		Set<ConstraintNeighbor> cNatCurrnetValue = this.constraint.get(this.value);
 
@@ -99,6 +103,69 @@ public class AgentField extends Agent {
 	public void setAgentZero(AgentZero az) {
 		this.agentZero = az;
 		
+	}
+
+	public void dsaDecide(double stochastic) {
+
+		
+		
+		List<PotentialCost>pCosts = findMinPotentialCost();
+		int currentCost = findCurrentCost(pCosts);
+		if (currentCost ==-1) {
+			System.out.println("we have a bug");
+		}
+		
+		PotentialCost minPotentialCost = Collections.min(pCosts);
+		int minCost = minPotentialCost.getCost();
+		
+		boolean shouldChange = false;
+		if (minCost<currentCost) {
+			shouldChange = true;
+		}
+		
+		if (shouldChange) {
+			double rnd = Math.random();
+			
+			if (rnd < stochastic) {
+				this.value = minPotentialCost.getValue();
+			}
+		}
+		
+	}
+
+	private int findCurrentCost(List<PotentialCost> pCosts) {
+		for (PotentialCost pC : pCosts) {
+			if (pC.getValue() == this.value) {
+				return pC.getCost();
+			}
+		}
+		return -1;
+	}
+
+	private List<PotentialCost> findMinPotentialCost() {
+		List<PotentialCost>pCosts =new ArrayList<PotentialCost>();
+		for (int i = 0; i < domain.length; i++) {
+			Set<ConstraintNeighbor>neighborsAtDomain = this.constraint.get(i);
+			int costPerValue = calCostPerValue(neighborsAtDomain);
+			PotentialCost pC = new PotentialCost(domain[i], costPerValue);
+			pCosts.add(pC);
+		}
+		return 	pCosts;
+	}
+
+	private int calCostPerValue(Set<ConstraintNeighbor> neighborsAtDomain) {
+		int ans = 0;
+		for (ConstraintNeighbor cN : neighborsAtDomain) {
+			Agent a = cN.getAgent();
+			int aId =a.getId();
+			int aCheckedValue= a.getValue();			
+			int aNeighborKnownValue = this.neighbor.get(aId);
+			if (aCheckedValue == aNeighborKnownValue) {
+				int costFromNeighbor = cN.getCost();
+				ans+=costFromNeighbor;			
+			}
+		}
+		return ans;
 	}
 
 

@@ -20,4 +20,17 @@ public class AgentZero {
 	public void emptyMessageBox() {
 		this.messagesBox.clear();
 	}
+
+	public void createMsgs() {
+		for (Neighbors n : this.neighbors) {
+			AgentField a1 = (AgentField) n.getA1();
+			AgentField a2 = (AgentField) n.getA2();
+			
+			
+
+		}
+		
+	}
+
+
 }

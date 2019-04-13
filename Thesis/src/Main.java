@@ -1,3 +1,5 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,18 +37,24 @@ public class Main {
 		initVariables();
 		printTableHeader1();
 		
-		PrintWriter pw = new PrintWriter(arg0)
+		
+		
+	
+		
+		
 		
 		while (p1 <= p1Max) {
 			while (p2 <= p2Max) {								 
 				for (int i = 0; i < meanReps; i++) {
 					Dcsp dcsp = createDcsp();
 					
-					Map<Double,List<List<Integer>>>costPerProblem = new HashMap<>
 					while (p3 <= p3Max) {
 
-						Dcop dsa = new DSA(dcsp, agentZero);
+						Dcop dsa = new DSA(dcsp, agents, agentZero, 0.7);
 						restartBetweenAlgo(dcsp);
+						
+						
+						
 						p3 += p3Gap;
 						dcsp.changeCommunicationProtocol(p3);
 
@@ -140,3 +148,24 @@ public class Main {
 	}
 
 }
+
+/*
+
+		BufferedWriter out = null;
+		try {
+			FileWriter s = new FileWriter("time.csv");
+			out = new BufferedWriter(s);
+			out.newLine();
+			for (int i = 0; i < x.length; i++) {
+				String o=""+x[i][0]+","+(x[i][1]/50);
+				out.write(o);
+				out.newLine();
+			}
+			
+		
+			out.close();
+		}catch (Exception e) {
+			System.err.println("Couldn't open the file");
+		}
+
+*/
