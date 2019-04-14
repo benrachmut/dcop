@@ -22,7 +22,7 @@ public class AgentField extends Agent {
 		super(id);
 		// this.id = id;
 		this.domain = createDomain(domainSize);
-		this.firstValue = Main.getRandomInt(0, domainSize - 1);
+		this.firstValue = Main.getRandomInt(0, domainSize-1 );
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, Integer>();
@@ -64,8 +64,11 @@ public class AgentField extends Agent {
 
 	public int getCurrentThinkCost() {
 		int ans = 0;
+		if (this.constraint.get(this.value)==null) {
+			return 0;
+		}
 		Set<ConstraintNeighbor> cNatCurrnetValue = this.constraint.get(this.value);
-
+		
 		for (Entry<Integer, Integer> n : neighbor.entrySet()) {
 			int nId = n.getKey();
 			int nValue = n.getValue();
@@ -109,17 +112,15 @@ public class AgentField extends Agent {
 
 		
 		
-		List<PotentialCost>pCosts = findMinPotentialCost();
-		int currentCost = findCurrentCost(pCosts);
-		if (currentCost ==-1) {
-			System.out.println("we have a bug");
-		}
+		List<PotentialCost>pCosts = findPotentialCost();
+		int currentPersonalCost = findCurrentCost(pCosts);
+		
 		
 		PotentialCost minPotentialCost = Collections.min(pCosts);
 		int minCost = minPotentialCost.getCost();
 		
 		boolean shouldChange = false;
-		if (minCost<currentCost) {
+		if (minCost<currentPersonalCost) {
 			shouldChange = true;
 		}
 		
@@ -142,7 +143,7 @@ public class AgentField extends Agent {
 		return -1;
 	}
 
-	private List<PotentialCost> findMinPotentialCost() {
+	private List<PotentialCost> findPotentialCost() {
 		List<PotentialCost>pCosts =new ArrayList<PotentialCost>();
 		for (int i = 0; i < domain.length; i++) {
 			Set<ConstraintNeighbor>neighborsAtDomain = this.constraint.get(i);
@@ -155,17 +156,29 @@ public class AgentField extends Agent {
 
 	private int calCostPerValue(Set<ConstraintNeighbor> neighborsAtDomain) {
 		int ans = 0;
+		
+		if (neighborsAtDomain==null) {
+			return 0;
+		}
 		for (ConstraintNeighbor cN : neighborsAtDomain) {
 			Agent a = cN.getAgent();
-			int aId =a.getId();
+			int aId = a.getId();
+			
+			
 			int aCheckedValue= a.getValue();			
 			int aNeighborKnownValue = this.neighbor.get(aId);
+			
 			if (aCheckedValue == aNeighborKnownValue) {
 				int costFromNeighbor = cN.getCost();
 				ans+=costFromNeighbor;			
 			}
 		}
 		return ans;
+	}
+
+	public void reciveMsg(int senderId, int senderValue) {
+		this.neighbor.put(senderId, senderValue);
+		
 	}
 
 

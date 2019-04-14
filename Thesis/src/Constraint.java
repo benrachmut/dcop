@@ -26,14 +26,7 @@ public class Constraint {
 		return cost;
 	}
 
-	public int getCostForNeighbors(Neighbors n) {
-		if (this.neighbors.equals(n)) {
-			return this.cost;
-		}
-		else {
-			return 0;
-		}
-	}
+
 	@Override
 	public String toString() {
 		Agent a1 = this.neighbors.getA1();

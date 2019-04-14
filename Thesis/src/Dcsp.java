@@ -11,7 +11,7 @@ public class Dcsp {
 	private double p1;// prob for neighbors
 	private double p2;// prob for domain of neigbors to have cost
 	private double p3;// prob of connection between neighbors to have delay;
-	private int itirationGap;//
+	//private int itirationGap;//
 	private Set<Constraint> constraints;
 	// private Map<AgentField, Set<AgentField>> neighbors;
 	// private AgentZero agentZero
@@ -31,9 +31,31 @@ public class Dcsp {
 		// this.agentZero = az;
 		// this.neighbors = new HashMap<AgentField, Set<AgentField>>();
 	}
+	
+	public Dcsp(Dcsp dcsp, double p3) {
+		this.agentsF= dcsp.getAgentsF();
+		this.p1 =dcsp.getP1();
+		this.p2 = dcsp.getP2();
+		this.p3 = p3;
+		//this.itirationGap = itirationGap;
+		this.neighbors = dcsp.getNeighbors();
+		
+		setAllNeighborFludToFalse();
+		this.constraints = dcsp.getConstraints();
+		createConnectionFlud();
+	}
 
 	
 	
+	private void setAllNeighborFludToFalse() {
+		for (Neighbors n : neighbors) {
+			n.setDelay12(false);
+			n.setDelay21(false);
+
+
+		}
+	}
+
 	private void createConnectionFlud() {
 		double rnd;
 		for (Neighbors n : this.neighbors) {
@@ -125,8 +147,21 @@ public class Dcsp {
 		int ans = 0;
 		
 		for (Neighbors n : neighbors) {
+			
+			Agent an1 = n.getA1();
+			Agent an2 = n.getA2();
+			
 			for (Constraint c : constraints) {
-				ans+=c.getCostForNeighbors(n);
+				
+				Agent ac1 = c.getNeighbors().getA1();
+				Agent ac2 = c.getNeighbors().getA2();
+				boolean sameId = an1.getId()==ac1.getId() &&an2.getId()==ac2.getId();
+				boolean sameValue = an1.getValue()==ac1.getValue() &&an2.getValue()==ac2.getValue();
+
+				if (sameValue&&sameId ) {
+					ans+=c.getCost();
+
+				}
 			}
 		}
 		
@@ -158,6 +193,38 @@ public class Dcsp {
 		}
 		
 	}
+
+
+
+	public AgentField[] getAgentsF() {
+		return agentsF;
+	}
+
+
+
+	public double getP1() {
+		return p1;
+	}
+
+
+
+	public double getP2() {
+		return p2;
+	}
+
+
+
+	public double getP3() {
+		return p3;
+	}
+
+
+
+	public Set<Constraint> getConstraints() {
+		return constraints;
+	}
+	
+	
 
 
 

@@ -5,7 +5,7 @@ private int cost;
 public PotentialCost(int value, int cost) {
 	super();
 	this.value = value;
-	cost = cost;
+	this.cost = cost;
 }
 public int getValue() {
 	return value;

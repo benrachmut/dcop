@@ -5,9 +5,12 @@ public class DSA extends Dcop {
 
 	private double stochastic;
 
-	public DSA(Dcsp dcsp, AgentField[] agents, AgentZero aZ, double stochastic) {
-		super(dcsp, agents, aZ);
+	public DSA(Dcsp dcsp, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
+		super(dcsp, agents, aZ,meanRun);
 		this.stochastic = stochastic;
+		this.algo = "dsa"+stochastic;
+		this.solve();
+
 	}
 
 	@Override
@@ -16,17 +19,20 @@ public class DSA extends Dcop {
 		for (int i = 0; i < this.itiration; i++) {
 			this.agentZero.createMsgs();
 			this.agentZero.sendMsgs();
-			agentsDecide();
+			agentDecide();
 			addCostToList();
 
 		}
 	}
+	@Override
 
-	public void agentsDecide() {
+	public void agentDecide() {
 		for (AgentField a : agents) {
 			a.dsaDecide(this.stochastic);
 		}
 	}
+
+	
 
 
 
