@@ -183,7 +183,7 @@ public class Main {
 
 		// -- variables for loops
 		meanReps = 20; // 10 number of reps for every solve process
-		p1Max = 0.6; // 0.5 limits the p1 loop include
+		p1Max = 1.0; // 0.5 limits the p1 loop include
 		p1Gap = 0.3; // 0.3 change in p1 in each itiration
 		p2Max = 1.0; // 1 limits the p2 loop include
 		p2Gap = 0.1; // 0.1 change in p2 in each itiration
