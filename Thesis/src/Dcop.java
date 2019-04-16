@@ -1,70 +1,234 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Vector;
 
-public abstract class Dcop {
+public class Dcop {
 
-	protected int itiration;
-	protected int meanRun;
-	protected Dcsp dcsp;
-	protected AgentField[] agents;
-	protected int cost;
-	protected AgentZero agentZero;
-	protected List<Integer> realCost;
-	protected List<Integer> agentThinkCost;
-	protected int currentItiration;
-	protected String algo;
+	private AgentField[] agentsF;
+	private double p1;// prob for neighbors
+	private double p2;// prob for domain of neigbors to have cost
+	private double p3;// prob of connection between neighbors to have delay;
+	//private int itirationGap;//
+	private Set<Constraint> constraints;
+	// private Map<AgentField, Set<AgentField>> neighbors;
+	// private AgentZero agentZero
+	private Set<Neighbors> neighbors;
+	//private AgentZero agentZero;
 
-
-	public Dcop(Dcsp dcsp, AgentField[] agents, AgentZero aZ, int meanRun) {
-		this.meanRun = meanRun+1;
-		this.dcsp = dcsp;
-		this.itiration = Main.iterations;
-		this.agents = agents;
-		this.cost = 0;
-		this.agentZero = aZ;
-		this.algo="";
-		this.realCost = new ArrayList<Integer>();
-		this.agentThinkCost = new ArrayList<Integer>();
-		addCostToList();
-
-
+	public Dcop(AgentField[] agents, int d, double p1, double p2, double p3) {
+		this.agentsF = agents;
+		this.p1 = p1;
+		this.p2 = p2;
+		this.p3 = p3;
+		//this.itirationGap = itirationGap;
+		this.neighbors = new HashSet<Neighbors>();
+		this.constraints = createConstraints();
+		createConnectionFlud();
+	
+		// this.agentZero = az;
+		// this.neighbors = new HashMap<AgentField, Set<AgentField>>();
+	}
+	
+	public Dcop(Dcop dcsp, double p3) {
+		this.agentsF= dcsp.getAgentsF();
+		this.p1 =dcsp.getP1();
+		this.p2 = dcsp.getP2();
+		this.p3 = p3;
+		//this.itirationGap = itirationGap;
+		this.neighbors = dcsp.getNeighbors();
+		
+		setAllNeighborFludToFalse();
+		this.constraints = dcsp.getConstraints();
+		createConnectionFlud();
 	}
 
-	public int calRealCost() {
-		return dcsp.calRealCost();
-	}
+	
+	
+	private void setAllNeighborFludToFalse() {
+		for (Neighbors n : neighbors) {
+			n.setDelay12(false);
+			n.setDelay21(false);
 
-	public void addCostToList() {
-		this.realCost.add(dcsp.calRealCost());
 
-		int temp = 0;
-		for (AgentField a : this.agents) {
-			temp += a.getCurrentThinkCost();
 		}
-		this.agentThinkCost.add(temp/2);
 	}
 
-	public abstract void solve();
+	private void createConnectionFlud() {
+		double rnd;
+		for (Neighbors n : this.neighbors) {
+			rnd = Math.random();
+			if (rnd <p3  ) {
+				n.setDelay12(true);
+			}
+			rnd = Math.random();
+			if ( rnd < p3) {
+				n.setDelay21(true);
+			}
+		}
 
-	public abstract void agentDecide();
+	}
+
+	private Set<Constraint> createConstraints() {
+		Set<Constraint> ans = new HashSet<Constraint>();
+		for (int i = 0; i < agentsF.length; i++) {
+			for (int j = i + 1; j < agentsF.length; j++) {
+				double p1Max = Math.random();
+				if (p1Max <  this.p1 ) {
+					AgentField af1 = agentsF[i];
+					AgentField af2 = agentsF[j];
+
+					for (int k = 0; k < af1.getDomainSize(); k++) {
+						int d1 = af1.getDomain()[k];
+						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
+							int d2 = af2.getDomain()[k2];
+							double p2Max = Math.random();
+							if (p2Max < this.p2  ) {
+
+								Agent a1 = new Agent(i, d1);
+								Agent a2 = new Agent(j, d2);
+								int cost = Main.getRandomInt(1, Main.costMax);
+								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
+
+								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
+								ans.add(c);
+							}
+						}
+					}
+				}
+			}
+		}
+		return ans;
+	}
+
+	private void informFieldAgentOnConstraint(int d1, int d2, Agent a1, Agent a2, AgentField af1, AgentField af2, int i,
+			int j, int cost) {
+		af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
+		af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
+		af1.addNeighbor(j, -1);
+		af2.addNeighbor(i, -1);
+		
+		boolean flag =false;
+		
+		int id1 = af1.getId();
+		int id2 = af2.getId();
+		
+		for (Neighbors n : neighbors) {
+			if (id1==n.getA1().getId() && id2==n.getA2().getId()) {
+				flag=true;
+				break;
+			}
+		}
+				
+		if (!flag) {
+			this.neighbors.add(new Neighbors(af1, af2));
+		}		
+		
+	}
+
+	/*
+	 * public void addToNeighbors(AgentField af1, AgentField af2) {
+	 * 
+	 * addOneWay(af1, af2); addOneWay(af2, af1);
+	 * 
+	 * }
+	 */
+	/*
+	 * private void addOneWay(AgentField af1, AgentField af2) { if
+	 * (!neighbors.containsKey(af1)) { this.neighbors.put(af1, new
+	 * HashSet<AgentField>()); } Set<AgentField> n = this.neighbors.get(af1);
+	 * n.add(af2);
+	 * 
+	 * }
+	 */
+	public int calRealCost() {
+		int ans = 0;
+		
+		for (Neighbors n : neighbors) {
+			
+			Agent an1 = n.getA1();
+			Agent an2 = n.getA2();
+			
+			for (Constraint c : constraints) {
+				
+				Agent ac1 = c.getNeighbors().getA1();
+				Agent ac2 = c.getNeighbors().getA2();
+				boolean sameId = an1.getId()==ac1.getId() &&an2.getId()==ac2.getId();
+				boolean sameValue = an1.getValue()==ac1.getValue() &&an2.getValue()==ac2.getValue();
+
+				if (sameValue&&sameId ) {
+					ans+=c.getCost();
+
+				}
+			}
+		}
+		
+		return ans;
+	}
+
+
+
+	public Set<Neighbors> getNeighbors() {
+		// TODO Auto-generated method stub
+		return this.neighbors;
+	}
+
+
+
+	public void changeCommunicationProtocol(double p) {
+		restartDelayFalse();
+		this.p3=p;
+		createConnectionFlud();
+		
+	}
+
+
+
+	private void restartDelayFalse() {
+		for (Neighbors n : this.neighbors) {
+			n.setDelay12(false);
+			n.setDelay21(false);
+		}
+		
+	}
+
+
+
+	public AgentField[] getAgentsF() {
+		return agentsF;
+	}
+
+
+
+	public double getP1() {
+		return p1;
+	}
+
+
+
+	public double getP2() {
+		return p2;
+	}
+
+
+
+	public double getP3() {
+		return p3;
+	}
+
+
+
+	public Set<Constraint> getConstraints() {
+		return constraints;
+	}
 	
-	@Override
-	public String toString() {
-		double p1 = dcsp.getP1();
-		double p2 = dcsp.getP2();
-		double p3= dcsp.getP3();
-		int gap = this.agentZero.getItirationGap();
-		return algo+","+p1+","+p2+","+p3+","+gap+","+meanRun;
-	}
-
-	public List<Integer> getRealCost() {
-		return realCost;
-	}
-
-	public List<Integer> getAgentThinkCost() {
-		return agentThinkCost;
-	}
 	
-	
+
+
+
+
+
 
 }

@@ -59,11 +59,12 @@ public class AgentZero {
 			reciver.reciveMsg(senderId,senderValue);
 			
 		}
-		
+		/*
 		for (Message m : this.messagesBox) {
 			int delay=m.getDelay()-1;
 			m.setDelay(delay);
 		}
+		*/
 
 	}
 

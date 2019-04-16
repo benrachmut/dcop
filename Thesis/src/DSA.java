@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class DSA extends Dcop {
+public class DSA extends Solution {
 
 	private double stochastic;
 
-	public DSA(Dcsp dcsp, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
+	public DSA(Dcop dcsp, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
 		super(dcsp, agents, aZ,meanRun);
 		this.stochastic = stochastic;
 		this.algo = "dsa"+stochastic;
