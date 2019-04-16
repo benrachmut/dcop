@@ -17,7 +17,7 @@ public class DSA extends Solution {
 	public void solve() {
 
 		for (int i = 0; i < this.itiration; i++) {
-			this.agentZero.createMsgs();
+			this.agentZero.createMsgs(i);
 			this.agentZero.sendMsgs();
 			agentDecide();
 			addCostToList();

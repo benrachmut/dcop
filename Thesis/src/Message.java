@@ -12,7 +12,7 @@ public class Message implements Comparable<Message> {
 		this.senderValue = senderValue;
 		this.delay = delay;
 	}
-
+/*
 	public Message(AgentField sender, AgentField reciever, int senderValue) {
 		super();
 		this.sender = sender;
@@ -20,6 +20,7 @@ public class Message implements Comparable<Message> {
 		this.senderValue = senderValue;
 		this.delay = 0;
 	}
+	*/
 
 	@Override
 	public int compareTo(Message o) {

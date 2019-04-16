@@ -16,22 +16,27 @@ public class Dcop {
 	// private Map<AgentField, Set<AgentField>> neighbors;
 	// private AgentZero agentZero
 	private Set<Neighbors> neighbors;
+	private int iterations;
 	//private AgentZero agentZero;
+	private int delayUpperBound;
 
-	public Dcop(AgentField[] agents, int d, double p1, double p2, double p3) {
+	public Dcop(AgentField[] agents, int d, double p1, double p2, double p3, int upperBound, int iterations) {
 		this.agentsF = agents;
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;
 		//this.itirationGap = itirationGap;
+		this.delayUpperBound = upperBound;
+
 		this.neighbors = new HashSet<Neighbors>();
+		this.iterations = iterations;
 		this.constraints = createConstraints();
-		createConnectionFlud();
+		//createConnectionFlud();
 	
 		// this.agentZero = az;
 		// this.neighbors = new HashMap<AgentField, Set<AgentField>>();
 	}
-	
+	/*
 	public Dcop(Dcop dcop, double p3) {
 		this.agentsF= dcop.getAgentsF();
 		this.p1 =dcop.getP1();
@@ -42,11 +47,12 @@ public class Dcop {
 		
 		setAllNeighborFludToFalse();
 		this.constraints = dcop.getConstraints();
-		createConnectionFlud();
+		//createConnectionFlud();
 	}
+	*/
 
 	
-	
+	/*
 	private void setAllNeighborFludToFalse() {
 		for (Neighbors n : neighbors) {
 			n.setDelay12(false);
@@ -55,10 +61,13 @@ public class Dcop {
 
 		}
 	}
-
+	*/
+/*
 	private void createConnectionFlud() {
 		double rnd;
 		for (Neighbors n : this.neighbors) {
+			n.createFlud();
+			
 			rnd = Main.r.nextDouble();
 			if (rnd <p3  ) {
 				n.setDelay12(true);
@@ -70,6 +79,7 @@ public class Dcop {
 		}
 
 	}
+*/
 
 	private Set<Constraint> createConstraints() {
 		Set<Constraint> ans = new HashSet<Constraint>();
@@ -123,7 +133,7 @@ public class Dcop {
 		}
 				
 		if (!flag) {
-			this.neighbors.add(new Neighbors(af1, af2));
+			this.neighbors.add(new Neighbors(af1, af2,p3,this.iterations,this.delayUpperBound));
 		}		
 		
 	}
@@ -176,16 +186,17 @@ public class Dcop {
 	}
 
 
-
+/*
 	public void changeCommunicationProtocol(double p) {
 		restartDelayFalse();
 		this.p3=p;
 		createConnectionFlud();
 		
 	}
+	*/
 
 
-
+/*
 	private void restartDelayFalse() {
 		for (Neighbors n : this.neighbors) {
 			n.setDelay12(false);
@@ -193,6 +204,7 @@ public class Dcop {
 		}
 		
 	}
+	*/
 
 
 

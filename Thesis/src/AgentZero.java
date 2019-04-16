@@ -12,24 +12,32 @@ import java.util.TreeSet;
 public class AgentZero {
 	private List<Message> messagesBox;
 	private Set<Neighbors> neighbors;
-	private int itirationGap;
+	private int iteration;
 
-	public AgentZero(int itirationGap, Set<Neighbors> neighbors) {
+	public AgentZero(int iteration, Set<Neighbors> neighbors) {
 		this.messagesBox = new ArrayList<Message>();
 		this.neighbors = neighbors;
-		this.itirationGap = itirationGap;
+		this.iteration = iteration;
 	}
 
 	public void emptyMessageBox() {
 		this.messagesBox.clear();
 	}
 
-	public void createMsgs() {
+	public void createMsgs(int currentIteration) {
 		for (Neighbors n : this.neighbors) {
+
 			AgentField a1 = (AgentField) n.getA1();
+			int delay12 = n.getDelay12(currentIteration);
+
 			AgentField a2 = (AgentField) n.getA2();
-			Message msg12 = createMsg(a1, a2, a1.getValue(), n.isDelay12());
-			Message msg21 = createMsg(a2, a1, a2.getValue(), n.isDelay21());
+			int delay21 = n.getDelay21(currentIteration);
+
+			
+			Message msg12 = new Message(a1, a2, a1.getValue(), delay12);
+			Message msg21 = new Message(a2, a1, a2.getValue(), delay21);
+
+			
 
 			this.messagesBox.add(msg12);
 			this.messagesBox.add(msg21);
@@ -37,17 +45,7 @@ public class AgentZero {
 
 	}
 
-	private Message createMsg(AgentField a1, AgentField a2, int value, boolean isDelay) {
-
-		Message msg;
-		if (isDelay) {
-			msg = new Message(a1, a2, value, this.itirationGap);
-		} else {
-			msg = new Message(a1, a2, value);
-		}
-		return msg;
-	}
-
+	
 	public void sendMsgs() {
 
 		List<Message> msgToSend = handleDelay();
@@ -88,8 +86,13 @@ public class AgentZero {
 		return msgToSend;
 	}
 
-	public int getItirationGap() {
-		return itirationGap;
+
+
+	public void changeCommunicationProtocol(double p3) {
+		for (Neighbors n : this.neighbors) {
+			n.createFluds(p3);
+		}
+		
 	}
 	
 	

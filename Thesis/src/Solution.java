@@ -53,8 +53,7 @@ public abstract class Solution {
 		double p1 = dcsp.getP1();
 		double p2 = dcsp.getP2();
 		double p3= dcsp.getP3();
-		int gap = this.agentZero.getItirationGap();
-		return algo+","+p1+","+p2+","+p3+","+gap+","+meanRun;
+		return algo+","+p1+","+p2+","+meanRun;
 	}
 
 	public List<Integer> getRealCost() {
