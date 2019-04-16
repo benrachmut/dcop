@@ -4,13 +4,17 @@ public class Message implements Comparable<Message> {
 	private AgentField reciever;
 	private int senderValue;
 	private int delay;
+	private int iterationCreated;
 
-	public Message(AgentField sender, AgentField reciever, int senderValue, int delay) {
+	public Message(AgentField sender, AgentField reciever, int senderValue, int delay, int iterationCreated) {
 		super();
 		this.sender = sender;
 		this.reciever = reciever;
 		this.senderValue = senderValue;
 		this.delay = delay;
+		
+		//this.iterationSend = iterationCreated+this.delay;
+		
 	}
 /*
 	public Message(AgentField sender, AgentField reciever, int senderValue) {
@@ -50,5 +54,8 @@ public class Message implements Comparable<Message> {
 	
 	
 	
+	public int getIterationCreated() {
+		return this.iterationCreated;
+	}
 
 }

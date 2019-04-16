@@ -12,7 +12,7 @@ public class AgentField extends Agent {
 	private int firstValue;
 	
 	private Map<Integer, Set<ConstraintNeighbor>> constraint;
-	private Map<Integer, Integer> neighbor; // id and value
+	private Map<Integer, MessageRecive> neighbor; // id and value
 	private AgentZero agentZero;
 
 	// private Set<Agent>neigbors;
@@ -25,7 +25,7 @@ public class AgentField extends Agent {
 		this.firstValue = Main.getRandomInt(0, domainSize-1 );
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
-		this.neighbor = new HashMap<Integer, Integer>();
+		this.neighbor = new HashMap<Integer, MessageRecive>();
 		
 		
 		//fdf
@@ -69,9 +69,9 @@ public class AgentField extends Agent {
 		}
 		Set<ConstraintNeighbor> cNatCurrnetValue = this.constraint.get(this.value);
 		
-		for (Entry<Integer, Integer> n : neighbor.entrySet()) {
+		for (Entry<Integer, MessageRecive> n : neighbor.entrySet()) {
 			int nId = n.getKey();
-			int nValue = n.getValue();
+			int nValue = n.getValue().getSenderValue();
 			Agent aTemp = new Agent(nId, nValue);
 			for (ConstraintNeighbor cN : cNatCurrnetValue) {
 				if (cN.getAgent().equals(aTemp)) {
@@ -91,14 +91,11 @@ public class AgentField extends Agent {
 
 	}
 
-	public void addNeighbor(int agentId, int value) {
-		this.neighbor.put(agentId, value);
-
-	}
+	
 
 	public void changeValOfAllNeighbor(int valNew) {
-		for (Entry<Integer, Integer> n : neighbor.entrySet()) {
-			n.setValue(valNew);
+		for (Entry<Integer, MessageRecive> n : neighbor.entrySet()) {
+			n.setValue(new MessageRecive(-1, n.getKey(), valNew));
 		}
 		
 	}
@@ -166,7 +163,7 @@ public class AgentField extends Agent {
 			
 			
 			int aCheckedValue= a.getValue();			
-			int aNeighborKnownValue = this.neighbor.get(aId);
+			int aNeighborKnownValue = this.neighbor.get(aId).getSenderValue();
 			
 			if (aCheckedValue == aNeighborKnownValue) {
 				int costFromNeighbor = cN.getCost();
@@ -176,13 +173,21 @@ public class AgentField extends Agent {
 		return ans;
 	}
 
-	public void reciveMsg(int senderId, int senderValue) {
-		this.neighbor.put(senderId, senderValue);
+	public void reciveMsg( int iterationCreated,int senderId, int senderValue) {
+		
+		int currentMessageCreated = this.neighbor.get(senderId).getIterationRecieve();
+		
+		if (currentMessageCreated<iterationCreated) {// means we recived a more updated info
+			this.neighbor.put(senderId, new MessageRecive(iterationCreated, senderId, senderValue));
+		}
 		
 	}
 
 	
+	public void addNeighbor(int iterationCreated,int agentId, int value ) {
+		this.neighbor.put(agentId, new MessageRecive(iterationCreated, agentId, value));
 
+	}
 
 
 }

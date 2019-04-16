@@ -97,22 +97,18 @@ public class Main {
 						
 						long start = System.currentTimeMillis( );
 						Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
-						restartBetweenAlgo(dsa3,p3);
-						long finish = System.currentTimeMillis( );
-						System.out.println(dsa3+","+p3);
-						System.out.println("time: "+((finish-start)*0.001));
-
+						restartBetweenAlgo(dsa3,start);
+						
+						
+						
+						start = System.currentTimeMillis( );
 						Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
+						restartBetweenAlgo(dsa6,start);
 						
-						restartBetweenAlgo(dsa6,p3);
-						System.out.println(dsa6+","+p3);
-						System.out.println("time: "+((finish-start)*0.001));
-						
+						start = System.currentTimeMillis( );
 						Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
+						restartBetweenAlgo(dsa9,start);
 						
-						restartBetweenAlgo(dsa9,p3);
-						System.out.println(dsa9+","+p3);
-						System.out.println("time: "+((finish-start)*0.001));
 						
 
 
@@ -163,10 +159,13 @@ public class Main {
 
 	}
 
-	private static void restartBetweenAlgo(Solution sol, double p32) {
+	private static void restartBetweenAlgo(Solution sol, long start) {
 		addToSolutionString(sol, p3);
 		restartAgent();
 		agentZero.emptyMessageBox();
+		long finish = System.currentTimeMillis( );
+		System.out.println(sol+","+p3);
+		System.out.println("time: "+((finish-start)*0.001));
 
 	}
 
@@ -199,7 +198,7 @@ public class Main {
 
 	private static void initVariables() {
 		// -- variables of dcop problem
-		iterations = 50; // 1000 number of iterations
+		iterations = 1000; // 1000 number of iterations
 		A = 30; // 30 number of agents
 		D = 10; // 10 size of domain for each agent
 		p1 = 0.5; // 0.2 chance for agents to be neighbors
