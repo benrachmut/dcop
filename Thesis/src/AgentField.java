@@ -125,7 +125,7 @@ public class AgentField extends Agent {
 		}
 		
 		if (shouldChange) {
-			double rnd = Math.random();
+			double rnd = Main.r.nextDouble();
 			
 			if (rnd < stochastic) {
 				this.value = minPotentialCost.getValue();

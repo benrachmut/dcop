@@ -32,16 +32,16 @@ public class Dcop {
 		// this.neighbors = new HashMap<AgentField, Set<AgentField>>();
 	}
 	
-	public Dcop(Dcop dcsp, double p3) {
-		this.agentsF= dcsp.getAgentsF();
-		this.p1 =dcsp.getP1();
-		this.p2 = dcsp.getP2();
+	public Dcop(Dcop dcop, double p3) {
+		this.agentsF= dcop.getAgentsF();
+		this.p1 =dcop.getP1();
+		this.p2 = dcop.getP2();
 		this.p3 = p3;
 		//this.itirationGap = itirationGap;
-		this.neighbors = dcsp.getNeighbors();
+		this.neighbors = dcop.getNeighbors();
 		
 		setAllNeighborFludToFalse();
-		this.constraints = dcsp.getConstraints();
+		this.constraints = dcop.getConstraints();
 		createConnectionFlud();
 	}
 
@@ -59,11 +59,11 @@ public class Dcop {
 	private void createConnectionFlud() {
 		double rnd;
 		for (Neighbors n : this.neighbors) {
-			rnd = Math.random();
+			rnd = Main.r.nextDouble();
 			if (rnd <p3  ) {
 				n.setDelay12(true);
 			}
-			rnd = Math.random();
+			rnd = Main.r.nextDouble();
 			if ( rnd < p3) {
 				n.setDelay21(true);
 			}
@@ -75,7 +75,7 @@ public class Dcop {
 		Set<Constraint> ans = new HashSet<Constraint>();
 		for (int i = 0; i < agentsF.length; i++) {
 			for (int j = i + 1; j < agentsF.length; j++) {
-				double p1Max = Math.random();
+				double p1Max = Main.r.nextDouble();
 				if (p1Max <  this.p1 ) {
 					AgentField af1 = agentsF[i];
 					AgentField af2 = agentsF[j];
@@ -84,7 +84,7 @@ public class Dcop {
 						int d1 = af1.getDomain()[k];
 						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
 							int d2 = af2.getDomain()[k2];
-							double p2Max = Math.random();
+							double p2Max = Main.r.nextDouble();
 							if (p2Max < this.p2  ) {
 
 								Agent a1 = new Agent(i, d1);
