@@ -171,7 +171,7 @@ public class Main {
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {
-			agents[i].changeValOfAllNeighbor(-1);
+			agents[i].changeValOfAllNeighbor(-1, -1);
 			agents[i].setFirstValueToValue();
 		}
 
