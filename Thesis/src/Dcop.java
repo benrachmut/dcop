@@ -117,8 +117,8 @@ public class Dcop {
 			int j, int cost) {
 		af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
 		af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-		af1.addNeighbor(-1,j, -1);
-		af2.addNeighbor(-1, i,-1);
+		af1.addNeighbor(j, -1);
+		af2.addNeighbor(i,-1);
 		
 		boolean flag =false;
 		

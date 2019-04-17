@@ -54,7 +54,7 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			
-			reciver.reciveMsg( msg.getIterationCreated(), senderId,senderValue);
+			reciver.reciveMsg( senderId,senderValue);
 		}
 		/*
 		for (Message m : this.messagesBox) {
