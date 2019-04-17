@@ -34,7 +34,8 @@ public class AgentZero {
 
 			
 			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
-		
+			this.messagesBox.add(msg12);
+
 			
 			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
 
@@ -54,7 +55,7 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			
-			reciver.reciveMsg( senderId,senderValue);
+			reciver.reciveMsg(senderId,senderValue);
 		}
 		/*
 		for (Message m : this.messagesBox) {
