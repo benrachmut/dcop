@@ -4,13 +4,15 @@ public class Message implements Comparable<Message> {
 	private AgentField reciever;
 	private int senderValue;
 	private int delay;
+	private int date;
 
-	public Message(AgentField sender, AgentField reciever, int senderValue, int delay) {
+	public Message(AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration) {
 		super();
 		this.sender = sender;
 		this.reciever = reciever;
 		this.senderValue = senderValue;
 		this.delay = delay;
+		this.date =currentIteration; 
 	}
 /*
 	public Message(AgentField sender, AgentField reciever, int senderValue) {
@@ -21,6 +23,10 @@ public class Message implements Comparable<Message> {
 		this.delay = 0;
 	}
 	*/
+	
+	public int getDate() {
+		return this.date;
+	}
 
 	@Override
 	public int compareTo(Message o) {

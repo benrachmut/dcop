@@ -172,7 +172,7 @@ public class Main {
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {
-			agents[i].changeValOfAllNeighbor(-1);
+			agents[i].initValForAllNeighbors();
 			agents[i].setFirstValueToValue();
 		}
 
@@ -199,7 +199,7 @@ public class Main {
 
 	private static void initVariables() {
 		// -- variables of dcop problem
-		iterations = 250; // 1000 number of iterations
+		iterations = 1000; // 1000 number of iterations
 		A = 30; // 30 number of agents
 		D = 10; // 10 size of domain for each agent
 		p1 = 0.5; // 0.2 chance for agents to be neighbors

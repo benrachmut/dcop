@@ -34,8 +34,8 @@ public class AgentZero {
 			int delay21 = n.getDelay21(currentIteration);
 
 			
-			Message msg12 = new Message(a1, a2, a1.getValue(), delay12);
-			Message msg21 = new Message(a2, a1, a2.getValue(), delay21);
+			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
+			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
 
 			
 
@@ -53,8 +53,8 @@ public class AgentZero {
 			int senderId= msg.getSender().getId();
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-			
-			reciver.reciveMsg(senderId,senderValue);
+			int date = msg.getDate();
+			reciver.reciveMsg(senderId,senderValue,date);
 			
 		}
 		/*
