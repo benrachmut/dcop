@@ -96,7 +96,7 @@ public boolean equals(Object obj) {
 	}
 
 	public void createFluds() {
-		double rnd = Main.r.nextDouble();
+		double rnd = Main.rSystem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay12 = true;
 			this.delayMap12 = this.setDelayMap();
@@ -105,7 +105,7 @@ public boolean equals(Object obj) {
 			this.isDelay12=false;
 			this.delayMap12 = new HashMap<Integer, Integer>(); 
 		}
-		rnd = Main.r.nextDouble();
+		rnd = Main.rSystem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay21 = true;
 			this.delayMap21 = this.setDelayMap();
@@ -121,7 +121,7 @@ public boolean equals(Object obj) {
 	private Map<Integer, Integer> setDelayMap() {
 		Map<Integer, Integer>ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
-			int rndDelay = Main.getRandomInt(1, this.delayUpperBound);
+			int rndDelay = Main.getRandomInt(Main.rSystem, 1, this.delayUpperBound);
 			ans.put(i,rndDelay);
 			
 		}

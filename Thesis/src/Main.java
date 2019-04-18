@@ -19,10 +19,12 @@ public class Main {
 	static double p3Init;
 	static int delayUpperBound;
 
+	static String algoRunning; //dsa0.3, dsa0.6, dsa0.9, MGM
 	//static int itirationGap; // the gap of message delay
 	static int costMax; // the max value of cost
 	static List<String> solutions;
-	static Random r;
+	static Random rSystem;
+	static Random rAlgo;
 
 
 	// -- variables for loops
@@ -46,7 +48,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter("dcops.csv");
+			FileWriter s = new FileWriter(algoRunning+".csv");
 			out = new BufferedWriter(s);
 			String header = "algo"+","+"p1"+","+"p2"+","+"mean_run"+","+"p3"+","+"itiration"+","+"real_cost";
 			out.write(header);
@@ -91,7 +93,7 @@ public class Main {
 						p3 =p3Init;
 					}
 					Dcop dcop = createDcop();
-
+				
 					while (p3 <= p3Max) {
 
 						
@@ -192,21 +194,21 @@ public class Main {
 		return ans;
 	}
 
-	public static int getRandomInt(int min, int max) {
+	public static int getRandomInt(Random r, int min, int max) {
 		
 		return r.nextInt(max - min + 1) + min;
 	}
 
 	private static void initVariables() {
 		// -- variables of dcop problem
-		iterations = 1000; // 1000 number of iterations
-		A = 30; // 30 number of agents
+		iterations = 10; // 1000 number of iterations
+		A = 50; // 30 number of agents
 		D = 10; // 10 size of domain for each agent
-		p1 = 0.5; // 0.2 chance for agents to be neighbors
+		p1 = 0.2; // 0.2 chance for agents to be neighbors
 		p2 = 1.0; // 0.1 chance of domain selection to have a cost
-		p3Init = 0; // 0 prob of communiction to have delay
+		p3Init = 0.0; // 0 prob of communiction to have delay
 		p3=p3Init;
-		costMax = 20; // 10 the max value of cost
+		costMax = 100; // 10 the max value of cost
 		meanReps = 10; // 10 number of reps for every solve process
 		delayUpperBound = 10;
 		// -- variables for loops
@@ -220,9 +222,13 @@ public class Main {
 		p3Gap = 0.25; // 0.2
 		
 		// create random object
-	    r = new Random();      
-	    r.setSeed(1);
+	    rSystem = new Random();      
+	    rSystem.setSeed(1);
+	    rAlgo = new Random();
+	    rAlgo.setSeed(1);
 	    
+	    
+	    algoRunning="dsa0.6";
 
 
 	}
