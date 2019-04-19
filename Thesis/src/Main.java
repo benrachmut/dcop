@@ -19,12 +19,10 @@ public class Main {
 	static double p3Init;
 	static int delayUpperBound;
 
-	static String algoRunning; //dsa0.3, dsa0.6, dsa0.9, MGM
 	//static int itirationGap; // the gap of message delay
 	static int costMax; // the max value of cost
 	static List<String> solutions;
-	static Random rSystem;
-	static Random rAlgo;
+	static Random r;
 
 
 	// -- variables for loops
@@ -48,7 +46,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter(algoRunning+".csv");
+			FileWriter s = new FileWriter("dcops.csv");
 			out = new BufferedWriter(s);
 			String header = "algo"+","+"p1"+","+"p2"+","+"mean_run"+","+"p3"+","+"itiration"+","+"real_cost";
 			out.write(header);
@@ -93,13 +91,35 @@ public class Main {
 						p3 =p3Init;
 					}
 					Dcop dcop = createDcop();
-				
+
 					while (p3 <= p3Max) {
+
+						
 						long start = System.currentTimeMillis( );
-						Solution algo = selectedAlgo(dcop,i);
-						restartBetweenAlgo(algo, start);		
+						Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
+						restartBetweenAlgo(dsa3,p3);
+						long finish = System.currentTimeMillis( );
+						System.out.println(dsa3+","+p3);
+						System.out.println("time: "+((finish-start)*0.001));
+
+						Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
+						
+						restartBetweenAlgo(dsa6,p3);
+						System.out.println(dsa6+","+p3);
+						System.out.println("time: "+((finish-start)*0.001));
+						
+						Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
+						
+						restartBetweenAlgo(dsa9,p3);
+						System.out.println(dsa9+","+p3);
+						System.out.println("time: "+((finish-start)*0.001));
+						
+
+
 						p3 += p3Gap;
+						//dcop = createDcsp(dcop);
 						agentZero.changeCommunicationProtocol(p3);
+						//dcop.changeCommunicationProtocol(p3);
 					}
 				}
 				p2 += p2Gap;
@@ -109,27 +129,6 @@ public class Main {
 		//return dcops;
 	}
 
-	private static Solution selectedAlgo(Dcop dcop, int i) {
-		boolean dsa3 = algoRunning.equals("dsa3");
-		boolean dsa6 = algoRunning.equals("dsa6");
-		boolean dsa9 = algoRunning.equals("dsa9");
-		boolean mgm = algoRunning.equals("mgm");
-		
-		Solution ans=null; 
-		if (dsa3) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.3);
-		}
-		if (dsa6) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.6);
-		}
-		if (dsa9) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.9);
-		}
-		
-		
-		return ans;
-	}
-
 	private static void addToSolutionString(Solution sol, double p33) {
 		for (int i = 0; i < iterations; i++) {
 			String o = new String(sol.toString()+","+p33+","+i+","+sol.getRealCost().get(i));
@@ -137,7 +136,15 @@ public class Main {
 		}
 		
 	}
-
+/*
+	private static Dcop createDcsp(Dcop dcsp) {
+		agents = initAgentsFieldArray();
+		Dcop dcsp1 = new Dcop(dcsp, p3);
+		agentZero = new AgentZero(itirationGap, dcsp.getNeighbors());
+		agentFieldMeetAgentZero();
+		return dcsp1;
+	}
+	*/
 	
 
 	private static Dcop createDcop() {
@@ -156,13 +163,10 @@ public class Main {
 
 	}
 
-	private static void restartBetweenAlgo(Solution sol, long start) {
+	private static void restartBetweenAlgo(Solution sol, double p32) {
 		addToSolutionString(sol, p3);
 		restartAgent();
 		agentZero.emptyMessageBox();
-		long finish = System.currentTimeMillis( );
-		System.out.println(sol+","+p3);
-		System.out.println("time: "+((finish-start)*0.001));
 
 	}
 
@@ -188,45 +192,36 @@ public class Main {
 		return ans;
 	}
 
-	public static int getRandomInt(Random r, int min, int max) {
+	public static int getRandomInt(int min, int max) {
 		
 		return r.nextInt(max - min + 1) + min;
 	}
 
 	private static void initVariables() {
 		// -- variables of dcop problem
-		iterations = 10; // 1000 number of iterations
-		A = 50; // 30 number of agents
+		iterations = 50; // 1000 number of iterations
+		A = 30; // 30 number of agents
 		D = 10; // 10 size of domain for each agent
-		p1 = 0.2; // 0.2 chance for agents to be neighbors
+		p1 = 0.5; // 0.2 chance for agents to be neighbors
 		p2 = 1.0; // 0.1 chance of domain selection to have a cost
-		p3Init = 0.0; // 0 prob of communiction to have delay
+		p3Init = 0; // 0 prob of communiction to have delay
 		p3=p3Init;
-		p3Max = 1.01; 
-		p3Gap = 0.25; // 0.2
-		costMax = 100; // 10 the max value of cost
+		costMax = 20; // 10 the max value of cost
 		meanReps = 10; // 10 number of reps for every solve process
 		delayUpperBound = 10;
-	    algoRunning="dsa6";
-
-		
-		
-		
 		// -- variables for loops
 		solutions = new ArrayList<String>();
 
-		p1Max = 0.2; // 0.5 limits the p1 loop include
+		p1Max = 1.0; // 0.5 limits the p1 loop include
 		p1Gap = 0.3; // 0.3 change in p1 in each itiration
 		p2Max = 1.0; // 1 limits the p2 loop include
 		p2Gap = 0.1; // 0.1 change in p2 in each itiration
-		
+		p3Max = 1.01; 
+		p3Gap = 0.25; // 0.2
 		
 		// create random object
-	    rSystem = new Random();      
-	    rSystem.setSeed(1);
-	    rAlgo = new Random();
-	    rAlgo.setSeed(1);
-	    
+	    r = new Random();      
+	    r.setSeed(1);
 	    
 
 
