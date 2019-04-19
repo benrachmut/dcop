@@ -8,22 +8,32 @@ import java.util.Map;
 import java.util.Random;
 
 public class Main {
-	// -- dcop entities 
-	static int iterations=50; 
-	static int A=50; 
-	static int D=10; 
-	// -- shape different problems
-	static double[] p1s= {0.2}; // prob for agents to be neighbors
-	static double[] p2s= {1}; // prob of domain selection to have a cost
-	static int costMax=100; // the max value of cost
-	// -- communication protocol
-	static double[] p3s= {0,0.5,1}; // prob of communiction to have delay
-	static int[] delayUpperBounds= {5,10};//{5,10,25,50,100};
-	// -- general
-	static List<String> solutions=new ArrayList<String>();
+
+	// -- variables of dcop problem
+	static int iterations; // number of iterations
+	static int A; // number of agents
+	static int D; // size of domain for each agent
+	static double p1; // prob for agents to be neighbors
+	static double p2; // prob of domain selection to have a cost
+	static double p3; // prob of communiction to have delay
+	static double p3Init;
+	static int delayUpperBound;
+
+	//static int itirationGap; // the gap of message delay
+	static int costMax; // the max value of cost
+	static List<String> solutions;
 	static Random r;
-	static int meanReps=2; // number of reps for every solve process
-	// -- characters
+
+
+	// -- variables for loops
+	// static double addToP2EachIteration;
+	static int meanReps; // number of reps for every solve process
+	static double p1Max; // limits the p1 loop include
+	static double p1Gap; // change in p1 in each itiration
+	static double p2Max; // limits the p2 loop include
+	static double p2Gap; // change in p2 in each itiration
+	static double p3Max; // limits the p2 loop include
+	static double p3Gap; // change in p2 in each itiration
 	static AgentField[] agents;
 	static AgentZero agentZero;
 
@@ -38,7 +48,7 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter("dcops.csv");
 			out = new BufferedWriter(s);
-			String header = "algo,p1,p2,mean_run,p3,upper_bound,itiration,real_cost";
+			String header = "algo"+","+"p1"+","+"p2"+","+"mean_run"+","+"p3"+","+"itiration"+","+"real_cost";
 			out.write(header);
 			out.newLine();
 			
@@ -69,44 +79,6 @@ public class Main {
 
 	private static void runExperiment() {
 
-		for (Double p1 : p1s) {
-			for (Double p2 : p2s) {
-				for (int i = 0; i < meanReps; i++) {
-					Dcop dcop = createDcop(p1,p2);
-
-					for (Double p3 : p3s) {
-						for (Integer dUpperBound : delayUpperBounds) {
-							agentZero.changeCommunicationProtocol(p3,dUpperBound);
-							String protocolString = p3+","+	dUpperBound;
-							
-							
-							long start = System.currentTimeMillis( );
-							Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
-							restartBetweenAlgo(dsa3,protocolString);
-							long finish = System.currentTimeMillis( );
-							System.out.println(protocolString+","+dsa3);
-							System.out.println("time: "+((finish-start)*0.001));
-
-							Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
-							
-							restartBetweenAlgo(dsa6,protocolString);
-							System.out.println(protocolString+","+dsa6);
-							System.out.println("time: "+((finish-start)*0.001));
-							
-							Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
-							
-							restartBetweenAlgo(dsa9,protocolString);
-							System.out.println(protocolString+","+dsa9);
-							System.out.println("time: "+((finish-start)*0.001));
-						}
-						
-					}
-					
-					
-				}
-			}
-		}
-		/*
 		while (p1 <= p1Max) {
 			
 			
@@ -122,31 +94,32 @@ public class Main {
 
 					while (p3 <= p3Max) {
 
-						agentZero.changeCommunicationProtocol(p3);
-
+						
 						long start = System.currentTimeMillis( );
-						Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
-						restartBetweenAlgo(dsa3,p3);
+						//Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
+						//restartBetweenAlgo(dsa3,p3);
 						long finish = System.currentTimeMillis( );
-						System.out.println(dsa3+","+p3);
-						System.out.println("time: "+((finish-start)*0.001));
-
+						//System.out.println(dsa3+","+p3);
+						//System.out.println("time: "+((finish-start)*0.001));
+						start = System.currentTimeMillis( );
 						Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
 						
 						restartBetweenAlgo(dsa6,p3);
 						System.out.println(dsa6+","+p3);
+						finish = System.currentTimeMillis( );
 						System.out.println("time: "+((finish-start)*0.001));
 						
-						Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
+						//Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
 						
-						restartBetweenAlgo(dsa9,p3);
-						System.out.println(dsa9+","+p3);
-						System.out.println("time: "+((finish-start)*0.001));
+						//restartBetweenAlgo(dsa9,p3);
+						//System.out.println(dsa9+","+p3);
+						//System.out.println("time: "+((finish-start)*0.001));
 						
 
 
 						p3 += p3Gap;
 						//dcop = createDcsp(dcop);
+						agentZero.changeCommunicationProtocol(p3);
 						//dcop.changeCommunicationProtocol(p3);
 					}
 				}
@@ -154,13 +127,12 @@ public class Main {
 			}
 			p1 += p1Gap; 
 		}
-		*/
 		//return dcops;
 	}
 
-	private static void addToSolutionString(Solution sol, String protocol) {
+	private static void addToSolutionString(Solution sol, double p33) {
 		for (int i = 0; i < iterations; i++) {
-			String o = new String(sol.toString()+","+protocol+","+i+","+sol.getRealCost().get(i));
+			String o = new String(sol.toString()+","+p33+","+i+","+sol.getRealCost().get(i));
 			solutions.add(o);
 		}
 		
@@ -176,9 +148,9 @@ public class Main {
 	*/
 	
 
-	private static Dcop createDcop(Double p1, Double p2) {
+	private static Dcop createDcop() {
 		agents = initAgentsFieldArray();
-		Dcop dcop = new Dcop(agents, D, p1, p2,  iterations);
+		Dcop dcop = new Dcop(agents, D, p1, p2, p3,  delayUpperBound,  iterations);
 		agentZero = new AgentZero(iterations, dcop.getNeighbors());
 		agentFieldMeetAgentZero();
 		return dcop;// create dcsp problem given p1 and p2
@@ -192,8 +164,8 @@ public class Main {
 
 	}
 
-	private static void restartBetweenAlgo(Solution sol, String protocol) {
-		addToSolutionString(sol, protocol);
+	private static void restartBetweenAlgo(Solution sol, double p32) {
+		addToSolutionString(sol, p3);
 		restartAgent();
 		agentZero.emptyMessageBox();
 
@@ -201,7 +173,7 @@ public class Main {
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {
-			agents[i].initValForAllNeighbors();
+			agents[i].changeValOfAllNeighbor(-1);
 			agents[i].setFirstValueToValue();
 		}
 
@@ -227,8 +199,27 @@ public class Main {
 	}
 
 	private static void initVariables() {
+		// -- variables of dcop problem
+		iterations = 250; // 1000 number of iterations
+		A = 30; // 30 number of agents
+		D = 10; // 10 size of domain for each agent
+		p1 = 0.5; // 0.2 chance for agents to be neighbors
+		p2 = 1.0; // 0.1 chance of domain selection to have a cost
+		p3Init = 0; // 0 prob of communiction to have delay
+		p3=p3Init;
+		costMax = 20; // 10 the max value of cost
+		meanReps = 5; // 10 number of reps for every solve process
+		delayUpperBound = 10;
+		// -- variables for loops
+		solutions = new ArrayList<String>();
 
-//		
+		p1Max = 1.0; // 0.5 limits the p1 loop include
+		p1Gap = 0.3; // 0.3 change in p1 in each itiration
+		p2Max = 1.0; // 1 limits the p2 loop include
+		p2Gap = 0.1; // 0.1 change in p2 in each itiration
+		p3Max = 1.01; 
+		p3Gap = 0.5; // 0.2
+		
 		// create random object
 	    r = new Random();      
 	    r.setSeed(1);

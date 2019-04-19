@@ -5,7 +5,7 @@ public abstract class Solution {
 
 	protected int itiration;
 	protected int meanRun;
-	protected Dcop dcop;
+	protected Dcop dcsp;
 	protected AgentField[] agents;
 	protected int cost;
 	protected AgentZero agentZero;
@@ -15,9 +15,9 @@ public abstract class Solution {
 	protected String algo;
 
 
-	public Solution(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
+	public Solution(Dcop dcsp, AgentField[] agents, AgentZero aZ, int meanRun) {
 		this.meanRun = meanRun+1;
-		this.dcop = dcop;
+		this.dcsp = dcsp;
 		this.itiration = Main.iterations;
 		this.agents = agents;
 		this.cost = 0;
@@ -31,11 +31,11 @@ public abstract class Solution {
 	}
 
 	public int calRealCost() {
-		return dcop.calRealCost();
+		return dcsp.calRealCost();
 	}
 
 	public void addCostToList() {
-		this.realCost.add(dcop.calRealCost());
+		this.realCost.add(dcsp.calRealCost());
 
 		int temp = 0;
 		for (AgentField a : this.agents) {
@@ -50,9 +50,9 @@ public abstract class Solution {
 	
 	@Override
 	public String toString() {
-		double p1 = dcop.getP1();
-		double p2 = dcop.getP2();
-		//double p3= dcop.getP3();
+		double p1 = dcsp.getP1();
+		double p2 = dcsp.getP2();
+		double p3= dcsp.getP3();
 		return algo+","+p1+","+p2+","+meanRun;
 	}
 

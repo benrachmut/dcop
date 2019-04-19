@@ -12,7 +12,7 @@ public class AgentField extends Agent {
 	private int firstValue;
 	
 	private Map<Integer, Set<ConstraintNeighbor>> constraint;
-	private Map<Integer, MessageRecieve> neighbor; // id and value
+	private Map<Integer, Integer> neighbor; // id and value
 	private AgentZero agentZero;
 
 	// private Set<Agent>neigbors;
@@ -25,7 +25,7 @@ public class AgentField extends Agent {
 		this.firstValue = Main.getRandomInt(0, domainSize-1 );
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
-		this.neighbor = new HashMap<Integer, MessageRecieve>();
+		this.neighbor = new HashMap<Integer, Integer>();
 		
 		
 		//fdf
@@ -69,9 +69,9 @@ public class AgentField extends Agent {
 		}
 		Set<ConstraintNeighbor> cNatCurrnetValue = this.constraint.get(this.value);
 		
-		for (Entry<Integer, MessageRecieve> n : neighbor.entrySet()) {
+		for (Entry<Integer, Integer> n : neighbor.entrySet()) {
 			int nId = n.getKey();
-			int nValue = n.getValue().getVariable();
+			int nValue = n.getValue();
 			Agent aTemp = new Agent(nId, nValue);
 			for (ConstraintNeighbor cN : cNatCurrnetValue) {
 				if (cN.getAgent().equals(aTemp)) {
@@ -91,7 +91,17 @@ public class AgentField extends Agent {
 
 	}
 
+	public void addNeighbor(int agentId, int value) {
+		this.neighbor.put(agentId, value);
 
+	}
+
+	public void changeValOfAllNeighbor(int valNew) {
+		for (Entry<Integer, Integer> n : neighbor.entrySet()) {
+			n.setValue(valNew);
+		}
+		
+	}
 
 	public void setAgentZero(AgentZero az) {
 		this.agentZero = az;
@@ -156,9 +166,9 @@ public class AgentField extends Agent {
 			
 			
 			int aCheckedValue= a.getValue();			
-			int aNeighborKnownVariable = this.neighbor.get(aId).getVariable();
+			int aNeighborKnownValue = this.neighbor.get(aId);
 			
-			if (aCheckedValue == aNeighborKnownVariable) {
+			if (aCheckedValue == aNeighborKnownValue) {
 				int costFromNeighbor = cN.getCost();
 				ans+=costFromNeighbor;			
 			}
@@ -166,31 +176,11 @@ public class AgentField extends Agent {
 		return ans;
 	}
 
-	public void reciveMsg(int senderId, int senderVariable, int dateNewMessage) {
-		int currentDate = this.neighbor.get(senderId).getDate();
-		if (dateNewMessage>currentDate) {
-			this.neighbor.put(senderId, new MessageRecieve(senderVariable, dateNewMessage));
-
-		}
-		
-		
+	public void reciveMsg(int senderId, int senderValue) {
+		this.neighbor.put(senderId, senderValue);
 		
 	}
 
-	public void addNeighbor(int agentId) {
-		
-		this.neighbor.put(agentId, new MessageRecieve(-1, -1));
-		
-
-	}
-	
-
-	public void initValForAllNeighbors() {
-		for (Entry<Integer, MessageRecieve> n : neighbor.entrySet()) {
-			n.setValue(new MessageRecieve(-1, -1));
-		}
-		
-	}
 	
 
 

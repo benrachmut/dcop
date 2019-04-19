@@ -34,8 +34,8 @@ public class AgentZero {
 			int delay21 = n.getDelay21(currentIteration);
 
 			
-			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
-			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
+			Message msg12 = new Message(a1, a2, a1.getValue(), delay12);
+			Message msg21 = new Message(a2, a1, a2.getValue(), delay21);
 
 			
 
@@ -53,8 +53,8 @@ public class AgentZero {
 			int senderId= msg.getSender().getId();
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-			int date = msg.getDate();
-			reciver.reciveMsg(senderId,senderValue,date);
+			
+			reciver.reciveMsg(senderId,senderValue);
 			
 		}
 		/*
@@ -88,9 +88,9 @@ public class AgentZero {
 
 
 
-	public void changeCommunicationProtocol(double p3,int delayUpperBound) {
+	public void changeCommunicationProtocol(double p3) {
 		for (Neighbors n : this.neighbors) {
-			n.createFluds(p3,delayUpperBound);
+			n.createFluds(p3);
 		}
 		
 	}
