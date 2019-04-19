@@ -10,7 +10,7 @@ public class Dcop {
 	private AgentField[] agentsF;
 	private double p1;// prob for neighbors
 	private double p2;// prob for domain of neigbors to have cost
-	private double p3;// prob of connection between neighbors to have delay;
+	//private double p3;// prob of connection between neighbors to have delay;
 	//private int itirationGap;//
 	private Set<Constraint> constraints;
 	// private Map<AgentField, Set<AgentField>> neighbors;
@@ -18,15 +18,15 @@ public class Dcop {
 	private Set<Neighbors> neighbors;
 	private int iterations;
 	//private AgentZero agentZero;
-	private int delayUpperBound;
+	//private int delayUpperBound;
 
-	public Dcop(AgentField[] agents, int d, double p1, double p2, double p3, int upperBound, int iterations) {
+	public Dcop(AgentField[] agents, int d, double p1, double p2, int iterations) {
 		this.agentsF = agents;
 		this.p1 = p1;
 		this.p2 = p2;
-		this.p3 = p3;
+		//this.p3 = p3;
 		//this.itirationGap = itirationGap;
-		this.delayUpperBound = upperBound;
+		//this.delayUpperBound = upperBound;
 
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
@@ -133,7 +133,7 @@ public class Dcop {
 		}
 				
 		if (!flag) {
-			this.neighbors.add(new Neighbors(af1, af2,p3,this.iterations,this.delayUpperBound));
+			this.neighbors.add(new Neighbors(af1, af2,this.iterations));
 		}		
 		
 	}
@@ -226,9 +226,7 @@ public class Dcop {
 
 
 
-	public double getP3() {
-		return p3;
-	}
+	
 
 
 

@@ -5,8 +5,8 @@ public class DSA extends Solution {
 
 	private double stochastic;
 
-	public DSA(Dcop dcsp, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
-		super(dcsp, agents, aZ,meanRun);
+	public DSA(Dcop dcop, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
+		super(dcop, agents, aZ,meanRun);
 		this.stochastic = stochastic;
 		this.algo = "dsa"+stochastic;
 		this.solve();

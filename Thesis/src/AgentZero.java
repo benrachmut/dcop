@@ -88,9 +88,9 @@ public class AgentZero {
 
 
 
-	public void changeCommunicationProtocol(double p3) {
+	public void changeCommunicationProtocol(double p3, int delayUB) {
 		for (Neighbors n : this.neighbors) {
-			n.createFluds(p3);
+			n.createFluds(p3, delayUB);
 		}
 		
 	}
