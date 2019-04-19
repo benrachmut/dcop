@@ -9,6 +9,9 @@ import java.util.Random;
 
 public class Main {
 
+	// versions
+	static String algo = "dsa6";// dsa3,dsa6,dsa9
+
 	// -- variables of dcop problem
 	static int A = 30; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
@@ -17,9 +20,9 @@ public class Main {
 	static int costMax = 20; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = {0.5}; // prob of communiction to have delay
-	static int[] delayUBs = { 5, 10 };
-	static double[] p4s = { 0, 0.5, 1 }; // prob of communiction to have delay
+	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
+	static int[] delayUBs = { 5, 10, 25, 50, 100 };
+	static double[] p4s = { 0, 0.5, 0.8 }; // prob of communication to have delay
 
 	// -- Experiment time
 	static int meanReps = 5; // number of reps for every solve process
@@ -56,12 +59,7 @@ public class Main {
 				out.newLine();
 			}
 
-			/*
-			 * for (Solution dcop : dcops) {
-			 * 
-			 * for (int i = 0; i < realCosts.size(); i++) { String o =
-			 * dcop.toString()+","+i+","+realCosts.get(i); out.write(o); out.newLine(); } }
-			 */
+			
 
 			out.close();
 		} catch (Exception e) {
@@ -74,47 +72,55 @@ public class Main {
 
 		for (Double p1 : p1s) {
 			for (Double p2 : p2s) {
-				Dcop dcop = createDcop(p1, p2);
-
 				for (int i = 0; i < meanReps; i++) {
+					Dcop dcop = createDcop(p1, p2);
 					for (Double p3 : p3s) {
 						for (Integer delayUB : delayUBs) {
 							for (Double p4 : p4s) {
+								// ---- protocol ----
 								agentZero.changeCommunicationProtocol(p3, delayUB, p4);
 								String protocol = p3 + "," + delayUB + "," + p4;
-								// long start = System.currentTimeMillis();
-								// Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
-								// restartBetweenAlgo(dsa3,p3);
-								// long finish = System.currentTimeMillis();
-								// System.out.println(dsa3+","+p3);
-								// System.out.println("time: "+((finish-start)*0.001));
-								// start = System.currentTimeMillis();
-								Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
-								restartBetweenAlgo(dsa6, protocol);
-								System.out.println(protocol + "," + dsa6);
-								// finish = System.currentTimeMillis();
-								// System.out.println("time: " + ((finish - start) * 0.001));
 
-								// Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
+								// ---- find solution ----
+								Solution algo = selectedAlgo(dcop,i);
 
-								// restartBetweenAlgo(dsa9,p3);
-								// System.out.println(dsa9+","+p3);
-								// System.out.println("time: "+((finish-start)*0.001));
+								System.out.println(protocol + "," + algo);
+
+								// ---- restart ----
+								restartBetweenAlgo(algo, protocol);
 
 								if (p3 == 0) {
 									break;
 								}
-							}//p4
+							} // p4
 							if (p3 == 0) {
 								break;
 							}
 
-						}//ub
-					}//p3
-				}//means run
-			}//p2
-		}//p1
+						} // ub
+					} // p3
+				} // means run
+			} // p2
+		} // p1
 
+	}
+
+	private static Solution selectedAlgo(Dcop dcop,int i) {
+		Solution ans=null;
+		boolean dsa3 = algo.equals("dsa3");
+		boolean dsa6 = algo.equals("dsa6");
+		boolean dsa9 = algo.equals("dsa9");
+
+		if (dsa3) {
+			ans = new DSA(dcop, agents, agentZero, i, 0.3);
+		}
+		if (dsa6) {
+			ans = new DSA(dcop, agents, agentZero, i, 0.6);
+		}
+		if (dsa9) {
+			ans = new DSA(dcop, agents, agentZero, i, 0.9);
+		}
+		return ans;
 	}
 
 	private static void addToSolutionString(Solution sol, String protocol) {
@@ -124,11 +130,8 @@ public class Main {
 		}
 
 	}
-	/*
-	 * private static Dcop createDcsp(Dcop dcsp) { agents = initAgentsFieldArray();
-	 * Dcop dcsp1 = new Dcop(dcsp, p3); agentZero = new AgentZero(itirationGap,
-	 * dcsp.getNeighbors()); agentFieldMeetAgentZero(); return dcsp1; }
-	 */
+	
+
 
 	private static Dcop createDcop(double p1, double p2) {
 		agents = initAgentsFieldArray();
