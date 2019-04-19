@@ -18,15 +18,15 @@ public class Dcop {
 	private Set<Neighbors> neighbors;
 	private int iterations;
 	//private AgentZero agentZero;
-	private int delayUpperBound;
+	//private int delayUpperBound;
 
-	public Dcop(AgentField[] agents, int d, double p1, double p2, double p3, int upperBound, int iterations) {
+	public Dcop(AgentField[] agents, int d, double p1, double p2, int upperBound, int iterations) {
 		this.agentsF = agents;
 		this.p1 = p1;
 		this.p2 = p2;
 		//this.p3 = p3;
 		//this.itirationGap = itirationGap;
-		this.delayUpperBound = upperBound;
+		//this.delayUpperBound = upperBound;
 
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
@@ -133,7 +133,7 @@ public class Dcop {
 		}
 				
 		if (!flag) {
-			this.neighbors.add(new Neighbors(af1, af2,this.iterations,this.delayUpperBound));
+			this.neighbors.add(new Neighbors(af1, af2,this.iterations));
 		}		
 		
 	}
