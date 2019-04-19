@@ -22,7 +22,7 @@ public class AgentField extends Agent {
 		super(id);
 		// this.id = id;
 		this.domain = createDomain(domainSize);
-		this.firstValue = Main.getRandomInt(0, domainSize-1 );
+		this.firstValue = Main.getRandomInt(Main.rProblem,0, domainSize-1 );
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, Integer>();
@@ -125,7 +125,7 @@ public class AgentField extends Agent {
 		}
 		
 		if (shouldChange) {
-			double rnd = Main.r.nextDouble();
+			double rnd = Main.rAlgo.nextDouble();
 			
 			if (rnd < stochastic) {
 				this.value = minPotentialCost.getValue();

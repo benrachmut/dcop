@@ -10,7 +10,7 @@ public class Neighbors {
 	private boolean isDelay21;
 	private Map<Integer, Integer>delayMap12; //key = iteration, value = delay 
 	private Map<Integer, Integer>delayMap21; //key = iteration, value = delay 
-	private int delayUpperBound;
+	//private int delayUpperBound;
 
 	public Neighbors(Agent a1, Agent a2) {
 		super();
@@ -96,7 +96,7 @@ public boolean equals(Object obj) {
 	}
 
 	public void createFluds(double p3, int delayUB) {
-		double rnd = Main.r.nextDouble();
+		double rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay12 = true;
 			this.delayMap12 = this.setDelayMap(delayUB);
@@ -105,7 +105,7 @@ public boolean equals(Object obj) {
 			this.isDelay12=false;
 			this.delayMap12 = new HashMap<Integer, Integer>(); 
 		}
-		rnd = Main.r.nextDouble();
+		rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay21 = true;
 			this.delayMap21 = this.setDelayMap(delayUB);
@@ -121,7 +121,7 @@ public boolean equals(Object obj) {
 	private Map<Integer, Integer> setDelayMap(int delayUB) {
 		Map<Integer, Integer>ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
-			int rndDelay = Main.getRandomInt(1, delayUB);
+			int rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
 			ans.put(i,rndDelay);
 			
 		}

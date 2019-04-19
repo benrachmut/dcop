@@ -30,10 +30,13 @@ public class Main {
 	
 	//-- other
 	static List<String> solutions = new ArrayList<String>();;
-	static Random r;
+	static Random rProblem = new Random();
+	static Random rAlgo = new Random();
 
 	public static void main(String[] args) {
-		initVariables();
+		//initVariables();
+		rProblem.setSeed(1);
+		rAlgo.setSeed(1);
 		runExperiment();
 		printDcops();
 	}
@@ -171,31 +174,10 @@ public class Main {
 		return ans;
 	}
 
-	public static int getRandomInt(int min, int max) {
+	public static int getRandomInt(Random r,int min, int max) {
 
 		return r.nextInt(max - min + 1) + min;
 	}
 
-	private static void initVariables() {
-		// -- variables of dcop problem
-
-		/*
-		 * iterations = 250; // 1000 number of iterations A = 30; // 30 number of agents
-		 * D = 10; // 10 size of domain for each agent p1 = 0.5; // 0.2 chance for
-		 * agents to be neighbors p2 = 1.0; // 0.1 chance of domain selection to have a
-		 * cost p3Init = 0; // 0 prob of communiction to have delay p3=p3Init; costMax =
-		 * 20; // 10 the max value of cost meanReps = 5; // 10 number of reps for every
-		 * solve process delayUpperBound = 10; // -- variables for loops solutions = new
-		 * ArrayList<String>();
-		 * 
-		 * p1Max = 1.0; // 0.5 limits the p1 loop include p1Gap = 0.3; // 0.3 change in
-		 * p1 in each itiration p2Max = 1.0; // 1 limits the p2 loop include p2Gap =
-		 * 0.1; // 0.1 change in p2 in each itiration p3Max = 1.01; p3Gap = 0.5; // 0.2
-		 */
-		// create random object
-		r = new Random();
-		r.setSeed(1);
-
-	}
-
+	
 }
