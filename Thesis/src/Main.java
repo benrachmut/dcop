@@ -94,7 +94,8 @@ public class Main {
 
 					while (p3 <= p3Max) {
 
-						
+						agentZero.changeCommunicationProtocol(p3);
+
 						long start = System.currentTimeMillis( );
 						Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
 						restartBetweenAlgo(dsa3,p3);
@@ -118,7 +119,6 @@ public class Main {
 
 						p3 += p3Gap;
 						//dcop = createDcsp(dcop);
-						agentZero.changeCommunicationProtocol(p3);
 						//dcop.changeCommunicationProtocol(p3);
 					}
 				}

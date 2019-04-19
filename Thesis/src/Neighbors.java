@@ -4,7 +4,7 @@ import java.util.Map;
 public class Neighbors {
 	private Agent a1;
 	private Agent a2;
-	private double p3;
+	//private double p3;
 	private int itirations;
 	private boolean isDelay12;
 	private boolean isDelay21;
@@ -17,7 +17,7 @@ public class Neighbors {
 		
 		this.a1 = a1;
 		this.a2 = a2;
-		this.p3 = 0;
+		//this.p3 = 0;
 		this.itirations = 0;
 		this.delayMap12= null;
 		this.delayMap21= null;
@@ -27,19 +27,19 @@ public class Neighbors {
 	}
 
 	
-	public Neighbors(Agent a1, Agent a2, double p3, int itirations, int delayUpperBound) {
+	public Neighbors(Agent a1, Agent a2,  int itirations, int delayUpperBound) {
 		super();
 		
 		this.a1 = a1;
 		this.a2 = a2;
-		this.p3 = p3;
+		//this.p3 = p3;
 		this.itirations = itirations;
 		this.delayMap12= new HashMap<Integer,Integer>();
 		this.delayMap21= new HashMap<Integer,Integer>();
 		this.isDelay12 = false;
 		this.isDelay12 = false;
 		this.delayUpperBound=delayUpperBound;
-		createFluds();
+		createFluds(0);
 	}
 
 @Override
@@ -95,7 +95,7 @@ public boolean equals(Object obj) {
 		//return "{A"+this.a1.getId()+",A"+this.a2.getId()+"}";
 	}
 
-	public void createFluds() {
+	public void createFluds(double p3) {
 		double rnd = Main.r.nextDouble();
 		if (rnd<p3) {
 			this.isDelay12 = true;
@@ -129,11 +129,12 @@ public boolean equals(Object obj) {
 		
 	}
 
-
+/*
 	public void createFluds(double input) {
 		this.p3 = input;
 		createFluds();	
 	}
+*/
 
 
 	public int getDelay12(int currentIteration) {
