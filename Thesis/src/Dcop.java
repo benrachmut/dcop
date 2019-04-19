@@ -20,7 +20,7 @@ public class Dcop {
 	//private AgentZero agentZero;
 	//private int delayUpperBound;
 
-	public Dcop(AgentField[] agents, int d, double p1, double p2, int upperBound, int iterations) {
+	public Dcop(AgentField[] agents, int d, double p1, double p2, int iterations) {
 		this.agentsF = agents;
 		this.p1 = p1;
 		this.p2 = p2;
