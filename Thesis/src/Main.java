@@ -14,27 +14,28 @@ public class Main {
 	static int D = 10; // 10 size of domain for each agent
 	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
-	static int costMax = 20; //100 the max value of cost
+	static int costMax = 20; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = { 0, 0.5, 1 }; // prob of communiction to have delay
-	static int[] delayUBs= {5,10};
-	
+	static double[] p3s = {0.5}; // prob of communiction to have delay
+	static int[] delayUBs = { 5, 10 };
+	static double[] p4s = { 0, 0.5, 1 }; // prob of communiction to have delay
+
 	// -- Experiment time
 	static int meanReps = 5; // number of reps for every solve process
 	static int iterations = 200;
-	
-	// -- characters 
+
+	// -- characters
 	static AgentField[] agents;
 	static AgentZero agentZero;
-	
-	//-- other
+
+	// -- other
 	static List<String> solutions = new ArrayList<String>();;
 	static Random rProblem = new Random();
 	static Random rAlgo = new Random();
 
 	public static void main(String[] args) {
-		//initVariables();
+		// initVariables();
 		rProblem.setSeed(1);
 		rAlgo.setSeed(1);
 		runExperiment();
@@ -46,7 +47,7 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter("dcops.csv");
 			out = new BufferedWriter(s);
-			String header = "p3,ub,algo,p1,p2,mean_run,itiration,real_cost";
+			String header = "p3,ub,p4,algo,p1,p2,mean_run,itiration,real_cost";
 			out.write(header);
 			out.newLine();
 
@@ -78,48 +79,47 @@ public class Main {
 				for (int i = 0; i < meanReps; i++) {
 					for (Double p3 : p3s) {
 						for (Integer delayUB : delayUBs) {
-							agentZero.changeCommunicationProtocol(p3, delayUB);
-							String protocol = p3+","+delayUB;
-							//long start = System.currentTimeMillis();
-							// Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
-							// restartBetweenAlgo(dsa3,p3);
-							//long finish = System.currentTimeMillis();
-							// System.out.println(dsa3+","+p3);
-							// System.out.println("time: "+((finish-start)*0.001));
-							//start = System.currentTimeMillis();
-							Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
-							restartBetweenAlgo(dsa6, protocol);
-							System.out.println(protocol+","+dsa6);
-							//finish = System.currentTimeMillis();
-							//System.out.println("time: " + ((finish - start) * 0.001));
-							
-							// Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
+							for (Double p4 : p4s) {
+								agentZero.changeCommunicationProtocol(p3, delayUB, p4);
+								String protocol = p3 + "," + delayUB + "," + p4;
+								// long start = System.currentTimeMillis();
+								// Solution dsa3 = new DSA(dcop, agents, agentZero, i, 0.3);
+								// restartBetweenAlgo(dsa3,p3);
+								// long finish = System.currentTimeMillis();
+								// System.out.println(dsa3+","+p3);
+								// System.out.println("time: "+((finish-start)*0.001));
+								// start = System.currentTimeMillis();
+								Solution dsa6 = new DSA(dcop, agents, agentZero, i, 0.6);
+								restartBetweenAlgo(dsa6, protocol);
+								System.out.println(protocol + "," + dsa6);
+								// finish = System.currentTimeMillis();
+								// System.out.println("time: " + ((finish - start) * 0.001));
 
-							// restartBetweenAlgo(dsa9,p3);
-							// System.out.println(dsa9+","+p3);
-							// System.out.println("time: "+((finish-start)*0.001));
+								// Solution dsa9 = new DSA(dcop, agents, agentZero, i, 0.9);
 
+								// restartBetweenAlgo(dsa9,p3);
+								// System.out.println(dsa9+","+p3);
+								// System.out.println("time: "+((finish-start)*0.001));
+
+								if (p3 == 0) {
+									break;
+								}
+							}//p4
 							if (p3 == 0) {
 								break;
 							}
-						}
-						
-						
-						
-						
-						
-					}
-					
-				}
-			}
-		}
 
-		
+						}//ub
+					}//p3
+				}//means run
+			}//p2
+		}//p1
+
 	}
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			String o = new String(protocol + "," +sol.toString()+ ","+ i + "," + sol.getRealCost().get(i));
+			String o = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost().get(i));
 			solutions.add(o);
 		}
 
@@ -174,10 +174,9 @@ public class Main {
 		return ans;
 	}
 
-	public static int getRandomInt(Random r,int min, int max) {
+	public static int getRandomInt(Random r, int min, int max) {
 
 		return r.nextInt(max - min + 1) + min;
 	}
 
-	
 }

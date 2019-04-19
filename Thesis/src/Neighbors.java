@@ -95,11 +95,11 @@ public boolean equals(Object obj) {
 		//return "{A"+this.a1.getId()+",A"+this.a2.getId()+"}";
 	}
 
-	public void createFluds(double p3, int delayUB) {
+	public void createFluds(double p3, int delayUB, Double p4) {
 		double rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay12 = true;
-			this.delayMap12 = this.setDelayMap(delayUB);
+			this.delayMap12 = this.setDelayMap(delayUB,p4);
 		}
 		else {
 			this.isDelay12=false;
@@ -108,7 +108,7 @@ public boolean equals(Object obj) {
 		rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay21 = true;
-			this.delayMap21 = this.setDelayMap(delayUB);
+			this.delayMap21 = this.setDelayMap(delayUB,p4);
 		}
 		else {
 			this.isDelay21=false;
@@ -118,10 +118,18 @@ public boolean equals(Object obj) {
 	}
 
 
-	private Map<Integer, Integer> setDelayMap(int delayUB) {
+	private Map<Integer, Integer> setDelayMap(int delayUB, Double p4) {
 		Map<Integer, Integer>ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
-			int rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
+			double rnd = Main.rProblem.nextDouble();
+			int rndDelay;
+			
+			if (rnd<p4) {
+				rndDelay = Integer.MAX_VALUE;
+			}else {
+				rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
+			}
+
 			ans.put(i,rndDelay);
 			
 		}
