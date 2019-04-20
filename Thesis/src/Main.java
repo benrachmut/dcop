@@ -11,6 +11,8 @@ public class Main {
 
 	// versions
 	static String algo = "dsa6";// dsa3,dsa6,dsa9
+	static boolean[] dateKnowns = { true, false };
+	static boolean dateKnown;
 
 	// -- variables of dcop problem
 	static int A = 30; // 50 number of agents
@@ -21,9 +23,8 @@ public class Main {
 
 	// -- communication protocol
 	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
-	static int[] delayUBs = { 5, 10, 25, 50, 100 };
-	static double[] p4s = { 0, 0.5, 0.8 }; // prob of communication to have delay
-
+	static int[] delayUBs = {10};//{ 5, 10, 25, 50, 100 };
+	static double[] p4s = {0};//{ 0, 0.5, 0.8, 0.9 }; // prob of communication to have delay
 	// -- Experiment time
 	static int meanReps = 5; // number of reps for every solve process
 	static int iterations = 200;
@@ -50,7 +51,7 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter("dcops.csv");
 			out = new BufferedWriter(s);
-			String header = "p3,ub,p4,algo,p1,p2,mean_run,itiration,real_cost";
+			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			out.write(header);
 			out.newLine();
 
@@ -58,8 +59,6 @@ public class Main {
 				out.write(o);
 				out.newLine();
 			}
-
-			
 
 			out.close();
 		} catch (Exception e) {
@@ -75,29 +74,27 @@ public class Main {
 				for (int i = 0; i < meanReps; i++) {
 					Dcop dcop = createDcop(p1, p2);
 					for (Double p3 : p3s) {
-						for (Integer delayUB : delayUBs) {
-							for (Double p4 : p4s) {
-								// ---- protocol ----
-								agentZero.changeCommunicationProtocol(p3, delayUB, p4);
-								String protocol = p3 + "," + delayUB + "," + p4;
+						for (boolean dK : dateKnowns) {
+							dateKnown = dK;
+							for (Integer delayUB : delayUBs) {
+								for (Double p4 : p4s) {
+									// ---- protocol ----
+									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
+									String protocol = p3 + "," + dK+","+delayUB + "," + p4;
 
-								// ---- find solution ----
-								Solution algo = selectedAlgo(dcop,i);
+									// ---- find solution ----
+									Solution algo = selectedAlgo(dcop, i);
 
-								System.out.println(protocol + "," + algo);
+									System.out.println(protocol + "," + algo);
 
-								// ---- restart ----
-								restartBetweenAlgo(algo, protocol);
-
-								if (p3 == 0) {
-									break;
-								}
-							} // p4
-							if (p3 == 0) {
-								break;
-							}
-
-						} // ub
+									// ---- restart ----
+									restartBetweenAlgo(algo, protocol);
+									if (p3 == 0)break;
+								} // p4
+								if (p3 == 0)break;
+							} // ub
+							if (p3 == 0)break;
+						} // date known
 					} // p3
 				} // means run
 			} // p2
@@ -105,8 +102,8 @@ public class Main {
 
 	}
 
-	private static Solution selectedAlgo(Dcop dcop,int i) {
-		Solution ans=null;
+	private static Solution selectedAlgo(Dcop dcop, int i) {
+		Solution ans = null;
 		boolean dsa3 = algo.equals("dsa3");
 		boolean dsa6 = algo.equals("dsa6");
 		boolean dsa9 = algo.equals("dsa9");
@@ -130,8 +127,6 @@ public class Main {
 		}
 
 	}
-	
-
 
 	private static Dcop createDcop(double p1, double p2) {
 		agents = initAgentsFieldArray();
@@ -158,7 +153,7 @@ public class Main {
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {
-			agents[i].changeValOfAllNeighbor(-1);
+			agents[i].changeValOfAllNeighbor();
 			agents[i].setFirstValueToValue();
 		}
 
