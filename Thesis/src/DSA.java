@@ -10,7 +10,12 @@ public class DSA extends Solution {
 		super(dcop, agents, aZ,meanRun);
 		this.stochastic = stochastic;
 		this.agentWait= agentWait;
-		this.algo = "dsa"+stochastic;
+		
+		if (agentWait) {
+			this.algo = "dsaW"+stochastic;
+		}else {
+			this.algo = "dsaD"+stochastic;
+		}
 		this.solve();
 
 	}
@@ -30,7 +35,7 @@ public class DSA extends Solution {
 
 	public void agentDecide() {
 		for (AgentField a : agents) {
-			a.dsaDecide(this.stochastic);
+			a.dsaDecide(this.stochastic,this.agentWait);
 		}
 	}
 

@@ -116,9 +116,16 @@ public class Dcop {
 	private void informFieldAgentOnConstraint(int d1, int d2, Agent a1, Agent a2, AgentField af1, AgentField af2, int i,
 			int j, int cost) {
 		af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
-		af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
 		af1.addNeighbor(j);
+		af1.addReciveveAll(j);
+		
+		
+		
+		af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
 		af2.addNeighbor(i);
+		af2.addReciveveAll(i);
+
+		
 		
 		boolean flag =false;
 		

@@ -27,7 +27,7 @@ public class AgentField extends Agent {
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
-		
+		this.allRecieve = new HashMap<Integer, Boolean>();
 		
 		//fdf
 		// neigbors = new HashSet<Agent>();
@@ -109,7 +109,7 @@ public class AgentField extends Agent {
 		
 	}
 */
-	public void dsaDecide(double stochastic) {
+	public void dsaDecide(double stochastic, boolean agentWait) {
 
 		
 		
@@ -125,6 +125,28 @@ public class AgentField extends Agent {
 			shouldChange = true;
 		}
 		
+		if (agentWait) {
+			boolean allNeighborReport = checkIfAllNeighborsReported();
+			if (allNeighborReport) {
+				setReciveAll(false);
+				maybeChange(shouldChange, minPotentialCost,stochastic);
+				
+			}
+		}
+		
+		else {
+			maybeChange(shouldChange, minPotentialCost,stochastic);
+		}
+		
+		
+	}
+
+	private boolean checkIfAllNeighborsReported() {
+	boolean allReport = !this.allRecieve.values().contains(false);
+	return allReport;
+}
+
+	private void maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {
 			double rnd = Main.rAlgo.nextDouble();
 			
@@ -132,8 +154,8 @@ public class AgentField extends Agent {
 				this.value = minPotentialCost.getValue();
 			}
 		}
-		
-	}
+	
+}
 
 	private int findCurrentCost(List<PotentialCost> pCosts) {
 		for (PotentialCost pC : pCosts) {
@@ -190,8 +212,23 @@ public class AgentField extends Agent {
 		}
 		
 		
+		this.allRecieve.put(senderId, true);
 		
 		
+		
+		
+		
+	}
+
+	public void addReciveveAll(int j) {
+		this.allRecieve.put(j, false);
+		
+	}
+
+	public void setReciveAll(boolean b) {
+		for (Entry<Integer, Boolean> aR : allRecieve.entrySet()) {
+			aR.setValue(b);
+		}
 		
 	}
 
