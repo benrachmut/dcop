@@ -13,7 +13,8 @@ public class AgentField extends Agent {
 	
 	private Map<Integer, Set<ConstraintNeighbor>> constraint;
 	private Map<Integer, MessageRecieve> neighbor; // id and value
-	private AgentZero agentZero;
+	//private AgentZero agentZero;
+	private Map<Integer, Boolean> allRecieve;
 
 	// private Set<Agent>neigbors;
 	// private Map <Agent, Integer> neiborsConstraint;
@@ -102,12 +103,12 @@ public class AgentField extends Agent {
 		}
 		
 	}
-
+/*
 	public void setAgentZero(AgentZero az) {
 		this.agentZero = az;
 		
 	}
-
+*/
 	public void dsaDecide(double stochastic) {
 
 		

@@ -4,10 +4,12 @@ import java.util.List;
 public class DSA extends Solution {
 
 	private double stochastic;
+	private boolean agentWait;
 
-	public DSA(Dcop dcop, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
+	public DSA(Dcop dcop, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic, boolean agentWait) {
 		super(dcop, agents, aZ,meanRun);
 		this.stochastic = stochastic;
+		this.agentWait= agentWait;
 		this.algo = "dsa"+stochastic;
 		this.solve();
 

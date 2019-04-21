@@ -10,24 +10,25 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "dsa6";// dsa3,dsa6,dsa9
-	static boolean[] dateKnowns = { true, false };
+	static String algo = "dsa4";// dsa3,dsa6,dsa9
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 30; // 50 number of agents
+	static int A = 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
-	static int costMax = 20; // 100 the max value of cost
+	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
 	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
-	static int[] delayUBs = {10};//{ 5, 10, 25, 50, 100 };
-	static double[] p4s = {0};//{ 0, 0.5, 0.8, 0.9 }; // prob of communication to have delay
+	static boolean[] dateKnowns = { true, false };
+	static int[] delayUBs = { 5, 10, 25, 50 };//{ 5, 10, 25, 50, 100 };
+	static double[] p4s = {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to have delay
+
 	// -- Experiment time
-	static int meanReps = 5; // number of reps for every solve process
-	static int iterations = 200;
+	static int meanReps = 10; // number of reps for every solve process
+	static int iterations = 1000;
 
 	// -- characters
 	static AgentField[] agents;
@@ -49,7 +50,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter("dcops.csv");
+			FileWriter s = new FileWriter(algo+".csv");
 			out = new BufferedWriter(s);
 			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			out.write(header);
@@ -96,6 +97,7 @@ public class Main {
 							if (p3 == 0)break;
 						} // date known
 					} // p3
+					printDcops();
 				} // means run
 			} // p2
 		} // p1
@@ -104,15 +106,15 @@ public class Main {
 
 	private static Solution selectedAlgo(Dcop dcop, int i) {
 		Solution ans = null;
-		boolean dsa3 = algo.equals("dsa3");
-		boolean dsa6 = algo.equals("dsa6");
+		boolean dsa4 = algo.equals("dsa4");
+		boolean dsa7 = algo.equals("dsa7");
 		boolean dsa9 = algo.equals("dsa9");
 
-		if (dsa3) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.3);
+		if (dsa4) {
+			ans = new DSA(dcop, agents, agentZero, i, 0.4);
 		}
-		if (dsa6) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.6);
+		if (dsa7) {
+			ans = new DSA(dcop, agents, agentZero, i, 0.7);
 		}
 		if (dsa9) {
 			ans = new DSA(dcop, agents, agentZero, i, 0.9);
@@ -132,17 +134,18 @@ public class Main {
 		agents = initAgentsFieldArray();
 		Dcop dcop = new Dcop(agents, D, p1, p2, iterations);
 		agentZero = new AgentZero(iterations, dcop.getNeighbors());
-		agentFieldMeetAgentZero();
+		//agentFieldMeetAgentZero();
 		return dcop;// create dcsp problem given p1 and p2
 					// and fix neighbors return null;
 	}
-
+/*
 	private static void agentFieldMeetAgentZero() {
 		for (AgentField aF : agents) {
 			aF.setAgentZero(agentZero);
 		}
 
 	}
+	*/
 
 	private static void restartBetweenAlgo(Solution sol, String protocol) {
 		addToSolutionString(sol, protocol);
@@ -159,10 +162,7 @@ public class Main {
 
 	}
 
-	private static ArrayList<Integer> solveDSA() {
 
-		return null;
-	}
 
 	private static AgentField[] initAgentsFieldArray() {
 		AgentField[] ans = new AgentField[A];
