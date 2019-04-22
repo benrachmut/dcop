@@ -116,15 +116,18 @@ public class Dcop {
 	private void informFieldAgentOnConstraint(int d1, int d2, Agent a1, Agent a2, AgentField af1, AgentField af2, int i,
 			int j, int cost) {
 		af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
-		af1.addNeighbor(j);
-		af1.addReciveveAll(j);
+		addToMapsAgents(af1,j);
+		
+		
+
 		
 		
 		
 		af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-		af2.addNeighbor(i);
-		af2.addReciveveAll(i);
+		addToMapsAgents(af2,i);
 
+		
+	
 		
 		
 		boolean flag =false;
@@ -145,6 +148,13 @@ public class Dcop {
 		
 	}
 
+	private void addToMapsAgents(AgentField agentInput, int idOther) {
+		agentInput.addNeighbor(idOther);
+		agentInput.addReciveveAll(idOther);
+		agentInput.addNeighborR(idOther);
+		agentInput.addReciveveAllR(idOther);
+		
+	}
 	/*
 	 * public void addToNeighbors(AgentField af1, AgentField af2) {
 	 * 

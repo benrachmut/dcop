@@ -10,25 +10,25 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "dsaW7";// dsa3,dsa6,dsa9
+	static String algo = "dsa7W";
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 3;//50; // 50 number of agents
+	static int A = 50;//50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
-	static int costMax = 100; // 100 the max value of cost
+	static int costMax = 50; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = {0.5};//{ 0, 0.5, 1 }; // prob of communication to have delay
-	static boolean[] dateKnowns = {false};//{ true, false };
-	static int[] delayUBs = {10};//{ 5, 10, 25, 50 };//{ 5, 10, 25, 50, 100 };
-	static double[] p4s = {0};//{0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to have delay
+	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
+	static boolean[] dateKnowns ={ true, false };
+	static int[] delayUBs = { 5, 10, 50 };//{ 5, 10, 25, 50, 100 };
+	static double[] p4s = {0,0.5,0.95};//{0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to have delay
 
 	// -- Experiment time
-	static int meanReps = 5;//10; // number of reps for every solve process
-	static int iterations = 10;//1000;
+	static int meanReps = 10;//10; // number of reps for every solve process
+	static int iterations = 700;//1000;
 
 	// -- characters
 	static AgentField[] agents;
@@ -50,7 +50,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter(algo+".csv");
+			FileWriter s = new FileWriter(algo+"full"+".csv");
 			out = new BufferedWriter(s);
 			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			out.write(header);
@@ -86,7 +86,7 @@ public class Main {
 									// ---- find solution ----
 									Solution algo = selectedAlgo(dcop, i);
 
-									System.out.println(protocol + "," + algo);
+									System.out.println(protocol  +","+ algo);
 
 									// ---- restart ----
 									restartBetweenAlgo(algo, protocol);
@@ -104,36 +104,55 @@ public class Main {
 
 	}
 
-	private static Solution selectedAlgo(Dcop dcop, int i) {
+	private static Solution selectedAlgo(Dcop dcop, int meanRun) {
 		Solution ans = null;
-		boolean dsa4D = algo.equals("dsaD4");
-		boolean dsa7D = algo.equals("dsaD7");
-		boolean dsa9D = algo.equals("dsaD9");
+		boolean dsa4D = algo.equals("dsa4D");
+		boolean dsa6D = algo.equals("dsa6D");
+
+		boolean dsa7D = algo.equals("dsa7D");
+		boolean dsa8D = algo.equals("dsa8D");
+
+		boolean dsa9D = algo.equals("dsa9D");
+
+		boolean dsa4W = algo.equals("dsa4W");
+		boolean dsa7W = algo.equals("dsa7W");
+		boolean dsa9W = algo.equals("dsa9W");
 		
-		boolean dsa4W = algo.equals("dsaW4");
-		boolean dsa7W = algo.equals("dsaW7");
-		boolean dsa9W = algo.equals("dsaW9");
+		boolean mgm = algo.equals("mgm");
+
 
 		if (dsa4D) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.4,false);
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.4,false);
 		}
+		if (dsa6D) {
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.6,false);
+		}
+		
 		if (dsa7D) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.7,false);
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7,false);
+		}
+		if (dsa8D) {
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.8,false);
 		}
 		if (dsa9D) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.9,false);
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.9,false);
 		}
 		
 		
 		if (dsa4W) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.4,true);
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.4,true);
 		}
 		if (dsa7W) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.7,true);
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7,true);
 		}
 		if (dsa9W) {
-			ans = new DSA(dcop, agents, agentZero, i, 0.9,true);
+			ans = new DSA(dcop, agents, agentZero, meanRun, 0.9,true);
 		}
+		if (mgm) {
+			ans = new MGM(dcop, agents, agentZero, meanRun);
+		}
+		
+		
 		return ans;
 	}
 
@@ -166,6 +185,8 @@ public class Main {
 		addToSolutionString(sol, protocol);
 		restartAgent();
 		agentZero.emptyMessageBox();
+		agentZero.emptyRMessageBox();
+
 
 	}
 

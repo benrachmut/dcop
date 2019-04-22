@@ -64,6 +64,11 @@ public abstract class Solution {
 		return agentThinkCost;
 	}
 	
+	public void sendAndRecieve(int i) {
+		this.agentZero.createMsgs(i);
+		this.agentZero.sendMsgs();
+	}
+	
 	
 
 }
