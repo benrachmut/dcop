@@ -1,10 +1,11 @@
 
 public class MGM extends Solution {
 
+
 	public MGM(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
 		this.algo = "mgm";
-		solve();
+		//solve();
 	}
 
 	@Override
@@ -27,13 +28,13 @@ public class MGM extends Solution {
 
 
 
-	private void sendAndRecieveRi(int i) {
+	protected void sendAndRecieveRi(int i) {
 		this.agentZero.createRiMsgs(i);
 		this.agentZero.sendRiMsgs();
 		
 	}
 
-	private void agentsSetR() {
+	protected void agentsSetR() {
 		for (AgentField a : agents) {
 			a.setR();
 		}

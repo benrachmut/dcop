@@ -14,6 +14,9 @@ public class AgentZero {
 	private Set<Neighbors> neighbors;
 	private int iteration;
 	private List<Message> rMessageBox;
+	private double p3;
+	private double p4;
+	private int delayUb;
 
 	public AgentZero(int iteration, Set<Neighbors> neighbors) {
 		this.messageBox = new ArrayList<Message>();
@@ -70,9 +73,13 @@ public class AgentZero {
 
 
 
-	public void changeCommunicationProtocol(double p3, int delayUB, Double p4) {
+	public void changeCommunicationProtocol(double p3Input, int delayUbInput, Double p4Input) {
+		this.p3 = p3Input;
+		this.delayUb = delayUbInput;
+		this.p4 = p4Input;
+		
 		for (Neighbors n : this.neighbors) {
-			n.createFluds(p3, delayUB,p4);
+			n.createFluds(p3, delayUb,p4);
 		}
 		
 	}
@@ -136,6 +143,20 @@ public class AgentZero {
 	
 	public void emptyMessageBox() {
 		this.messageBox.clear();
+	}
+
+
+
+	public int getUb() {
+		// TODO Auto-generated method stub
+		return this.delayUb;
+	}
+
+
+
+	public double getP3() {
+		// TODO Auto-generated method stub
+		return this.p3;
 	}
 	
 	

@@ -4,19 +4,13 @@ import java.util.List;
 public class DSA extends Solution {
 
 	private double stochastic;
-	private boolean agentWait;
 
-	public DSA(Dcop dcop, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic, boolean agentWait) {
+	public DSA(Dcop dcop, AgentField[] agents, AgentZero aZ,  int meanRun, double stochastic) {
 		super(dcop, agents, aZ,meanRun);
-		this.stochastic = stochastic;
-		this.agentWait= agentWait;
+		this.stochastic = stochastic;				
+		this.algo = "dsa";
 		
-		if (agentWait) {
-			this.algo = "dsaW"+stochastic;
-		}else {
-			this.algo = "dsaD"+stochastic;
-		}
-		this.solve();
+		//this.solve();
 
 	}
 
@@ -35,7 +29,7 @@ public class DSA extends Solution {
 
 	public void agentDecide() {
 		for (AgentField a : agents) {
-			a.dsaDecide(this.stochastic,this.agentWait);
+			a.dsaDecide(this.stochastic);
 		}
 	}
 

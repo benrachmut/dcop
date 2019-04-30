@@ -112,7 +112,7 @@ public class AgentField extends Agent {
 	 * 
 	 * }
 	 */
-	public void dsaDecide(double stochastic, boolean agentWait) {
+	public void dsaDecide(double stochastic) {
 
 		List<PotentialCost> pCosts = findPotentialCost();
 		int currentPersonalCost = findCurrentCost(pCosts);
@@ -125,18 +125,7 @@ public class AgentField extends Agent {
 			shouldChange = true;
 		}
 
-		if (agentWait) {
-			boolean allNeighborReport = checkIfAllNeighborsReported();
-			if (allNeighborReport) {
-				setReciveAll(false);
-				maybeChange(shouldChange, minPotentialCost, stochastic);
-
-			}
-		}
-
-		else {
-			maybeChange(shouldChange, minPotentialCost, stochastic);
-		}
+		maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
 
@@ -278,16 +267,19 @@ public class AgentField extends Agent {
 	public void mgmDecide() {
 		Entry<Integer, MessageRecieve> maxRInMap = getMaxRFromNeighbors();
 
+		if (maxRInMap == null) {
+			this.value = this.domain[0];
+			return;
+		}
 		int maxRVal = maxRInMap.getValue().getValue();
 		if (this.r > maxRVal) {
 			this.value = this.minPC.getValue();
 		}
 		int maxRId = maxRInMap.getKey();
-		if (this.r == maxRVal && this.id<maxRId) {
+		if (this.r == maxRVal && this.id < maxRId) {
 			this.value = this.minPC.getValue();
 		}
-		
-		
+
 	}
 
 	private Entry<Integer, MessageRecieve> getMaxRFromNeighbors() {
@@ -310,6 +302,13 @@ public class AgentField extends Agent {
 			}
 		}
 		return max;
+	}
+
+	public void changeValR() {
+		for (Entry<Integer, MessageRecieve> n : neighborR.entrySet()) {
+			n.setValue(new MessageRecieve(-1, -1));
+		}
+		
 	}
 
 }
