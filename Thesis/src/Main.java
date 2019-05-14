@@ -22,14 +22,16 @@ public class Main {
 
 	// -- communication protocol
 	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
-	static boolean[] dateKnowns ={ true};//{ true, false };
-	static int[] delayUBs = { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static boolean[] dateKnowns = { true };// { true, false };
+	static int[] delayUBs = { 5, 10, 20, 40 };// { 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static int[] lambdas = { 1, 5, 10, 20};
+	static int ubLamda;
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
 	static int meanReps = 10;// 10; // number of reps for every solve process
-	static int iterations = 1200;// 1000;
+	static int iterations = 2000;// 1000;
 
 	// -- characters
 	static AgentField[] agents;
@@ -44,8 +46,26 @@ public class Main {
 		// initVariables();
 		rProblem.setSeed(1);
 		rAlgo.setSeed(1);
-		runExperiment();
+		
+		//checkPoisDest();
+		System.out.println(getUbForPois(lambdas[2], 0.999));
+		//runExperiment();
 		printDcops();
+	}
+
+	private static void checkPoisDest() {
+		List<Integer>poisNums = new ArrayList<Integer>();
+		
+		for (int i = 0; i < 100000; i++) {
+			poisNums.add(getRandomIntPois(rProblem, lambdas[1]));
+		}
+		
+		double sum = 0;
+		for (int i = 0; i < poisNums.size(); i++) {
+			sum+=poisNums.get(i);
+		}
+		System.out.println(sum/poisNums.size());
+		
 	}
 
 	private static void printDcops() {
@@ -53,7 +73,7 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter(algo + "3004" + ".csv");
 			out = new BufferedWriter(s);
-			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
+			String header = "p3,date_known,lambda,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			out.write(header);
 			out.newLine();
 
@@ -78,11 +98,12 @@ public class Main {
 					for (Double p3 : p3s) {
 						for (boolean dK : dateKnowns) {
 							dateKnown = dK;
-							for (Integer delayUB : delayUBs) {
+							for (Integer lambda : lambdas) {
+								//ubLamda = calUbLamda(lambda);
 								for (Double p4 : p4s) {
 									// ---- protocol ----
-									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
-									String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
+									agentZero.changeCommunicationProtocol(p3, lambda, p4);
+									String protocol = p3 + "," + dK + "," + lambda + "," + p4;
 									// ---- find solution ----
 									Solution algo = selectedAlgo(dcop, i);
 									System.out.println(protocol + "," + algo);
@@ -177,9 +198,58 @@ public class Main {
 		return ans;
 	}
 
-	public static int getRandomInt(Random r, int min, int max) {
+	public static int getRandomIntUniform(Random r, int min, int max) {
 
 		return r.nextInt(max - min + 1) + min;
 	}
+
+	public static int getRandomIntPois(Random r, int lambda) {
+		double L = Math.exp(-lambda);
+		double p = 1.0;
+		int k = 0;
+
+		do {
+			k++;
+			p *= r.nextDouble();
+		} while (p > L);
+
+		return k - 1;
+	}
+	
+	public static int getUbForPois(int lambda, double p) {
+		
+
+		
+		int k = 0;
+		double a = Math.exp(-lambda);
+		double b = Math.pow(lambda,k);
+		long fact = factorial(k);
+		
+		double sum =(a*b)/fact; 
+		
+		while(p> sum) {
+			k=k+1;
+			b = Math.pow(lambda,k);
+			fact = factorial(k);
+			
+			double addition =(a*b)/fact;
+			sum=sum+addition; 	
+		}
+
+		return k;
+	}
+
+	public static long factorial(int k) {
+		if (k==0) {
+			return 1;
+		}
+		
+		long ans = 1;
+		for (int i = 1; i <= k; i++) {
+			ans*=i;
+		}
+		return ans;
+	}
+	
 
 }

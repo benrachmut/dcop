@@ -29,7 +29,7 @@ public class AgentField extends Agent {
 		super(id);
 		// this.id = id;
 		this.domain = createDomain(domainSize);
-		this.firstValue = Main.getRandomInt(Main.rProblem, 0, domainSize - 1);
+		this.firstValue = Main.getRandomIntUniform(Main.rProblem, 0, domainSize - 1);
 		this.setFirstValueToValue();
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, MessageRecieve>();

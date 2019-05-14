@@ -99,7 +99,7 @@ public class Dcop {
 
 								Agent a1 = new Agent(i, d1);
 								Agent a2 = new Agent(j, d2);
-								int cost = Main.getRandomInt(Main.rProblem,1, Main.costMax);
+								int cost = Main.getRandomIntUniform(Main.rProblem,1, Main.costMax);
 								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
 
 								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
