@@ -95,11 +95,11 @@ public boolean equals(Object obj) {
 		//return "{A"+this.a1.getId()+",A"+this.a2.getId()+"}";
 	}
 
-	public void createFluds(double p3, int lambda, Double p4) {
+	public void createFluds(double p3, int delayUB, Double p4) {
 		double rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay12 = true;
-			this.delayMap12 = this.setDelayMap(lambda,p4);
+			this.delayMap12 = this.setDelayMap(delayUB,p4);
 		}
 		else {
 			this.isDelay12=false;
@@ -108,7 +108,7 @@ public boolean equals(Object obj) {
 		rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
 			this.isDelay21 = true;
-			this.delayMap21 = this.setDelayMap(lambda,p4);
+			this.delayMap21 = this.setDelayMap(delayUB,p4);
 		}
 		else {
 			this.isDelay21=false;
@@ -118,7 +118,7 @@ public boolean equals(Object obj) {
 	}
 
 
-	private Map<Integer, Integer> setDelayMap(int lambda, Double p4) {
+	private Map<Integer, Integer> setDelayMap(int delayUB, Double p4) {
 		Map<Integer, Integer>ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
 			double rnd = Main.rProblem.nextDouble();
@@ -127,9 +127,7 @@ public boolean equals(Object obj) {
 			if (rnd<p4) {
 				rndDelay = Integer.MAX_VALUE;
 			}else {
-				//rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
-				rndDelay = Main.getRandomIntPois(Main.rProblem, lambda);
-
+				rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
 			}
 
 			ans.put(i,rndDelay);
