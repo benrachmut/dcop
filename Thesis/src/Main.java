@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +11,11 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "mgm";
+	static String algo = "unsynchMono";
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 50;// 50; // 50 number of agents
+	static int A = 6;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
 	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
@@ -108,7 +109,13 @@ public class Main {
 		boolean dsa7 = algo.equals("dsa7");
 		boolean mgm = algo.equals("mgm");
 		boolean mgmUb = algo.equals("mgmUb");
+		
+		boolean unsynchMono = algo.equals("unsynchMono");
 
+		
+		if (unsynchMono) {
+			//ans = new unsynchMono();
+		}
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
 		}
@@ -135,10 +142,17 @@ public class Main {
 		agents = initAgentsFieldArray();
 		Dcop dcop = new Dcop(agents, D, p1, p2, iterations);
 		agentZero = new AgentZero(iterations, dcop.getNeighbors());
-		// agentFieldMeetAgentZero();
-		return dcop;// create dcsp problem given p1 and p2
-					// and fix neighbors return null;
+		
+		if (algo.equals("unsynchMono")) {
+			Tree pT = new Tree(agents);
+			pT.dfs();
+		}
+		
+		
+		return dcop;
 	}
+	
+
 	/*
 	 * private static void agentFieldMeetAgentZero() { for (AgentField aF : agents)
 	 * { aF.setAgentZero(agentZero); }

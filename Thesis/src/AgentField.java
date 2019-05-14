@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class AgentField extends Agent {
+public class AgentField extends Agent implements Comparable<AgentField> {
 	private int[] domain;
 	private int firstValue;
 
@@ -21,6 +21,8 @@ public class AgentField extends Agent {
 
 	private PotentialCost minPC;
 	private int r;
+	private AgentField father;
+	private List<AgentField>  sons;
 
 	// private Set<Agent>neigbors;
 	// private Map <Agent, Integer> neiborsConstraint;
@@ -36,12 +38,20 @@ public class AgentField extends Agent {
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
 		this.allRecieve = new HashMap<Integer, Boolean>();
 		this.allRecieveR = new HashMap<Integer, Boolean>();
+		this.sons = new ArrayList<AgentField>();
+
 		setR();
 		// fdf
 		// neigbors = new HashSet<Agent>();
 		// this.neiborsConstraint = new HashMap<Agent, Integer>();
 	}
 
+	public void setFather(AgentField father) {
+		this.father = father;
+	}
+	public void addSon(AgentField son) {
+		sons.add(son);
+	}
 	public void setFirstValueToValue() {
 		this.value = firstValue;
 
@@ -309,6 +319,21 @@ public class AgentField extends Agent {
 			n.setValue(new MessageRecieve(-1, -1));
 		}
 		
+	}
+
+	@Override
+	public int compareTo(AgentField other) {
+		
+		return this.id-other.getId();
+	}
+
+	public int getNieghborSize() {
+		// TODO Auto-generated method stub
+		return this.neighbor.keySet().size();
+	}
+
+	public Set<Integer> getNSetId() {
+		return this.neighbor.keySet();
 	}
 
 }
