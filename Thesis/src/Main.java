@@ -17,14 +17,14 @@ public class Main {
 	// -- variables of dcop problem
 	static int A = 6;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
+	static double[] p3s = {0.5};//{ 0, 0.5, 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns ={ true};//{ true, false };
-	static int[] delayUBs = { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static int[] delayUBs = {5};//{ 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
@@ -114,7 +114,7 @@ public class Main {
 
 		
 		if (unsynchMono) {
-			//ans = new unsynchMono();
+			ans = new UnsynchMono(dcop, agents,  agentZero,  meanRun) ;
 		}
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
@@ -141,14 +141,13 @@ public class Main {
 	private static Dcop createDcop(double p1, double p2) {
 		agents = initAgentsFieldArray();
 		Dcop dcop = new Dcop(agents, D, p1, p2, iterations);
-		agentZero = new AgentZero(iterations, dcop.getNeighbors());
+		agentZero = new AgentZero(iterations, dcop.getNeighbors(),agents);
 		
 		if (algo.equals("unsynchMono")) {
 			Tree pT = new Tree(agents);
 			pT.dfs();
 		}
-		
-		
+
 		return dcop;
 	}
 	
@@ -170,6 +169,7 @@ public class Main {
 		restartAgent();
 		agentZero.emptyMessageBox();
 		agentZero.emptyRMessageBox();
+		agentZero.emptyTimeStempBoxMessage();
 
 	}
 
@@ -179,6 +179,8 @@ public class Main {
 			agents[i].changeValR();
 			agents[i].setFirstValueToValue();
 			agents[i].setReciveAll(false);
+			agents[i].setTimeStemp(0);
+			agents[i].resetNumOfInterationForChange();
 		}
 
 	}

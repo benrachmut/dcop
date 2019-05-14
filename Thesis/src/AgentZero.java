@@ -11,21 +11,24 @@ import java.util.TreeSet;
 
 public class AgentZero {
 	private List<Message> messageBox;
+	private List<Message> rMessageBox;
+	private List<Message> timeStempMessageBox;
+
 	private Set<Neighbors> neighbors;
 	private int iteration;
-	private List<Message> rMessageBox;
 	private double p3;
 	private double p4;
 	private int delayUb;
+	private AgentField[] agents;
 
-	public AgentZero(int iteration, Set<Neighbors> neighbors) {
+	public AgentZero(int iteration, Set<Neighbors> neighbors, AgentField[] agents) {
+		this.agents = agents;
 		this.messageBox = new ArrayList<Message>();
 		rMessageBox = new ArrayList<Message>();
+		timeStempMessageBox = new ArrayList<Message>();
 		this.neighbors = neighbors;
 		this.iteration = iteration;
 	}
-
-	
 
 	public void createMsgs(int currentIteration) {
 		for (Neighbors n : this.neighbors) {
@@ -36,11 +39,8 @@ public class AgentZero {
 			AgentField a2 = (AgentField) n.getA2();
 			int delay21 = n.getDelay21(currentIteration);
 
-			
-			Message msg12 = new Message(a1, a2, a1.getValue(), delay12,currentIteration);
-			Message msg21 = new Message(a2, a1, a2.getValue(), delay21,currentIteration);
-
-			
+			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
+			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
 
 			this.messageBox.add(msg12);
 			this.messageBox.add(msg21);
@@ -48,10 +48,7 @@ public class AgentZero {
 
 	}
 
-	
-
-
-	private List<Message> handleDelay(List<Message>input) {
+	private List<Message> handleDelay(List<Message> input) {
 		Collections.sort(input);
 		List<Message> msgToSend = new ArrayList<Message>();
 
@@ -71,49 +68,43 @@ public class AgentZero {
 		return msgToSend;
 	}
 
-
-
 	public void changeCommunicationProtocol(double p3Input, int delayUbInput, Double p4Input) {
 		this.p3 = p3Input;
 		this.delayUb = delayUbInput;
 		this.p4 = p4Input;
-		
+
 		for (Neighbors n : this.neighbors) {
-			n.createFluds(p3, delayUb,p4);
+			n.createFluds(p3, delayUb, p4);
 		}
-		
+
 	}
 
 	public void sendRiMsgs() {
 		List<Message> msgToSend = handleDelay(this.rMessageBox);
 		for (Message msg : msgToSend) {
-			int senderId= msg.getSender().getId();
+			int senderId = msg.getSender().getId();
 			int senderR = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-			
-			reciver.reciveRMsg(senderId,senderR,msg.getDate());
-			
+
+			reciver.reciveRMsg(senderId, senderR, msg.getDate());
+
 		}
-		
+
 	}
-	
-	
+
 	public void sendMsgs() {
 
 		List<Message> msgToSend = handleDelay(this.messageBox);
 		for (Message msg : msgToSend) {
-			int senderId= msg.getSender().getId();
+			int senderId = msg.getSender().getId();
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-			
-			reciver.reciveMsg(senderId,senderValue,msg.getDate());
-			
+
+			reciver.reciveMsg(senderId, senderValue, msg.getDate());
+
 		}
-	
 
 	}
-
-	
 
 	public void createRiMsgs(int currentIteration) {
 		for (Neighbors n : this.neighbors) {
@@ -124,11 +115,8 @@ public class AgentZero {
 			AgentField a2 = (AgentField) n.getA2();
 			int delay21 = n.getDelay21(currentIteration);
 
-			
-			Message msg12 = new Message(a1, a2, a1.getR(), delay12,currentIteration);
-			Message msg21 = new Message(a2, a1, a2.getR(), delay21,currentIteration);
-
-			
+			Message msg12 = new Message(a1, a2, a1.getR(), delay12, currentIteration);
+			Message msg21 = new Message(a2, a1, a2.getR(), delay21, currentIteration);
 
 			this.rMessageBox.add(msg12);
 			this.rMessageBox.add(msg21);
@@ -138,29 +126,79 @@ public class AgentZero {
 
 	public void emptyRMessageBox() {
 		this.rMessageBox.clear();
-		
+
 	}
-	
+
 	public void emptyMessageBox() {
 		this.messageBox.clear();
 	}
-
-
 
 	public int getUb() {
 		// TODO Auto-generated method stub
 		return this.delayUb;
 	}
 
-
-
 	public double getP3() {
 		// TODO Auto-generated method stub
 		return this.p3;
 	}
+
+	public void createTimeStempMsgs(int currentIteration) {
+
+		for (AgentField father : agents) {
+			for (AgentField son : father.getSons()) {
+
+				int fatherId = father.getId();
+				int sonId = son.getId();
+				Neighbors n;
+				int delayFatherSon;
+				if (fatherId<sonId) {
+					n = lookForNeighbor(father, son);
+					delayFatherSon = n.getDelay12(currentIteration);
+				}else {
+					n = lookForNeighbor(son, father);
+					delayFatherSon = n.getDelay21(currentIteration);
+				}
+				
 	
-	
-	
-	
+				Message m = new Message(father,son, father.getTimeStemp(), delayFatherSon, currentIteration);
+				this.timeStempMessageBox.add(m);
+				// Neighbor n =
+
+				
+			}
+		}
+
+		
+
+	}
+
+	private Neighbors lookForNeighbor(AgentField a1, AgentField a2) {
+		
+		Neighbors inputN = new Neighbors(a1, a2);
+		for (Neighbors n : this.neighbors) {
+			if (inputN.equals(n)) {
+				return n;
+			}
+		}
+		return null;
+	}
+
+	public void sendTimeStempMsgs() {
+		List<Message> msgToSend = handleDelay(this.timeStempMessageBox);
+		for (Message msg : msgToSend) {
+			int senderId = msg.getSender().getId();
+			int senderValue = msg.getSenderValue();
+			AgentField reciver = msg.getReciever();
+			reciver.reciveTimeStempMsg(senderId, senderValue, msg.getDate());
+
+		}
+		
+	}
+
+	public void emptyTimeStempBoxMessage() {
+		this.timeStempMessageBox.clear();
+		
+	}
 
 }
