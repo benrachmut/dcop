@@ -11,13 +11,16 @@ import java.util.TreeMap;
 public class Tree {
 
 	private List<AgentField> afs;
-	private Map<AgentField, List<AgentField>> neighborsMap;
+	//private Map<AgentField, Integer> levelInTree;
 	private Map<AgentField, Boolean> visited;
+	//private List<AgentField> firstInTree;
 
 	public Tree(AgentField[] aFieldInput) {
 		this.afs = createAfList(aFieldInput);
 		this.visited = initColorMap();
-		// this.neighborsMap = createNeighborsMap();
+		//this.firstInTree = new ArrayList<AgentField>();
+		//this.levelInTree = new HashMap<AgentField, Integer>();
+		
 	}
 
 	private Map<AgentField, Boolean> initColorMap() {
@@ -57,11 +60,17 @@ public class Tree {
 
 	public void dfs() {
 		while (someOneIsNotColored()) {
+			
 			AgentField firstNotVisited = findFirstNotVisited();
-			dfs( firstNotVisited);
-	}}
+			//firstInTree.add(firstNotVisited);
+			dfs(firstNotVisited,0);
+			
+		}
+
+	}
 
 	private AgentField findFirstNotVisited() {
+
 		for (AgentField agentField : afs) {
 			if (!visited.get(agentField)) {
 				return agentField;
@@ -70,39 +79,36 @@ public class Tree {
 		return null;
 	}
 
-	private void dfs(AgentField currntA) {
-
-		// AgentField currntA= this.afs.get(0);
-		this.visited.put(currntA, true);
-		
-		List<AgentField> sons = getSons(currntA);
-
+	private int dfs(AgentField currentA, int counter) {	
+		this.visited.put(currentA, true);
+		List<AgentField> sons = getSons(currentA);
 		for (AgentField agentFieldSon : sons) {
 			if (!visited.get(agentFieldSon)) {
-				agentFieldSon.setFather(currntA);
-				currntA.addSon(agentFieldSon);
-				dfs(agentFieldSon);
+				agentFieldSon.setFather(currentA);
+				currentA.addSon(agentFieldSon);
+				//setLevelInTreeForCurrentAgent(currentA);
+				
+				currentA.setLevelInTree(counter++);
+				
+				
+				
+				return counter + dfs(agentFieldSon, counter++);
 			}
 		}
+		return counter;
+		
 
-		/*
-		 * stack.add(firstNotColored()); AgentField neighborInStack =
-		 * stack.get(stack.size() - 1); stack.remove(o) stack =
-		 * addToStack(neighborInStack, stack);
-		 * 
-		 */
+	}
 
-		/*
-		 * //Iterator<AgentField> it = stack.iterator();
-		 * 
-		 * // stack.add(afs.get(0)); // stack = addToStack(afs.get(0), stack,it); while
-		 * (someOneIsNotColored()) { stack.add(firstNotColored()); while (it.hasNext())
-		 * { AgentField neighborInStack = stack.get(stack.size() - 1);
-		 * addToStack(neighborInStack, stack);
-		 * 
-		 * } }
-		 */
-
+	private void setLevelInTreeForCurrentAgent(AgentField currentA) {
+		if (currentA.getFather()==null) {
+			currentA.setLevelInTree(0);
+		}
+		else {
+			int fatherLevel = currentA.getFather().getLevelInTree();
+			currentA.setLevelInTree(fatherLevel+1);
+		}
+		
 	}
 
 	private boolean someOneIsNotColored() {
@@ -114,28 +120,6 @@ public class Tree {
 		}
 		return false;
 	}
-	/*
-	 * private AgentField firstNotColored() { for (AgentField agentField : afs) { if
-	 * (!colorMap.get(agentField)) { return agentField; } } return null; }
-	 * 
-	 * private boolean someOneIsNotColored() { Collection<Boolean>colors =
-	 * this.colorMap.values(); for (Boolean c : colors) { if (!c) { return true; } }
-	 * return false; } /* private List<AgentField> addToStack(AgentField colored,
-	 * List<AgentField> stack) { this.colorMap.put(colored, true); //it.remove();
-	 * Set<Integer> nSetId = colored.getNSetId(); List<AgentField> sons =
-	 * getNeighborsOfAgentField(nSetId); Collections.sort(sons, new
-	 * AgentNeighborComp()); Collections.reverse(sons);
-	 * 
-	 * AgentField father = colored;
-	 * 
-	 * if (!sons.isEmpty()) { setFatherAndSons(father, sons); } stack.addAll(sons);
-	 * return stack; }
-	 * 
-	 * private void setFatherAndSons(AgentField father, List<AgentField> sons) { for
-	 * (AgentField son : sons) { father.addSon(son); son.setFather(father); }
-	 * 
-	 * }
-	 */
 
 	private List<AgentField> getSons(AgentField currntA) {
 		Set<Integer> nSetId = currntA.getNSetId();
@@ -143,5 +127,50 @@ public class Tree {
 		Collections.sort(sons, new AgentNeighborComp());
 		Collections.reverse(sons);
 		return sons;
+	}
+	
+	public void setIsAboveMe() {
+		for (AgentField a : afs) {
+			Set<Integer> neighborIds = a.getNeighborIds();
+			for ( Integer nId : neighborIds) {
+				int neighborLevel = getLevelInTree(nId);
+				int aLevel = a.getLevelInTree();
+				if (aLevel<neighborLevel) {
+					a.isNeighborAboveMe(nId,false);
+				}
+				if (aLevel>neighborLevel) {
+					a.isNeighborAboveMe(nId,true);
+				}else {
+					System.err.println("bug, problem with creation of psaduo tree");
+				}
+				
+			}
+			
+		}
+	}
+/*
+	private int lookForAgentInTree(AgentField a) {
+		for (AgentField first : firstInTree) {
+			if (first.equals(a)) {
+				return 0;
+			}
+			if (first.) {
+				
+			}
+		}
+		return 0;
+	}
+*/
+
+	private int getLevelInTree(Integer nId) {
+		for (AgentField aN : afs) {
+			if (nId == aN.getId()) {
+				return aN.getLevelInTree();
+			}
+		}
+		
+			System.err.println("logical bug from setBelowAndAbove in Tree");
+		
+		return -1;
 	}
 }

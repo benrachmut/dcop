@@ -12,14 +12,14 @@ public class MGM extends Solution {
 	public void solve() {
 		boolean first = true;
 		for (int i = 0; i < this.itiration; i++) {
-			if (first) {
+			if (!first) {
 				sendAndRecieve(i);		
-				first=false;
+				first=true;
 			}else {	
 				agentsSetR();
 				sendAndRecieveRi(i);			
 				agentDecide();
-				first=true;
+				first=false;
 			}
 			addCostToList();
 		}

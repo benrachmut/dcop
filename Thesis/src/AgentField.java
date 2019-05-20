@@ -14,6 +14,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, Set<ConstraintNeighbor>> constraint;
 	private Map<Integer, MessageRecieve> neighbor; // id and value
 	private Map<Integer, MessageRecieve> neighborR;
+	
 
 	// private AgentZero agentZero;
 	private Map<Integer, Boolean> allRecieve;
@@ -22,11 +23,17 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private int numOfInterationForChangeCounter;
 	private PotentialCost minPC;
 	private int r;
+	
+	//---tree stuff
 	private AgentField father;
 	private List<AgentField> sons;
-	private int timeStemp;
-	private MessageRecieve fatherMsg;
+	private int levelInTree;
+	private Map<Integer, Boolean> isNeighborAbove;
+	//private List<AgentField> aboveMeInTree;
 
+	//private int timeStemp;
+	//private MessageRecieve fatherMsg;
+	
 	// private Set<Agent>neigbors;
 	// private Map <Agent, Integer> neiborsConstraint;
 
@@ -34,16 +41,28 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		super(id);
 		// this.id = id;
 		this.domain = createDomain(domainSize);
-		this.firstValue = Main.getRandomInt(Main.rProblem, 0, domainSize - 1);
+		
+		if (Main.synch) {
+			this.firstValue = Main.getRandomInt(Main.rProblem, 0, domainSize - 1);
+		}else {
+			this.firstValue = -1;
+		}
 		this.setFirstValueToValue();
-		this.fatherMsg = new MessageRecieve(-1, -1);
+		//this.fatherMsg = new MessageRecieve(-1, -1);
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
 		this.allRecieve = new HashMap<Integer, Boolean>();
 		this.allRecieveR = new HashMap<Integer, Boolean>();
 		this.sons = new ArrayList<AgentField>();
-		this.timeStemp = 0;
+		
+		//--- tree stuff
+		this.father = null;
+		this.levelInTree = 0;
+		this.isNeighborAbove = new HashMap<Integer,Boolean>();
+
+		resetBelowAndAbove();
+		//this.timeStemp = 0;
 		resetNumOfInterationForChange();
 		numOfInterationForChangeCounter = 0;
 		setR();
@@ -52,9 +71,17 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		// this.neiborsConstraint = new HashMap<Agent, Integer>();
 	}
 
+	public void resetBelowAndAbove() {
+		
+
+		
+	}
+
 	public void resetNumOfInterationForChange() {
 		this.numOfInterationForChange = new ArrayList<Integer>();
 		numOfInterationForChangeCounter = 0;
+		//this.timeStemp = 0;
+		//this.fatherMsg = new MessageRecieve(-1, -1);
 	}
 	public void setFather(AgentField father) {
 		this.father = father;
@@ -348,7 +375,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public Set<Integer> getNSetId() {
 		return this.neighbor.keySet();
 	}
-
+/*
 	public void setTimeStemp(int input) {
 		this.timeStemp = input;
 
@@ -358,12 +385,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		// TODO Auto-generated method stub
 		return this.timeStemp;
 	}
-
+*/
 	public List<AgentField> getSons() {
-		// TODO Auto-generated method stub
 		return sons;
 	}
-
+/*
 	public void reciveTimeStempMsg(int senderId, int senderValue, int dateOfOther) {
 		if (senderId != this.father.getId()) {
 			System.err.println("I have logical bug from reciveTimeStempMsg because senderId != this.father.getId() ");
@@ -374,11 +400,17 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 	}
-
+/*
 	public void unsynchMono() {
 		
 		boolean timeStempFatherValid = this.fatherMsg.getValue()-1 == this.timeStemp;
+		if (this.father ==null) {
+			timeStempFatherValid = true;
+		}
+		
 		boolean recieveFromAll = checkIfAllNeighborsReported();
+		
+		
 		
 		
 		if (timeStempFatherValid && recieveFromAll) {
@@ -393,5 +425,36 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		
 	}
+*/
 
+	public AgentField getFather() {
+		// TODO Auto-generated method stub
+		return this.father;
+	}
+
+	public int getLevelInTree() {
+		// TODO Auto-generated method stub
+		return this.levelInTree;
+	}
+
+	public void setLevelInTree(int i) {
+		this.levelInTree=i;
+		
+	}
+
+	public Set<Integer> getNeighborIds() {
+		return this.neighbor.keySet();
+		
+	}
+
+	public void isNeighborAboveMe(Integer nId, boolean isAbove) {
+		this.isNeighborAbove.put(nId,isAbove);
+	}
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString()+" "+this.levelInTree;
+	}
+
+	
 }

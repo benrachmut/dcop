@@ -3,54 +3,61 @@ public class UnsynchMono extends Solution {
 
 	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
-		// TODO Auto-generated constructor stub
+		this.algo = "UnsynchMono";
+
 	}
 
 	@Override
 	public void solve() {
-		boolean first = true;
+/*
 		for (int i = 0; i < this.itiration; i++) {
+			
+			
 			
 			sendAndRecieve(i);
 			sendAndRecieveTimeStemp(i);
 			agentDecide();
-			
-			/*
-			if (first) {
-				sendAndRecieve(i);
-				first = false;
-			}//first 
-			else {
-				sendAndRecieveRi(i);
-				if (ub == 0) {
-					agentDecide();
-
-				} else {
-					if (whenAgentDecide()) {
-						agentDecide();
-						counter = 0;
-					}
-					counter++;
-				}
-				first = true;
-			}//second
-			
-			*/
 			addCostToList();
-		} //iteration
+		}
+		*/
+
+	} // iteration
+
+	@Override
+	public void addCostToList() {
+		if (atlistOneAgentMinusOne()) {
+			this.realCost.add(Integer.MAX_VALUE);
+		} else {
+			super.addCostToList();
+		}
 	}
 
+	private boolean atlistOneAgentMinusOne() {
+
+		for (AgentField a : agents) {
+			if (a.getValue() == -1) {
+				return true;
+			}
+		}
+		return false;
+	}
+/*
 	private void sendAndRecieveTimeStemp(int i) {
 		this.agentZero.createTimeStempMsgs(i);
 		this.agentZero.sendTimeStempMsgs();
-		
-	}
 
+	}
+*/
 	@Override
-	public void agentDecide() {
+	public void agentDecide() {		
+		/*
 		for (AgentField a : agents) {
-			a.unsynchMono();
+			boolean isUnsynchMonoDecide = a.canUnsynchMonoDecide();
+			if (isUnsynchMonoDecide) {
+				a.dsaDecide(1);
+			}
 		}
+		*/
 	}
 
 }

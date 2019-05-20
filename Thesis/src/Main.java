@@ -11,7 +11,8 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "unsynchMono";
+	static String algo = "unsynchMono";//"mgmUb";
+	static boolean synch = true;
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
@@ -22,15 +23,15 @@ public class Main {
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = {0.5};//{ 0, 0.5, 1 }; // prob of communication to have delay
-	static boolean[] dateKnowns ={ true};//{ true, false };
-	static int[] delayUBs = {5};//{ 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
+	static boolean[] dateKnowns ={true};//{ true, false };
+	static int[] delayUBs = { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
 	static int meanReps = 10;// 10; // number of reps for every solve process
-	static int iterations = 1200;// 1000;
+	static int iterations = 1000;// 1000;
 
 	// -- characters
 	static AgentField[] agents;
@@ -49,10 +50,12 @@ public class Main {
 		printDcops();
 	}
 
+	
+
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter(algo + "3004" + ".csv");
+			FileWriter s = new FileWriter(algo + "1405" + ".csv");
 			out = new BufferedWriter(s);
 			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			out.write(header);
@@ -115,15 +118,22 @@ public class Main {
 		
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents,  agentZero,  meanRun) ;
+			synch =false;
 		}
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
+			synch =true;
+
 		}
 		if (mgm) {
 			ans = new MGM(dcop, agents, agentZero, meanRun);
+			synch =true;
+
 		}
 		if (mgmUb) {
 			ans = new MGMub(dcop, agents, agentZero, meanRun);
+			synch =true;
+
 		}
 		ans.solve();
 
@@ -146,11 +156,17 @@ public class Main {
 		if (algo.equals("unsynchMono")) {
 			Tree pT = new Tree(agents);
 			pT.dfs();
+			pT.setIsAboveMe();
 		}
+		
 
 		return dcop;
 	}
 	
+
+
+
+
 
 	/*
 	 * private static void agentFieldMeetAgentZero() { for (AgentField aF : agents)
@@ -179,7 +195,7 @@ public class Main {
 			agents[i].changeValR();
 			agents[i].setFirstValueToValue();
 			agents[i].setReciveAll(false);
-			agents[i].setTimeStemp(0);
+			//agents[i].setTimeStemp(0);
 			agents[i].resetNumOfInterationForChange();
 		}
 
