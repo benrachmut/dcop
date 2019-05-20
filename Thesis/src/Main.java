@@ -11,14 +11,14 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "mgmUb";//"unsynchMono";//"mgmUb";
+	static String algo = "unsynchMono";//"unsynchMono";//"mgmUb";
 	static boolean synch = true;
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 25;// 50; // 50 number of agents
+	static int A = 6;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
@@ -41,6 +41,7 @@ public class Main {
 	static List<String> solutions = new ArrayList<String>();;
 	static Random rProblem = new Random();
 	static Random rAlgo = new Random();
+	static Random rNonAlgo = new Random();
 	static Double currentP4;
 	static Integer currentUb;
 	static Double currentP3;
@@ -49,11 +50,23 @@ public class Main {
 		// initVariables();
 		rProblem.setSeed(1);
 		rAlgo.setSeed(1);
+		setSynchBool();
 		runExperiment();
 		printDcops();
 	}
 
 	
+
+	private static void setSynchBool() {
+		if (algo.equals("unsynchMono")) {
+			synch = false;
+		}else {
+			synch = true;
+		}
+		
+	}
+
+
 
 	private static void printDcops() {
 		BufferedWriter out = null;
@@ -126,21 +139,17 @@ public class Main {
 		
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents,  agentZero,  meanRun) ;
-			synch =false;
 		}
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
-			synch =true;
 
 		}
 		if (mgm) {
 			ans = new MGM(dcop, agents, agentZero, meanRun);
-			synch =true;
 
 		}
 		if (mgmUb) {
 			ans = new MGMub(dcop, agents, agentZero, meanRun);
-			synch =true;
 
 		}
 		ans.solve();
@@ -164,7 +173,7 @@ public class Main {
 		if (algo.equals("unsynchMono")) {
 			Tree pT = new Tree(agents);
 			pT.dfs();
-			pT.setIsAboveMe();
+			pT.setIsAboveBelow();
 		}
 		
 
@@ -202,7 +211,7 @@ public class Main {
 			agents[i].changeValOfAllNeighbor();
 			agents[i].changeValR();
 			agents[i].setFirstValueToValue();
-			agents[i].setReciveAll(false);
+			//agents[i].setReciveAll(false);
 			//agents[i].setTimeStemp(0);
 			agents[i].resetNumOfInterationForChange();
 		}

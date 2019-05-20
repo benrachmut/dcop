@@ -150,9 +150,9 @@ public class Dcop {
 
 	private void addToMapsAgents(AgentField agentInput, int idOther) {
 		agentInput.addNeighbor(idOther);
-		agentInput.addReciveveAll(idOther);
+		//agentInput.addReciveveAll(idOther);
 		agentInput.addNeighborR(idOther);
-		agentInput.addReciveveAllR(idOther);
+		//agentInput.addReciveveAllR(idOther);
 		
 	}
 	/*
