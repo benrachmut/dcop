@@ -95,7 +95,8 @@ public class Tree {
 				return counter + dfs(agentFieldSon, counter++);
 			}
 		}
-		return counter;
+		return counter
+				;
 		
 
 	}

@@ -11,14 +11,14 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "unsynchMono";//"mgmUb";
+	static String algo = "mgmUb";//"unsynchMono";//"mgmUb";
 	static boolean synch = true;
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 6;// 50; // 50 number of agents
+	static int A = 25;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 

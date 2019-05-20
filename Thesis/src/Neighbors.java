@@ -96,40 +96,56 @@ public boolean equals(Object obj) {
 	}
 
 	public void createFluds(double p3, int delayUB, Double p4) {
-		double rnd = Main.rProblem.nextDouble();
+		//double rnd = Main.rProblem.nextDouble();
+		this.delayMap12 = this.setDelayMap(p3,delayUB,p4);
+		this.delayMap21 = this.setDelayMap(p3, delayUB,p4);
+
+		
+		
+		
+		
+		/*
 		if (rnd<p3) {
-			this.isDelay12 = true;
-			this.delayMap12 = this.setDelayMap(delayUB,p4);
+			//this.isDelay12 = true;
+			this.delayMap12 = this.setDelayMap(p3,delayUB,p4);
 		}
 		else {
-			this.isDelay12=false;
+			//this.isDelay12=false;
 			this.delayMap12 = new HashMap<Integer, Integer>(); 
 		}
 		rnd = Main.rProblem.nextDouble();
 		if (rnd<p3) {
-			this.isDelay21 = true;
-			this.delayMap21 = this.setDelayMap(delayUB,p4);
+			//this.isDelay21 = true;
+			this.delayMap21 = this.setDelayMap(p3, delayUB,p4);
 		}
 		else {
-			this.isDelay21=false;
+			//this.isDelay21=false;
 			this.delayMap21 = new HashMap<Integer, Integer>(); 
 		}
+		*/
 		
 	}
 
 
-	private Map<Integer, Integer> setDelayMap(int delayUB, Double p4) {
+	private Map<Integer, Integer> setDelayMap(double p3, int delayUB, Double p4) {
 		Map<Integer, Integer>ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
 			double rnd = Main.rProblem.nextDouble();
 			int rndDelay;
-			
-			if (rnd<p4) {
-				rndDelay = Integer.MAX_VALUE;
-			}else {
+			if (rnd<p3) {
 				rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
+				rnd = Main.rProblem.nextDouble();
+				if (rnd<p4) {
+					rndDelay = Integer.MAX_VALUE;
+				}
+				
 			}
-
+			else {
+				rndDelay = 0;
+			}
+			
+			
+		
 			ans.put(i,rndDelay);
 			
 		}
@@ -142,20 +158,20 @@ public boolean equals(Object obj) {
 
 
 	public int getDelay12(int currentIteration) {
-		if (!isDelay12) {
-			return 0;
-		}else {
+		//if (!isDelay12) {
+		//	return 0;
+		//}else {
 			return delayMap12.get(currentIteration);
-		}
+		//}
 	}
 
 
 	public int getDelay21(int currentIteration) {
-		if (!isDelay21) {
-			return 0;
-		}else {
+		//if (!isDelay21) {
+		//	return 0;
+		//}else {
 			return delayMap21.get(currentIteration);
-		}
+		//}
 	}
 
 }

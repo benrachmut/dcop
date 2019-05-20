@@ -34,6 +34,7 @@ public class AgentZero {
 		for (Neighbors n : this.neighbors) {
 
 			AgentField a1 = (AgentField) n.getA1();
+			//int delay12 = createDelay();
 			int delay12 = n.getDelay12(currentIteration);
 
 			AgentField a2 = (AgentField) n.getA2();
@@ -47,6 +48,26 @@ public class AgentZero {
 		}
 
 	}
+/*
+	private int createDelay() {
+		double rnd = Main.rProblem.nextDouble();
+		int rndDelay;
+		rndDelay = Integer.MAX_VALUE;
+
+		if (rnd<Main.currentP3) {			
+			rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
+			rnd = Main.rProblem.nextDouble();
+			if (rnd<Main.currentP4) {			
+				rndDelay = Integer.MAX_VALUEl
+				
+			}
+
+			
+		}else {
+		}
+		return 0;
+	}
+	*/
 
 	private List<Message> handleDelay(List<Message> input) {
 		Collections.sort(input);
