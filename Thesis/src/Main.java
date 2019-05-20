@@ -41,6 +41,9 @@ public class Main {
 	static List<String> solutions = new ArrayList<String>();;
 	static Random rProblem = new Random();
 	static Random rAlgo = new Random();
+	static Double currentP4;
+	static Integer currentUb;
+	static Double currentP3;
 
 	public static void main(String[] args) {
 		// initVariables();
@@ -80,10 +83,15 @@ public class Main {
 				for (int i = 0; i < meanReps; i++) {
 					Dcop dcop = createDcop(p1, p2);
 					for (Double p3 : p3s) {
+						currentP3 = p3;
 						for (boolean dK : dateKnowns) {
 							dateKnown = dK;
 							for (Integer delayUB : delayUBs) {
+								currentUb = delayUB;
+
 								for (Double p4 : p4s) {
+									currentP4 = p4;
+
 									// ---- protocol ----
 									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
 									String protocol = p3 + "," + dK + "," + delayUB + "," + p4;

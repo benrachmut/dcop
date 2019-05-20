@@ -8,6 +8,9 @@ public class Neighbors {
 	private int itirations;
 	private boolean isDelay12;
 	private boolean isDelay21;
+	private int counter12;
+	private int counter21;
+
 	private Map<Integer, Integer>delayMap12; //key = iteration, value = delay 
 	private Map<Integer, Integer>delayMap21; //key = iteration, value = delay 
 	//private int delayUpperBound;
@@ -143,9 +146,6 @@ public boolean equals(Object obj) {
 			else {
 				rndDelay = 0;
 			}
-			
-			
-		
 			ans.put(i,rndDelay);
 			
 		}
@@ -158,20 +158,30 @@ public boolean equals(Object obj) {
 
 
 	public int getDelay12(int currentIteration) {
-		//if (!isDelay12) {
-		//	return 0;
-		//}else {
-			return delayMap12.get(currentIteration);
-		//}
+		if (Main.synch) {
+			counter12 = counter12+1;
+			return delayMap12.get(counter12--);
+		}else {
+		return delayMap12.get(currentIteration);
+		
+		}
 	}
 
 
 	public int getDelay21(int currentIteration) {
-		//if (!isDelay21) {
-		//	return 0;
-		//}else {
-			return delayMap21.get(currentIteration);
-		//}
+		if (Main.synch) {
+			counter21 = counter21+1;
+			return delayMap21.get(counter21--);
+		}else {
+		return delayMap21.get(currentIteration);
+		
+		}
 	}
 
+	public void setCounter12(int i) {
+		this.counter12 = i;
+	}
+	public void setCounter21(int i) {
+		this.counter21 = i;
+	}
 }

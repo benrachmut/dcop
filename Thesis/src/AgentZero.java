@@ -35,10 +35,17 @@ public class AgentZero {
 
 			AgentField a1 = (AgentField) n.getA1();
 			//int delay12 = createDelay();
-			int delay12 = n.getDelay12(currentIteration);
-
 			AgentField a2 = (AgentField) n.getA2();
-			int delay21 = n.getDelay21(currentIteration);
+			int delay12;
+			int delay21;
+			if (Main.synch) {
+				delay12 = n.getDelay12(currentIteration);
+				delay21 = n.getDelay21(currentIteration);
+			}else {
+				delay12 = createDelay();
+				delay21 = createDelay();
+			}
+			
 
 			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
 			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
@@ -48,26 +55,25 @@ public class AgentZero {
 		}
 
 	}
-/*
+
 	private int createDelay() {
 		double rnd = Main.rProblem.nextDouble();
 		int rndDelay;
 		rndDelay = Integer.MAX_VALUE;
 
 		if (rnd<Main.currentP3) {			
-			rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
+			rndDelay = Main.getRandomInt(Main.rProblem,1, Main.currentUb);
 			rnd = Main.rProblem.nextDouble();
 			if (rnd<Main.currentP4) {			
-				rndDelay = Integer.MAX_VALUEl
-				
-			}
-
+				rndDelay = Integer.MAX_VALUE;
+			}	
 			
 		}else {
+			rndDelay =0;
 		}
-		return 0;
+		return rndDelay;
 	}
-	*/
+	
 
 	private List<Message> handleDelay(List<Message> input) {
 		Collections.sort(input);
@@ -83,7 +89,6 @@ public class AgentZero {
 			} else {
 				msg.setDelay(msg.getDelay() - 1);
 			}
-
 		}
 
 		return msgToSend;
