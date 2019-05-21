@@ -4,83 +4,76 @@ import java.util.Map;
 public class Neighbors {
 	private Agent a1;
 	private Agent a2;
-	//private double p3;
+	// private double p3;
 	private int itirations;
 	private boolean isDelay12;
 	private boolean isDelay21;
 	private int counter12;
 	private int counter21;
 
-	private Map<Integer, Integer>delayMap12; //key = iteration, value = delay 
-	private Map<Integer, Integer>delayMap21; //key = iteration, value = delay 
-	//private int delayUpperBound;
+	private Map<Integer, Integer> delayMap12; // key = iteration, value = delay
+	private Map<Integer, Integer> delayMap21; // key = iteration, value = delay
+	// private int delayUpperBound;
 
 	public Neighbors(Agent a1, Agent a2) {
 		super();
-		
+
 		this.a1 = a1;
 		this.a2 = a2;
-		//this.p3 = 0;
+		// this.p3 = 0;
 		this.itirations = 0;
-		this.delayMap12= null;
-		this.delayMap21= null;
+		this.delayMap12 = null;
+		this.delayMap21 = null;
 
 		this.isDelay12 = false;
 		this.isDelay12 = false;
 	}
 
-	
 	public Neighbors(Agent a1, Agent a2, int itirations) {
 		super();
-		
+
 		this.a1 = a1;
 		this.a2 = a2;
-		//this.p3 = p3;
+		// this.p3 = p3;
 		this.itirations = itirations;
-		this.delayMap12= new HashMap<Integer,Integer>();
-		this.delayMap21= new HashMap<Integer,Integer>();
+		this.delayMap12 = new HashMap<Integer, Integer>();
+		this.delayMap21 = new HashMap<Integer, Integer>();
 		this.isDelay12 = false;
 		this.isDelay12 = false;
-		//this.delayUpperBound=delayUpperBound;
-		//createFluds(0,0);
+		// this.delayUpperBound=delayUpperBound;
+		// createFluds(0,0);
 	}
 
-@Override
-public boolean equals(Object obj) {
-	/*
-	if (!(obj instanceof Neighbors)) {
-		return false;
-	}
-	*/
-	
-	Neighbors n = (Neighbors)obj;
-	Agent na1 = n.getA1();
-	Agent na2 = n.getA2();
-	
-	return na1.getId()==a1.getId() && na2.getId()==a2.getId();
+	@Override
+	public boolean equals(Object obj) {
+		/*
+		 * if (!(obj instanceof Neighbors)) { return false; }
+		 */
 
-	//return false;
-}
-	
+		Neighbors n = (Neighbors) obj;
+		Agent na1 = n.getA1();
+		Agent na2 = n.getA2();
+
+		return na1.getId() == a1.getId() && na2.getId() == a2.getId();
+
+		// return false;
+	}
+
 	public boolean isDelay12() {
 		return isDelay12;
 	}
-
 
 	public void setDelay12(boolean delay12) {
 		this.isDelay12 = delay12;
 	}
 
-
 	public boolean isDelay21() {
 		return isDelay21;
 	}
 
-
 	public void setDelay21(boolean delay21) {
 		this.isDelay21 = delay21;
 	}
-
 
 	public Agent getA1() {
 		return a1;
@@ -89,98 +82,85 @@ public boolean equals(Object obj) {
 	public Agent getA2() {
 		return a2;
 	}
-	
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		
-		return "{"+this.a1+","+this.a2+"}";
-		//return "{A"+this.a1.getId()+",A"+this.a2.getId()+"}";
+
+		return "{" + this.a1 + "," + this.a2 + "}";
+		// return "{A"+this.a1.getId()+",A"+this.a2.getId()+"}";
 	}
 
 	public void createFluds(double p3, int delayUB, Double p4) {
-		//double rnd = Main.rProblem.nextDouble();
-		this.delayMap12 = this.setDelayMap(p3,delayUB,p4);
-		this.delayMap21 = this.setDelayMap(p3, delayUB,p4);
+		// double rnd = Main.rProblem.nextDouble();
+		this.delayMap12 = this.setDelayMap(p3, delayUB, p4);
+		this.delayMap21 = this.setDelayMap(p3, delayUB, p4);
 
-		
-		
-		
-		
 		/*
-		if (rnd<p3) {
-			//this.isDelay12 = true;
-			this.delayMap12 = this.setDelayMap(p3,delayUB,p4);
-		}
-		else {
-			//this.isDelay12=false;
-			this.delayMap12 = new HashMap<Integer, Integer>(); 
-		}
-		rnd = Main.rProblem.nextDouble();
-		if (rnd<p3) {
-			//this.isDelay21 = true;
-			this.delayMap21 = this.setDelayMap(p3, delayUB,p4);
-		}
-		else {
-			//this.isDelay21=false;
-			this.delayMap21 = new HashMap<Integer, Integer>(); 
-		}
-		*/
-		
-	}
+		 * if (rnd<p3) { //this.isDelay12 = true; this.delayMap12 =
+		 * this.setDelayMap(p3,delayUB,p4); } else { //this.isDelay12=false;
+		 * this.delayMap12 = new HashMap<Integer, Integer>(); } rnd =
+		 * Main.rProblem.nextDouble(); if (rnd<p3) { //this.isDelay21 = true;
+		 * this.delayMap21 = this.setDelayMap(p3, delayUB,p4); } else {
+		 * //this.isDelay21=false; this.delayMap21 = new HashMap<Integer, Integer>(); }
+		 */
 
+	}
 
 	private Map<Integer, Integer> setDelayMap(double p3, int delayUB, Double p4) {
-		Map<Integer, Integer>ans = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
-			double rnd = Main.rProblem.nextDouble();
+			double rnd = Main.rDelay.nextDouble();
 			int rndDelay;
-			if (rnd<p3) {
-				rndDelay = Main.getRandomInt(Main.rProblem,1, delayUB);
-				rnd = Main.rProblem.nextDouble();
-				if (rnd<p4) {
+			if (rnd < p3) {
+				rndDelay = Main.getRandomInt(Main.rDelay, 1, delayUB);
+				rnd = Main.rDelay.nextDouble();
+				if (rnd < p4) {
 					rndDelay = Integer.MAX_VALUE;
 				}
-				
-			}
-			else {
+
+			} else {
 				rndDelay = 0;
 			}
-			ans.put(i,rndDelay);
-			
+			ans.put(i, rndDelay);
+
 		}
 		return ans;
-		
+
 	}
 
-
-	
-
-
-	public int getDelay12(int currentIteration) {
-		if (Main.synch) {
-			counter12 = counter12+1;
-			return delayMap12.get(counter12--);
-		}else {
+	public int getDelay12Synch(int currentIteration) {
+		
 		return delayMap12.get(currentIteration);
 		
-		}
+		
+		
+		
+	}
+		
+		
+	public int getDelay12Unsynch() {
+		counter12 = counter12+1;
+		return delayMap12.get(counter12--);		
 	}
 
 
-	public int getDelay21(int currentIteration) {
-		if (Main.synch) {
-			counter21 = counter21+1;
-			return delayMap21.get(counter21--);
-		}else {
+	public int getDelay21Synch(int currentIteration) {
+		
 		return delayMap21.get(currentIteration);
 		
-		}
+		
+	}
+
+	public int getDelay21Unsynch() {
+		counter12 = counter12+1;
+		return delayMap12.get(counter12--);		
 	}
 
 	public void setCounter12(int i) {
 		this.counter12 = i;
 	}
+
 	public void setCounter21(int i) {
 		this.counter21 = i;
 	}

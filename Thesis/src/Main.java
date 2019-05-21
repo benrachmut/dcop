@@ -11,14 +11,15 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "unsynchMono";//"unsynchMono";//"mgmUb";
+	static String algo = "dsa7";//"unsynchMono";//"mgmUb";
+	static String date = "2105";
 	static boolean synch = true;
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 6;// 50; // 50 number of agents
+	static int A = 25;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
@@ -39,23 +40,55 @@ public class Main {
 
 	// -- other
 	static List<String> solutions = new ArrayList<String>();;
-	static Random rProblem = new Random();
-	static Random rAlgo = new Random();
-	static Random rNonAlgo = new Random();
+	static int seed = 1;
+	//static Random rProblem = new Random();
+	static Random rDsa = new Random();
+	static Random rFirstSolution = new Random();
+	static Random rCost= new Random();
+	static Random rP1= new Random();
+	static Random rP2= new Random();
+	static Random rP3= new Random();
+	static Random rP4= new Random();
+	static Random rDelay = new Random();
+
 	static Double currentP4;
 	static Integer currentUb;
 	static Double currentP3;
 
 	public static void main(String[] args) {
 		// initVariables();
-		rProblem.setSeed(1);
-		rAlgo.setSeed(1);
+		
+		setSeedDcop();
+		
+		
+		setSeedCommunication();
+
 		setSynchBool();
 		runExperiment();
 		printDcops();
 	}
 
 	
+
+	private static void setSeedCommunication() {
+		rP3.setSeed(seed);
+		rP4.setSeed(seed);
+		rDelay.setSeed(seed);
+		
+	}
+
+
+
+	private static void setSeedDcop() {
+		rDsa.setSeed(seed);;
+		rFirstSolution.setSeed(seed);
+		rCost.setSeed(seed);
+		rP1.setSeed(seed);
+		rP2.setSeed(seed);
+		
+	}
+
+
 
 	private static void setSynchBool() {
 		if (algo.equals("unsynchMono")) {
@@ -71,7 +104,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter(algo + "1405" + ".csv");
+			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
 			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			out.write(header);
@@ -107,6 +140,9 @@ public class Main {
 
 									// ---- protocol ----
 									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
+									seed = seed+1;
+									setSeedCommunication();
+
 									String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
 									// ---- find solution ----
 									Solution algo = selectedAlgo(dcop, i);

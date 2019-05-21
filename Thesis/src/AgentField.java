@@ -42,7 +42,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.domain = createDomain(domainSize);
 		
 		if (Main.synch) {
-			this.firstValue = Main.getRandomInt(Main.rNonAlgo, 0, domainSize - 1);
+			this.firstValue = Main.getRandomInt(Main.rFirstSolution, 0, domainSize - 1);
 		}else {
 			this.firstValue = -1;
 		}
@@ -175,7 +175,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 */
 	private void maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {
-			double rnd = Main.rAlgo.nextDouble();
+			double rnd = Main.rDsa.nextDouble();
 
 			if (rnd < stochastic) {
 				this.value = minPotentialCost.getValue();
