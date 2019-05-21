@@ -17,8 +17,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	
 
 	// private AgentZero agentZero;
-	private Map<Integer, Boolean> allRecieve;
-	private Map<Integer, Boolean> allRecieveR;
+	//private Map<Integer, Boolean> allRecieve;
+	//private Map<Integer, Boolean> allRecieveR;
 	private List<Integer>numOfInterationForChange;
 	private int numOfInterationForChangeCounter;
 	private PotentialCost minPC;
@@ -27,23 +27,22 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	//---tree stuff
 	private AgentField father;
 	private List<AgentField> sons;
-	private int levelInTree;
+	//private int levelInTree;
 	private Map<Integer, Boolean> isNeighborAbove;
 	//private List<AgentField> aboveMeInTree;
 
 	//private int timeStemp;
 	//private MessageRecieve fatherMsg;
 	
-	// private Set<Agent>neigbors;
-	// private Map <Agent, Integer> neiborsConstraint;
+	//private Set<Agent>neigbors;
+	//private Map <Agent, Integer> neiborsConstraint;
 
 	public AgentField(int domainSize, int id) {
 		super(id);
-		// this.id = id;
 		this.domain = createDomain(domainSize);
 		
 		if (Main.synch) {
-			this.firstValue = Main.getRandomInt(Main.rProblem, 0, domainSize - 1);
+			this.firstValue = Main.getRandomInt(Main.rFirstValue, 0, domainSize - 1);
 		}else {
 			this.firstValue = -1;
 		}
@@ -52,30 +51,21 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
-		this.allRecieve = new HashMap<Integer, Boolean>();
-		this.allRecieveR = new HashMap<Integer, Boolean>();
+		//this.allRecieve = new HashMap<Integer, Boolean>();
+		//this.allRecieveR = new HashMap<Integer, Boolean>();
 		this.sons = new ArrayList<AgentField>();
 		
 		//--- tree stuff
 		this.father = null;
-		this.levelInTree = 0;
+		//this.levelInTree = 0;
 		this.isNeighborAbove = new HashMap<Integer,Boolean>();
-
-		resetBelowAndAbove();
-		//this.timeStemp = 0;
 		resetNumOfInterationForChange();
 		numOfInterationForChangeCounter = 0;
 		setR();
-		// fdf
-		// neigbors = new HashSet<Agent>();
-		// this.neiborsConstraint = new HashMap<Agent, Integer>();
+	
 	}
 
-	public void resetBelowAndAbove() {
-		
 
-		
-	}
 
 	public void resetNumOfInterationForChange() {
 		this.numOfInterationForChange = new ArrayList<Integer>();
@@ -177,15 +167,15 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
-
+/*
 	private boolean checkIfAllNeighborsReported() {
 		boolean allReport = !this.allRecieve.values().contains(false);
 		return allReport;
 	}
-
+*/
 	private void maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {
-			double rnd = Main.rAlgo.nextDouble();
+			double rnd = Main.rDsa.nextDouble();
 
 			if (rnd < stochastic) {
 				this.value = minPotentialCost.getValue();
@@ -246,16 +236,17 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
 		}
 
-		this.allRecieve.put(senderId, true);
+		//this.allRecieve.put(senderId, true);
 	
 	}
-
+/*
 	public void setReciveAll(boolean b) {
 		for (Entry<Integer, Boolean> aR : allRecieve.entrySet()) {
 			aR.setValue(b);
 		}
 
 	}
+	*/
 
 	public void setR() {
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -290,7 +281,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.neighborR.put(senderId, new MessageRecieve(senderR, dateOfOther));
 		}
 
-		this.allRecieveR.put(senderId, true);
+		//this.allRecieveR.put(senderId, true);
 
 	}
 
@@ -303,7 +294,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.neighbor.put(agentId, new MessageRecieve(-1, -1));
 
 	}
-
+/*
 	public void addReciveveAllR(int idOther) {
 		this.allRecieveR.put(idOther, false);
 
@@ -313,7 +304,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.allRecieve.put(j, false);
 
 	}
-
+*/
 	public void mgmDecide() {
 		Entry<Integer, MessageRecieve> maxRInMap = getMaxRFromNeighbors();
 
@@ -450,10 +441,32 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void isNeighborAboveMe(Integer nId, boolean isAbove) {
 		this.isNeighborAbove.put(nId,isAbove);
 	}
-	@Override
-	public String toString() {
+	
+	
+
+	public int sonsSize() {
 		// TODO Auto-generated method stub
-		return super.toString()+" "+this.levelInTree;
+		return this.sons.size();
+	}
+
+
+
+	public void addBelow() {
+		List<Integer>temp = new ArrayList<Integer>();
+		for (int n : this.neighbor.keySet()) {
+			Set<Integer> isAbove = this.isNeighborAbove.keySet();
+			
+			boolean isAlreadyInMap = isAbove.contains(n);
+			if (!isAlreadyInMap) {
+				temp.add(n);
+			}
+			
+		}
+		for (Integer integer : temp) {
+			this.isNeighborAbove.put(integer,false);
+		}
+	
+		
 	}
 
 	

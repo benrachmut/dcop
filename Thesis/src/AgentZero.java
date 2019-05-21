@@ -34,10 +34,15 @@ public class AgentZero {
 		for (Neighbors n : this.neighbors) {
 
 			AgentField a1 = (AgentField) n.getA1();
-			int delay12 = n.getDelay12(currentIteration);
+			
 
 			AgentField a2 = (AgentField) n.getA2();
-			int delay21 = n.getDelay21(currentIteration);
+			
+			int delay12 = createDelay();
+			int delay21 = createDelay();
+			
+			//int delay12 = n.getDelay12(currentIteration);
+			//int delay21 = n.getDelay21(currentIteration);
 
 			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
 			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
@@ -45,6 +50,30 @@ public class AgentZero {
 			this.messageBox.add(msg12);
 			this.messageBox.add(msg21);
 		}
+
+	}
+	public void createRiMsgs(int currentIteration) {
+		for (Neighbors n : this.neighbors) {
+
+			AgentField a1 = (AgentField) n.getA1();
+
+			AgentField a2 = (AgentField) n.getA2();
+			int delay12 = createDelay();
+			int delay21 = createDelay();
+			//int delay12 = n.getDelay12(currentIteration);
+			//int delay21 = n.getDelay21(currentIteration);
+
+			Message msg12 = new Message(a1, a2, a1.getR(), delay12, currentIteration);
+			Message msg21 = new Message(a2, a1, a2.getR(), delay21, currentIteration);
+
+			this.rMessageBox.add(msg12);
+			this.rMessageBox.add(msg21);
+		}
+
+	}
+
+	public void emptyRMessageBox() {
+		this.rMessageBox.clear();
 
 	}
 
@@ -106,28 +135,7 @@ public class AgentZero {
 
 	}
 
-	public void createRiMsgs(int currentIteration) {
-		for (Neighbors n : this.neighbors) {
 
-			AgentField a1 = (AgentField) n.getA1();
-			int delay12 = n.getDelay12(currentIteration);
-
-			AgentField a2 = (AgentField) n.getA2();
-			int delay21 = n.getDelay21(currentIteration);
-
-			Message msg12 = new Message(a1, a2, a1.getR(), delay12, currentIteration);
-			Message msg21 = new Message(a2, a1, a2.getR(), delay21, currentIteration);
-
-			this.rMessageBox.add(msg12);
-			this.rMessageBox.add(msg21);
-		}
-
-	}
-
-	public void emptyRMessageBox() {
-		this.rMessageBox.clear();
-
-	}
 
 	public void emptyMessageBox() {
 		this.messageBox.clear();
@@ -199,6 +207,24 @@ public class AgentZero {
 	public void emptyTimeStempBoxMessage() {
 		this.timeStempMessageBox.clear();
 		
+	}
+	
+	private int createDelay() {
+		double rnd = Main.rProblem.nextDouble();
+		int rndDelay;
+		rndDelay = Integer.MAX_VALUE;
+
+		if (rnd<Main.currentP3) {			
+			rndDelay = Main.getRandomInt(Main.rProblem,1, Main.currentUb);
+			rnd = Main.rProblem.nextDouble();
+			if (rnd<Main.currentP4) {			
+				rndDelay = Integer.MAX_VALUE;
+			}	
+			
+		}else {
+			rndDelay =0;
+		}
+		return rndDelay;
 	}
 
 }

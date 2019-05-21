@@ -11,15 +11,15 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "dsa7";//"unsynchMono";//"mgmUb";
+	static String algo = "unsynchMono";//"unsynchMono";//"mgmUb";
 	static String date= "2105";
 	static boolean synch = true;
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 25;// 50; // 50 number of agents
+	static int A = 6;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
@@ -41,13 +41,27 @@ public class Main {
 	// -- other
 	static List<String> solutions = new ArrayList<String>();;
 	static Random rProblem = new Random();
-	static Random rAlgo = new Random();
+	static Random rDsa = new Random();
+	static Random rP3 = new Random();
+	static Random rP4 = new Random();
+	static Random rCost = new Random();
+	static Random rDelay= new Random();
+	static Random rFirstValue= new Random();
+
+	static Double currentP3=0.0;
+	static Double currentP4=0.0;
+	
+	static int currentUb=0;
 
 	public static void main(String[] args) {
 		// initVariables();
 		rProblem.setSeed(1);
-		rAlgo.setSeed(1);
-		
+		rDsa.setSeed(1);
+		rP3.setSeed(1);
+		rP4.setSeed(1);
+		rCost.setSeed(1);
+		rDelay.setSeed(1);
+		rFirstValue.setSeed(1);
 		setSynchBoolean();
 		runExperiment();
 		printDcops();
@@ -97,10 +111,15 @@ public class Main {
 				for (int i = 0; i < meanReps; i++) {
 					Dcop dcop = createDcop(p1, p2);
 					for (Double p3 : p3s) {
+						currentP3 = p3;
 						for (boolean dK : dateKnowns) {
 							dateKnown = dK;
 							for (Integer delayUB : delayUBs) {
+								currentUb= delayUB;
+
 								for (Double p4 : p4s) {
+									currentP4= p4;
+
 									// ---- protocol ----
 									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
 									String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
@@ -173,7 +192,7 @@ public class Main {
 		if (algo.equals("unsynchMono")) {
 			Tree pT = new Tree(agents);
 			pT.dfs();
-			//pT.setIsAboveMe();
+			pT.setIsAboveBelow();
 		}
 		
 
@@ -211,7 +230,7 @@ public class Main {
 			agents[i].changeValOfAllNeighbor();
 			agents[i].changeValR();
 			agents[i].setFirstValueToValue();
-			agents[i].setReciveAll(false);
+			//agents[i].setReciveAll(false);
 			//agents[i].setTimeStemp(0);
 			agents[i].resetNumOfInterationForChange();
 		}
