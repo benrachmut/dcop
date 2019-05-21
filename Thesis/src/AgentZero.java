@@ -34,20 +34,10 @@ public class AgentZero {
 		for (Neighbors n : this.neighbors) {
 
 			AgentField a1 = (AgentField) n.getA1();
-			//int delay12 = createDelay();
+			int delay12 = n.getDelay12(currentIteration);
+
 			AgentField a2 = (AgentField) n.getA2();
-			int delay12;
-			int delay21;
-			//if (Main.synch) {
-			delay12 = n.getDelay12Synch(currentIteration);
-			delay21 =  n.getDelay21Synch(currentIteration);
-			
-			
-			//}else {
-				//delay12 = createDelay();
-				//delay21 = createDelay();
-			//}
-			
+			int delay21 = n.getDelay21(currentIteration);
 
 			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
 			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
@@ -57,25 +47,6 @@ public class AgentZero {
 		}
 
 	}
-
-	private int createDelay() {
-		double rnd = Main.rP3.nextDouble();
-		int rndDelay;
-		rndDelay = Integer.MAX_VALUE;
-
-		if (rnd<Main.currentP3) {			
-			rndDelay = Main.getRandomInt(Main.rDelay,1, Main.currentUb);
-			rnd = Main.rP4.nextDouble();
-			if (rnd<Main.currentP4) {			
-				rndDelay = Integer.MAX_VALUE;
-			}	
-			
-		}else {
-			rndDelay =0;
-		}
-		return rndDelay;
-	}
-	
 
 	private List<Message> handleDelay(List<Message> input) {
 		Collections.sort(input);
@@ -91,14 +62,13 @@ public class AgentZero {
 			} else {
 				msg.setDelay(msg.getDelay() - 1);
 			}
+
 		}
 
 		return msgToSend;
 	}
 
 	public void changeCommunicationProtocol(double p3Input, int delayUbInput, Double p4Input) {
-		
-		
 		this.p3 = p3Input;
 		this.delayUb = delayUbInput;
 		this.p4 = p4Input;
@@ -140,10 +110,10 @@ public class AgentZero {
 		for (Neighbors n : this.neighbors) {
 
 			AgentField a1 = (AgentField) n.getA1();
-			int delay12 =n.getDelay12Synch(currentIteration);
+			int delay12 = n.getDelay12(currentIteration);
 
 			AgentField a2 = (AgentField) n.getA2();
-			int delay21 = n.getDelay21Synch(currentIteration);
+			int delay21 = n.getDelay21(currentIteration);
 
 			Message msg12 = new Message(a1, a2, a1.getR(), delay12, currentIteration);
 			Message msg21 = new Message(a2, a1, a2.getR(), delay21, currentIteration);
@@ -172,7 +142,7 @@ public class AgentZero {
 		// TODO Auto-generated method stub
 		return this.p3;
 	}
-/*
+
 	public void createTimeStempMsgs(int currentIteration) {
 
 		for (AgentField father : agents) {
@@ -202,8 +172,7 @@ public class AgentZero {
 		
 
 	}
-*/
-	/*
+
 	private Neighbors lookForNeighbor(AgentField a1, AgentField a2) {
 		
 		Neighbors inputN = new Neighbors(a1, a2);
@@ -214,7 +183,7 @@ public class AgentZero {
 		}
 		return null;
 	}
-/*
+
 	public void sendTimeStempMsgs() {
 		List<Message> msgToSend = handleDelay(this.timeStempMessageBox);
 		for (Message msg : msgToSend) {
@@ -226,14 +195,9 @@ public class AgentZero {
 		}
 		
 	}
-*/
+
 	public void emptyTimeStempBoxMessage() {
 		this.timeStempMessageBox.clear();
-		
-	}
-
-	public void createUnsynchMessage(List<AgentField> whoSendMessages) {
-		
 		
 	}
 

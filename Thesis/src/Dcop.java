@@ -85,7 +85,7 @@ public class Dcop {
 		Set<Constraint> ans = new HashSet<Constraint>();
 		for (int i = 0; i < agentsF.length; i++) {
 			for (int j = i + 1; j < agentsF.length; j++) {
-				double p1Max = Main.rP1.nextDouble();
+				double p1Max = Main.rProblem.nextDouble();
 				if (p1Max <  this.p1 ) {
 					AgentField af1 = agentsF[i];
 					AgentField af2 = agentsF[j];
@@ -94,12 +94,12 @@ public class Dcop {
 						int d1 = af1.getDomain()[k];
 						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
 							int d2 = af2.getDomain()[k2];
-							double p2Max = Main.rP2.nextDouble();
+							double p2Max = Main.rProblem.nextDouble();
 							if (p2Max < this.p2  ) {
 
 								Agent a1 = new Agent(i, d1);
 								Agent a2 = new Agent(j, d2);
-								int cost = Main.getRandomInt(Main.rCost,1, Main.costMax);
+								int cost = Main.getRandomInt(Main.rProblem,1, Main.costMax);
 								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
 
 								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
@@ -150,9 +150,9 @@ public class Dcop {
 
 	private void addToMapsAgents(AgentField agentInput, int idOther) {
 		agentInput.addNeighbor(idOther);
-		//agentInput.addReciveveAll(idOther);
+		agentInput.addReciveveAll(idOther);
 		agentInput.addNeighborR(idOther);
-		//agentInput.addReciveveAllR(idOther);
+		agentInput.addReciveveAllR(idOther);
 		
 	}
 	/*

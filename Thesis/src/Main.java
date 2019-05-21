@@ -12,7 +12,7 @@ public class Main {
 
 	// versions
 	static String algo = "dsa7";//"unsynchMono";//"mgmUb";
-	static String date = "2105";
+	static String date= "2105";
 	static boolean synch = true;
 	static boolean dateKnown;
 
@@ -26,7 +26,7 @@ public class Main {
 	// -- communication protocol
 	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns ={true};//{ true, false };
-	static int[] delayUBs = { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static int[] delayUBs = {5,20};//{ 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
@@ -40,60 +40,28 @@ public class Main {
 
 	// -- other
 	static List<String> solutions = new ArrayList<String>();;
-	static int seed = 1;
-	//static Random rProblem = new Random();
-	static Random rDsa = new Random();
-	static Random rFirstSolution = new Random();
-	static Random rCost= new Random();
-	static Random rP1= new Random();
-	static Random rP2= new Random();
-	static Random rP3= new Random();
-	static Random rP4= new Random();
-	static Random rDelay = new Random();
-
-	static Double currentP4;
-	static Integer currentUb;
-	static Double currentP3;
+	static Random rProblem = new Random();
+	static Random rAlgo = new Random();
 
 	public static void main(String[] args) {
 		// initVariables();
+		rProblem.setSeed(1);
+		rAlgo.setSeed(1);
 		
-		setSeedDcop();
-		
-		
-		setSeedCommunication();
-
-		setSynchBool();
+		setSynchBoolean();
 		runExperiment();
 		printDcops();
 	}
 
 	
 
-	private static void setSeedCommunication() {
-		rP3.setSeed(seed);
-		rP4.setSeed(seed);
-		rDelay.setSeed(seed);
-		
-	}
+	private static void setSynchBoolean() {
+		boolean unsynchMono = algo.equals("unsynchMono");
 
-
-
-	private static void setSeedDcop() {
-		rDsa.setSeed(seed);;
-		rFirstSolution.setSeed(seed);
-		rCost.setSeed(seed);
-		rP1.setSeed(seed);
-		rP2.setSeed(seed);
-		
-	}
-
-
-
-	private static void setSynchBool() {
-		if (algo.equals("unsynchMono")) {
-			synch = false;
-		}else {
+		if (unsynchMono) {
+			synch =false;
+		}
+		else {
 			synch = true;
 		}
 		
@@ -129,20 +97,12 @@ public class Main {
 				for (int i = 0; i < meanReps; i++) {
 					Dcop dcop = createDcop(p1, p2);
 					for (Double p3 : p3s) {
-						currentP3 = p3;
 						for (boolean dK : dateKnowns) {
 							dateKnown = dK;
 							for (Integer delayUB : delayUBs) {
-								currentUb = delayUB;
-
 								for (Double p4 : p4s) {
-									currentP4 = p4;
-
 									// ---- protocol ----
 									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
-									seed = seed+1;
-									setSeedCommunication();
-
 									String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
 									// ---- find solution ----
 									Solution algo = selectedAlgo(dcop, i);
@@ -175,17 +135,21 @@ public class Main {
 		
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents,  agentZero,  meanRun) ;
+			
 		}
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
+			
 
 		}
 		if (mgm) {
 			ans = new MGM(dcop, agents, agentZero, meanRun);
+			
 
 		}
 		if (mgmUb) {
 			ans = new MGMub(dcop, agents, agentZero, meanRun);
+			
 
 		}
 		ans.solve();
@@ -209,7 +173,7 @@ public class Main {
 		if (algo.equals("unsynchMono")) {
 			Tree pT = new Tree(agents);
 			pT.dfs();
-			pT.setIsAboveBelow();
+			//pT.setIsAboveMe();
 		}
 		
 
@@ -247,7 +211,7 @@ public class Main {
 			agents[i].changeValOfAllNeighbor();
 			agents[i].changeValR();
 			agents[i].setFirstValueToValue();
-			//agents[i].setReciveAll(false);
+			agents[i].setReciveAll(false);
 			//agents[i].setTimeStemp(0);
 			agents[i].resetNumOfInterationForChange();
 		}
