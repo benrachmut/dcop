@@ -28,7 +28,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private AgentField father;
 	private List<AgentField> sons;
 	//private int levelInTree;
-	private Map<Integer, Boolean> isNeighborAbove;
+	//private Map<Integer, Boolean> isNeighborAbove;
+	private Map<Integer, Integer> aboveMap;
+	private Map<Integer, Integer> belowMap;
+
+	private int decisonCounter;
 	//private List<AgentField> aboveMeInTree;
 
 	//private int timeStemp;
@@ -46,6 +50,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}else {
 			this.firstValue = -1;
 		}
+		decisonCounter = 0;
 		this.setFirstValueToValue();
 		//this.fatherMsg = new MessageRecieve(-1, -1);
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
@@ -58,7 +63,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		//--- tree stuff
 		this.father = null;
 		//this.levelInTree = 0;
-		this.isNeighborAbove = new HashMap<Integer,Boolean>();
+		aboveMap = new HashMap<Integer,Integer>();
+		belowMap=  new HashMap<Integer,Integer>();
 		resetNumOfInterationForChange();
 		numOfInterationForChangeCounter = 0;
 		setR();
@@ -163,8 +169,36 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		if (minCost < currentPersonalCost) {
 			shouldChange = true;
 		}
+		// used for unsynch
+		if (this.value == -1) {
+			shouldChange = true;
+		}
 
 		maybeChange(shouldChange, minPotentialCost, stochastic);
+
+	}
+	
+	public void unsynchDecide() {
+
+		List<PotentialCost> pCosts = findPotentialCost();
+		int currentPersonalCost = findCurrentCost(pCosts);
+
+		PotentialCost minPotentialCost = Collections.min(pCosts);
+		int minCost = minPotentialCost.getCost();
+
+		boolean shouldChange = false;
+		if (minCost <= currentPersonalCost) {
+			shouldChange = true;
+		}
+		// used for unsynch
+		if (this.value == -1) {
+			shouldChange = true;
+		}
+
+		if (shouldChange) {
+			this.value = minPotentialCost.getValue();
+
+		}
 
 	}
 /*
@@ -423,24 +457,14 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return this.father;
 	}
 
-	public int getLevelInTree() {
-		// TODO Auto-generated method stub
-		return this.levelInTree;
-	}
 
-	public void setLevelInTree(int i) {
-		this.levelInTree=i;
-		
-	}
 
 	public Set<Integer> getNeighborIds() {
 		return this.neighbor.keySet();
 		
 	}
 
-	public void isNeighborAboveMe(Integer nId, boolean isAbove) {
-		this.isNeighborAbove.put(nId,isAbove);
-	}
+	
 	
 	
 
@@ -454,7 +478,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void addBelow() {
 		List<Integer>temp = new ArrayList<Integer>();
 		for (int n : this.neighbor.keySet()) {
-			Set<Integer> isAbove = this.isNeighborAbove.keySet();
+			Set<Integer> isAbove = this.aboveMap.keySet();
 			
 			boolean isAlreadyInMap = isAbove.contains(n);
 			if (!isAlreadyInMap) {
@@ -462,12 +486,112 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			}
 			
 		}
-		for (Integer integer : temp) {
-			this.isNeighborAbove.put(integer,false);
+		for (Integer idTemp : temp) {
+			this.putInBelowMap(idTemp,0);
 		}
 	
 		
 	}
+
+
+
+	public int getDecisonCounter() {
+		// TODO Auto-generated method stub
+		return this.decisonCounter;
+	}
+
+
+
+	public void setDecisionCounter(int i) {
+		this.decisonCounter=i; 
+		
+	}
+	
+	public void putInAboveMap(Integer agentId, Integer counter) {
+		this.aboveMap.put(agentId, counter );
+	}
+	public void putInBelowMap(Integer agentId, Integer counter) {
+		this.belowMap.put(agentId, counter );
+	}
+	
+	public void setAllAboveMap(int input) {
+		for (Entry<Integer, Integer> e : aboveMap.entrySet()) {
+			e.setValue(input);
+		}
+	}
+	public void setAllBelowMap(int input) {
+		for (Entry<Integer, Integer> e : belowMap.entrySet()) {
+			e.setValue(input);
+		}
+	}
+
+
+
+	public void reciveUnsynchMsg(int senderId, int senderValue, int date) {
+		this.reciveMsg(senderId, senderValue, date);// TODO Auto-generated method stub
+		boolean isAbove = this.aboveMap.containsKey(senderId);
+		int currentCounter=0;
+		if (isAbove) {
+			currentCounter = aboveMap.get(senderId);
+			aboveMap.put(senderId, currentCounter+1);
+		}else {
+			currentCounter = belowMap.get(senderId);
+			belowMap.put(senderId, currentCounter+1);
+		}
+	}
+
+
+
+	public boolean unsynchAbilityToDecide() {
+		boolean aboveOneMoreThenMe= checkAllOneAboveMe();
+		boolean belowLikeMe = checkbelowLikeMe();
+		if (belowLikeMe&&aboveOneMoreThenMe) {
+			//this.decisonCounter = this.decisonCounter+1;
+			return true;
+		}
+		return false;
+	}
+
+
+
+	private boolean checkbelowLikeMe() {
+		
+		if (belowMap.keySet().size() ==0) {
+			return true;
+		}
+		
+		for (int counterBelow : belowMap.values()){
+			if (counterBelow != this.decisonCounter) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+
+	private boolean checkAllOneAboveMe() {
+		
+		if (aboveMap.keySet().size() ==0) {
+			return true;
+		}
+		
+		
+		for (int counterAbove : aboveMap.values()){
+			if (counterAbove != this.decisonCounter+1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+
+	public void setValue(int randomInt) {
+		this.value = randomInt;
+		
+	}
+
 
 	
 }

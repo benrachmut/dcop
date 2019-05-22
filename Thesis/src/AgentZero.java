@@ -150,7 +150,7 @@ public class AgentZero {
 		// TODO Auto-generated method stub
 		return this.p3;
 	}
-
+/*
 	public void createTimeStempMsgs(int currentIteration) {
 
 		for (AgentField father : agents) {
@@ -180,7 +180,8 @@ public class AgentZero {
 		
 
 	}
-
+*/
+/*
 	private Neighbors lookForNeighbor(AgentField a1, AgentField a2) {
 		
 		Neighbors inputN = new Neighbors(a1, a2);
@@ -191,7 +192,8 @@ public class AgentZero {
 		}
 		return null;
 	}
-
+*/
+/*
 	public void sendTimeStempMsgs() {
 		List<Message> msgToSend = handleDelay(this.timeStempMessageBox);
 		for (Message msg : msgToSend) {
@@ -203,7 +205,7 @@ public class AgentZero {
 		}
 		
 	}
-
+*/
 	public void emptyTimeStempBoxMessage() {
 		this.timeStempMessageBox.clear();
 		
@@ -225,6 +227,48 @@ public class AgentZero {
 			rndDelay =0;
 		}
 		return rndDelay;
+	}
+
+	public void createUnsynchMessage(List<AgentField> whoCanDecide, int currentIteration) {
+		for (AgentField a : whoCanDecide) {
+			a.setDecisionCounter(a.getDecisonCounter()+1);
+			List<AgentField> neighborsAgents = getNeighborsAgents(a);
+			for (AgentField n : neighborsAgents) {
+				AgentField sender =a;
+				AgentField reciever =n;
+				int senderValue = a.getValue();
+				int delay = this.createDelay();
+				Message m = new Message(sender, reciever, senderValue, delay, currentIteration);
+				this.messageBox.add(m);
+			}
+		}
+		
+	}
+
+	private List<AgentField> getNeighborsAgents(AgentField a) {
+		List<AgentField> ans = new ArrayList<AgentField>();
+		for (Integer neigborNumber : a.getNeighborIds()) {
+			for (AgentField aTemp : agents) {
+				if (aTemp.getId() == neigborNumber) {
+					ans.add(aTemp);
+				}
+			}
+		}
+		return ans;
+	}
+
+	public void sendUnsynchMsgs() {
+
+		List<Message> msgToSend = handleDelay(this.messageBox);
+		for (Message msg : msgToSend) {
+			int senderId = msg.getSender().getId();
+			int senderValue = msg.getSenderValue();
+			AgentField reciver = msg.getReciever();
+
+			reciver.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
+			
+		}
+		
 	}
 
 }

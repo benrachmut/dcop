@@ -17,22 +17,22 @@ public class Main {
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 6;// 50; // 50 number of agents
+	static int A = 50;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
 	static double[] p3s = { 0, 0.5, 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns ={true};//{ true, false };
-	static int[] delayUBs = {5,20};//{ 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static int[] delayUBs = {5,10,25,50};//{ 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
 	static int meanReps = 10;// 10; // number of reps for every solve process
-	static int iterations = 1000;// 1000;
+	static int iterations = 2500;// 1000;
 
 	// -- characters
 	static AgentField[] agents;
@@ -233,6 +233,9 @@ public class Main {
 			//agents[i].setReciveAll(false);
 			//agents[i].setTimeStemp(0);
 			agents[i].resetNumOfInterationForChange();
+			agents[i].setAllBelowMap(0);
+			agents[i].setAllAboveMap(0);
+			agents[i].setDecisionCounter(0);
 		}
 
 	}

@@ -3,33 +3,62 @@ import java.util.List;
 
 public class UnsynchMono extends Solution {
 
-	private List<AgentField> whoSendMessages;
+	private List<AgentField> whoCanDecide;
 
 	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
 		this.algo = "UnsynchMono";
-		this.whoSendMessages = new ArrayList<AgentField>();
+		this.whoCanDecide = new ArrayList<AgentField>();
 
 	}
 
 	@Override
 	public void solve() {
 		for (int i = 0; i < this.itiration; i++) {
-
-			if (i == 0) {
-				headSelectRandomAndAddToSend();
-			} else {
-				agentDecide();
+			updateWhoCanDecide(i);
+			agentDecide();
+			if (i==0) {
+				for (AgentField a: this.whoCanDecide) {
+					a.setValue(Main.getRandomInt(Main.rFirstValue, 0, a.getDomainSize() - 1));
+					
+				}
 			}
-			
-			agentZero.createUnsynchMessage(this.whoSendMessages);
-			agentZero.sendMsgs();
-			
-			
+			agentZero.createUnsynchMessage(this.whoCanDecide, i);
+			agentZero.sendUnsynchMsgs();
 			addCostToList();
 		}
+	}
 
-	} // iteration
+	private void updateWhoCanDecide(int i) {
+		List<AgentField> temp = new ArrayList<AgentField>();
+		if (i == 0) {
+			temp = findHeadOfTree();
+		} else {
+			temp = iterateAgentsWhoCan();
+		}
+		this.whoCanDecide = temp;
+
+	}
+
+	private List<AgentField> iterateAgentsWhoCan() {
+		List<AgentField> ans = new ArrayList<AgentField>();
+		for (AgentField a : agents) {
+			if (a.unsynchAbilityToDecide()) {
+				ans.add(a);
+			}
+		}
+		return ans;
+	}
+
+	private List<AgentField> findHeadOfTree() {
+		List<AgentField> ans = new ArrayList<AgentField>();
+		for (AgentField a : agents) {
+			if (a.getFather() == null) {
+				ans.add(a);
+			}
+		}
+		return ans;
+	}
 
 	@Override
 	public void addCostToList() {
@@ -52,17 +81,8 @@ public class UnsynchMono extends Solution {
 
 	@Override
 	public void agentDecide() {
-		List<AgentField>agentDecideThisIt = new ArrayList<>();
-		for (AgentField a : agents) {
-			
-			boolean isUnsynchMonoDecide = a.canUnsynchMonoDecide();
-			
-			if (isUnsynchMonoDecide) {
-				a.dsaDecide(1);
-				agentDecideThisIt.add(a);
-			}
-			
+		for (AgentField a : this.whoCanDecide) {
+			a.unsynchDecide();
 		}
-		this.whoSendMessages = agentDecideThisIt;
 	}
 }

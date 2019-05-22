@@ -185,7 +185,10 @@ public class Tree {
 			}
 			color.put(a, true);
 			while (father !=null) {
-				a.isNeighborAboveMe(father.getId(),true);
+				if (a.getNeighborIds().contains(father.getId())) {
+					a.putInAboveMap(father.getId(),0);	
+				}
+				
 				father = father.getFather();
 			}
 		}
