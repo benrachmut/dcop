@@ -128,9 +128,7 @@ public class AgentZero {
 			int senderId = msg.getSender().getId();
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-
 			reciver.reciveMsg(senderId, senderValue, msg.getDate());
-
 		}
 
 	}
@@ -212,19 +210,16 @@ public class AgentZero {
 	}
 	
 	private int createDelay() {
-		double rnd = Main.rProblem.nextDouble();
 		int rndDelay;
-		rndDelay = Integer.MAX_VALUE;
-
+		rndDelay = 0;
+		double rnd = Main.rP3.nextDouble();
 		if (rnd<Main.currentP3) {			
-			rndDelay = Main.getRandomInt(Main.rProblem,1, Main.currentUb);
-			rnd = Main.rProblem.nextDouble();
+			rndDelay = Main.getRandomInt(Main.rDelay,1, Main.currentUb);
+			rnd = Main.rP4.nextDouble();
 			if (rnd<Main.currentP4) {			
 				rndDelay = Integer.MAX_VALUE;
 			}	
 			
-		}else {
-			rndDelay =0;
 		}
 		return rndDelay;
 	}

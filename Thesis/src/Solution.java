@@ -47,10 +47,9 @@ public abstract class Solution {
 
 	@Override
 	public String toString() {
-		double p1 = dcop.getP1();
-		double p2 = dcop.getP2();
+		
 
-		return algo + "," + p1 + "," + p2 + "," + meanRun;
+		return algo + "," + Main.currentP1 + "," + Main.currentP2 + "," + meanRun;
 	}
 
 	public List<Integer> getRealCost() {

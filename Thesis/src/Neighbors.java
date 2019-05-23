@@ -111,13 +111,13 @@ public class Neighbors {
 	private Map<Integer, Integer> setDelayMap(int delayUB, Double p4, Double p3) {
 		Map<Integer, Integer> ans = new HashMap<Integer, Integer>();
 		for (int i = 0; i < itirations; i++) {
-			double rnd = Main.rProblem.nextDouble();
+			double rnd = Main.rP3.nextDouble();
 			int rndDelay = 0;
 
 			if (rnd < p3) {
-				rndDelay = Main.getRandomInt(Main.rProblem, 1, delayUB);
+				rndDelay = Main.getRandomInt(Main.rDelay, 1, delayUB);
 
-				rnd = Main.rProblem.nextDouble();
+				rnd = Main.rP4.nextDouble();
 
 				if (rnd < p4) {
 					rndDelay = Integer.MAX_VALUE;

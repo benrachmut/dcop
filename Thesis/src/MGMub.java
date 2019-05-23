@@ -20,9 +20,7 @@ public class MGMub extends MGM {
 		int counter = 0;
 		for (int i = 0; i < this.itiration; i++) {
 			if (!first) {
-				sendAndRecieve(i);
-				first = true;
-			} else {
+
 				agentsSetR();
 				sendAndRecieveRi(i);
 				if (ub == 0) {
@@ -35,6 +33,13 @@ public class MGMub extends MGM {
 					}
 					counter++;
 				}
+				
+				first = true;
+			} else {
+				
+				sendAndRecieve(i);
+				
+				
 				first = false;
 			}
 			addCostToList();
