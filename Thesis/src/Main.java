@@ -11,22 +11,23 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "dsa7";//"unsynchMono";//"mgmUb";
-	static String date = "2305";
+	static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";
+	static String date = "2505";
 	static boolean synch = true;
 	static boolean dateKnown;
 
 	// -- variables of dcop problem
-	static int A = 50;// 50; // 50 number of agents
+	static int A = 25;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
 	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = {0};//{ 0,0.5,1 }; // prob of communication to have delay
+	static double[] p3s =  { 0,0.5,1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 5, 10, 25, 50 };//{0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5, 10, 25, 50, 100 };
+	static int[] delayUBs = { 5, 10, 25, 50 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+												// 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
@@ -40,7 +41,7 @@ public class Main {
 
 	// -- other
 	static List<String> solutions = new ArrayList<String>();;
-	
+
 	static Random rP1 = new Random();
 	static Random rP2 = new Random();
 	static Random rFirstValue = new Random();
@@ -49,9 +50,9 @@ public class Main {
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
 	static Random rDelay = new Random();
-	
+
 	static Random rDsa = new Random();
-	
+
 	static Double currentP3 = 0.0;
 	static Double currentP4 = 0.0;
 	static int currentUb = 0;
@@ -64,7 +65,6 @@ public class Main {
 		runExperiment();
 		printDcops();
 	}
-
 
 	private static void setSynchBoolean() {
 		boolean unsynchMono = algo.equals("unsynchMono");
@@ -127,32 +127,48 @@ public class Main {
 	}
 
 	private static void differentCommunicationProtocols(Dcop dcop, int meanRun) {
-		
+
 		int communicationSeed = 0;
 
 		for (Double p3 : p3s) {
 			currentP3 = p3;
-			for (boolean dK : dateKnowns) {
-				dateKnown = dK;
-				for (Integer delayUB : delayUBs) {
-					currentUb = delayUB;
-					for (Double p4 : p4s) {
-						communicationSeed = communicationSeed+1;
-						communicationSeeds(communicationSeed);
-						currentP4 = p4;
-						// ---- protocol ----
-						// agentZero.changeCommunicationProtocol(p3, delayUB, p4);
-						String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
-						// ---- find solution ----
-						Solution algo = selectedAlgo(dcop, meanRun);
-						System.out.println(protocol + "," + algo);
-						// ---- restart ----
-						restartBetweenAlgo(algo, protocol);
-					} // p4
-				} // ub
-			} // date known
+			if (p3 == 0) {
+				afterHavingAllPrameters(p3, true, -1, -1.0, dcop, meanRun);
+			} else {
+				diffCommunicationGivenP3(communicationSeed, dcop, meanRun, p3);
+			}
 		} // p3
 		printDcops();
+
+	}
+
+	private static void afterHavingAllPrameters(Double p3, Boolean dK, Integer delayUB, Double p4, Dcop dcop,
+			int meanRun) {
+		// ---- protocol ----
+		// agentZero.changeCommunicationProtocol(p3, delayUB, p4);
+		String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
+		// ---- find solution ----
+		Solution algo = selectedAlgo(dcop, meanRun);
+		System.out.println(protocol + "," + algo);
+		// ---- restart ----
+		restartBetweenAlgo(algo, protocol);
+
+	}
+
+	private static void diffCommunicationGivenP3(int communicationSeed, Dcop dcop, int meanRun, Double p3) {
+		for (boolean dK : dateKnowns) {
+			dateKnown = dK;
+			for (Integer delayUB : delayUBs) {
+				currentUb = delayUB;
+				for (Double p4 : p4s) {
+					communicationSeed = communicationSeed + 1;
+					communicationSeeds(communicationSeed);
+					currentP4 = p4;
+					afterHavingAllPrameters(p3, dK, delayUB, p4, dcop, meanRun);
+
+				} // p4
+			} // ub
+		} // date known
 
 	}
 
