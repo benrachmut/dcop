@@ -42,32 +42,38 @@ public class Main {
 	static List<String> solutions = new ArrayList<String>();;
 	static Random rProblem = new Random();
 	static Random rDsa = new Random();
-	static Random rP3 = new Random();
-	static Random rP4 = new Random();
-	static Random rCost = new Random();
-	static Random rDelay= new Random();
+	//static Random rP3 = new Random();
+	//static Random rP4 = new Random();
+	//static Random rCost = new Random();
+	//static Random rDelay= new Random();
 	static Random rFirstValue= new Random();
 
 	static Double currentP3=0.0;
 	static Double currentP4=0.0;
-	
+	static int seed = 0;
 	static int currentUb=0;
 
 	public static void main(String[] args) {
 		// initVariables();
-		rProblem.setSeed(1);
-		rDsa.setSeed(1);
-		rP3.setSeed(1);
-		rP4.setSeed(1);
-		rCost.setSeed(1);
-		rDelay.setSeed(1);
-		rFirstValue.setSeed(1);
+		
+		setSeeds(1);
+		
 		setSynchBoolean();
 		runExperiment();
 		printDcops();
 	}
 
 	
+
+	private static void setSeeds(int input) {
+		seed = input;
+		rProblem.setSeed(seed);
+		rDsa.setSeed(seed);
+		rFirstValue.setSeed(seed);
+		
+	}
+
+
 
 	private static void setSynchBoolean() {
 		boolean unsynchMono = algo.equals("unsynchMono");
@@ -121,6 +127,9 @@ public class Main {
 									currentP4= p4;
 
 									// ---- protocol ----
+									
+									setSeeds(seed++);
+									
 									agentZero.changeCommunicationProtocol(p3, delayUB, p4);
 									String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
 									// ---- find solution ----

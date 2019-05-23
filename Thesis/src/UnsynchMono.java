@@ -17,12 +17,8 @@ public class UnsynchMono extends Solution {
 		for (int i = 0; i < this.itiration; i++) {
 			updateWhoCanDecide(i);
 			agentDecide();
-			if (i==0) {
-				for (AgentField a: this.whoCanDecide) {
-					a.setValue(Main.getRandomInt(Main.rFirstValue, 0, a.getDomainSize() - 1));
-					
-				}
-			}
+			
+			
 			agentZero.createUnsynchMessage(this.whoCanDecide, i);
 			agentZero.sendUnsynchMsgs();
 			addCostToList();
