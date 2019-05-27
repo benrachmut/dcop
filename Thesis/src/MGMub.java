@@ -1,4 +1,3 @@
-
 public class MGMub extends MGM {
 
 	private int ub;
@@ -7,10 +6,10 @@ public class MGMub extends MGM {
 		super(dcop, agents, aZ, meanRun);
 		this.algo = "mgmUb";
 
-		if (aZ.getP3() == 0) {
+		if (Main.currentP3== 0) {
 			this.ub = 0;
 		} else {
-			this.ub = aZ.getUb();
+			this.ub = Main.currentUb;
 		}
 		// TODO Auto-generated constructor stub
 	}
@@ -20,7 +19,9 @@ public class MGMub extends MGM {
 		int counter = 0;
 		for (int i = 0; i < this.itiration; i++) {
 			if (!first) {
-
+				sendAndRecieve(i);
+				first = true;
+			} else {
 				agentsSetR();
 				sendAndRecieveRi(i);
 				if (ub == 0) {
@@ -33,13 +34,6 @@ public class MGMub extends MGM {
 					}
 					counter++;
 				}
-				
-				first = true;
-			} else {
-				
-				sendAndRecieve(i);
-				
-				
 				first = false;
 			}
 			addCostToList();
