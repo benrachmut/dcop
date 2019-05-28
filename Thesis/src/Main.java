@@ -12,7 +12,7 @@ public class Main {
 
 
 	// versions
-		static String algo = "mgmUb";// "unsynchMono";//"mgmUb";
+		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";
 		static String date = "2805";
 		static boolean synch = true;
 		static boolean dateKnown;

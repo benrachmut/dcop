@@ -116,7 +116,7 @@ public class Tree {
 		Set<Integer> nSetId = currntA.getNSetId();
 		List<AgentField> sons = getNeighborsOfAgentField(nSetId);
 		Collections.sort(sons, new AgentNeighborComp());
-		Collections.reverse(sons);
+		//Collections.reverse(sons);
 		return sons;
 	}
 	/*
