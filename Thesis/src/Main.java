@@ -260,9 +260,10 @@ public class Main {
 			agents[i].setFirstValueToValue();
 			// agents[i].setReciveAll(false);
 			// agents[i].setTimeStemp(0);
-			agents[i].resetNumOfInterationForChange();
+			//agents[i].resetNumOfInterationForChange();
 			agents[i].setAllBelowMap(0);
 			agents[i].setAllAboveMap(0);
+			agents[i].setMsgUpAndDown(null);
 			agents[i].setDecisionCounter(0);
 		}
 

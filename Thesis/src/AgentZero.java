@@ -34,15 +34,14 @@ public class AgentZero {
 		for (Neighbors n : this.neighbors) {
 
 			AgentField a1 = (AgentField) n.getA1();
-			
 
 			AgentField a2 = (AgentField) n.getA2();
-			
+
 			int delay12 = createDelay();
 			int delay21 = createDelay();
-			
-			//int delay12 = n.getDelay12(currentIteration);
-			//int delay21 = n.getDelay21(currentIteration);
+
+			// int delay12 = n.getDelay12(currentIteration);
+			// int delay21 = n.getDelay21(currentIteration);
 
 			Message msg12 = new Message(a1, a2, a1.getValue(), delay12, currentIteration);
 			Message msg21 = new Message(a2, a1, a2.getValue(), delay21, currentIteration);
@@ -52,6 +51,7 @@ public class AgentZero {
 		}
 
 	}
+
 	public void createRiMsgs(int currentIteration) {
 		for (Neighbors n : this.neighbors) {
 
@@ -60,8 +60,8 @@ public class AgentZero {
 			AgentField a2 = (AgentField) n.getA2();
 			int delay12 = createDelay();
 			int delay21 = createDelay();
-			//int delay12 = n.getDelay12(currentIteration);
-			//int delay21 = n.getDelay21(currentIteration);
+			// int delay12 = n.getDelay12(currentIteration);
+			// int delay21 = n.getDelay21(currentIteration);
 
 			Message msg12 = new Message(a1, a2, a1.getR(), delay12, currentIteration);
 			Message msg21 = new Message(a2, a1, a2.getR(), delay21, currentIteration);
@@ -129,11 +129,17 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			reciver.reciveMsg(senderId, senderValue, msg.getDate());
+			
+			
+			if (msg instanceof MessageAnyTimeUp) {
+				reciver.reciveMsgAnyTimeUp(___);
+			}
+			if (msg instanceof MessageAnyTimeDown) {
+				reciver.reciveMsgAnyTimeDowm(___);
+			}
 		}
 
 	}
-
-
 
 	public void emptyMessageBox() {
 		this.messageBox.clear();
@@ -148,96 +154,64 @@ public class AgentZero {
 		// TODO Auto-generated method stub
 		return this.p3;
 	}
-/*
-	public void createTimeStempMsgs(int currentIteration) {
 
-		for (AgentField father : agents) {
-			for (AgentField son : father.getSons()) {
-
-				int fatherId = father.getId();
-				int sonId = son.getId();
-				Neighbors n;
-				int delayFatherSon;
-				if (fatherId<sonId) {
-					n = lookForNeighbor(father, son);
-					delayFatherSon = n.getDelay12(currentIteration);
-				}else {
-					n = lookForNeighbor(son, father);
-					delayFatherSon = n.getDelay21(currentIteration);
-				}
-				
-	
-				Message m = new Message(father,son, father.getTimeStemp(), delayFatherSon, currentIteration);
-				this.timeStempMessageBox.add(m);
-				// Neighbor n =
-
-				
-			}
-		}
-
-		
-
-	}
-*/
-/*
-	private Neighbors lookForNeighbor(AgentField a1, AgentField a2) {
-		
-		Neighbors inputN = new Neighbors(a1, a2);
-		for (Neighbors n : this.neighbors) {
-			if (inputN.equals(n)) {
-				return n;
-			}
-		}
-		return null;
-	}
-*/
-/*
-	public void sendTimeStempMsgs() {
-		List<Message> msgToSend = handleDelay(this.timeStempMessageBox);
-		for (Message msg : msgToSend) {
-			int senderId = msg.getSender().getId();
-			int senderValue = msg.getSenderValue();
-			AgentField reciver = msg.getReciever();
-			reciver.reciveTimeStempMsg(senderId, senderValue, msg.getDate());
-
-		}
-		
-	}
-*/
+	/*
+	 * public void createTimeStempMsgs(int currentIteration) {
+	 * 
+	 * for (AgentField father : agents) { for (AgentField son : father.getSons()) {
+	 * 
+	 * int fatherId = father.getId(); int sonId = son.getId(); Neighbors n; int
+	 * delayFatherSon; if (fatherId<sonId) { n = lookForNeighbor(father, son);
+	 * delayFatherSon = n.getDelay12(currentIteration); }else { n =
+	 * lookForNeighbor(son, father); delayFatherSon =
+	 * n.getDelay21(currentIteration); }
+	 * 
+	 * 
+	 * Message m = new Message(father,son, father.getTimeStemp(), delayFatherSon,
+	 * currentIteration); this.timeStempMessageBox.add(m); // Neighbor n =
+	 * 
+	 * 
+	 * } }
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
+	/*
+	 * private Neighbors lookForNeighbor(AgentField a1, AgentField a2) {
+	 * 
+	 * Neighbors inputN = new Neighbors(a1, a2); for (Neighbors n : this.neighbors)
+	 * { if (inputN.equals(n)) { return n; } } return null; }
+	 */
+	/*
+	 * public void sendTimeStempMsgs() { List<Message> msgToSend =
+	 * handleDelay(this.timeStempMessageBox); for (Message msg : msgToSend) { int
+	 * senderId = msg.getSender().getId(); int senderValue = msg.getSenderValue();
+	 * AgentField reciver = msg.getReciever(); reciver.reciveTimeStempMsg(senderId,
+	 * senderValue, msg.getDate());
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
 	public void emptyTimeStempBoxMessage() {
 		this.timeStempMessageBox.clear();
-		
+
 	}
-	
+
 	private int createDelay() {
 		int rndDelay;
 		rndDelay = 0;
 		double rnd = Main.rP3.nextDouble();
-		if (rnd<Main.currentP3) {			
-			rndDelay = Main.getRandomInt(Main.rDelay,1, Main.currentUb);
+		if (rnd < Main.currentP3) {
+			rndDelay = Main.getRandomInt(Main.rDelay, 1, Main.currentUb);
 			rnd = Main.rP4.nextDouble();
-			if (rnd<Main.currentP4) {			
+			if (rnd < Main.currentP4) {
 				rndDelay = Integer.MAX_VALUE;
-			}	
-			
+			}
+
 		}
 		return rndDelay;
-	}
-
-	public void createUnsynchMessage(List<AgentField> whoCanDecide, int currentIteration) {
-		for (AgentField a : whoCanDecide) {
-			a.setDecisionCounter(a.getDecisonCounter()+1);
-			List<AgentField> neighborsAgents = getNeighborsAgents(a);
-			for (AgentField n : neighborsAgents) {
-				AgentField sender =a;
-				AgentField reciever =n;
-				int senderValue = a.getValue();
-				int delay = this.createDelay();
-				Message m = new Message(sender, reciever, senderValue, delay, currentIteration);
-				this.messageBox.add(m);
-			}
-		}
-		
 	}
 
 	private List<AgentField> getNeighborsAgents(AgentField a) {
@@ -259,10 +233,102 @@ public class AgentZero {
 			int senderId = msg.getSender().getId();
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-
 			reciver.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
-			
+			}
+	}
+
+	
+	public void iterateOverWhoCanDecide(List<AgentField> whoCanDecide, int currentIteration) {
+		for (AgentField a : whoCanDecide) {
+			a.setDecisionCounter(a.getDecisonCounter() + 1);
+
+			createUnsynchMsgs(a, currentIteration);
+
 		}
+
+	}
+
+	private void createUnsynchMsgs(AgentField currentAgent, int currentIteration) {
+
+		List<AgentField> neighborsAgents = getNeighborsAgents(currentAgent);
+		for (AgentField n : neighborsAgents) {
+			Message m = createUnsynchOneMsg(currentAgent, n, currentIteration);
+			
+			
+			
+			
+			
+			// father(n) <-- son(currentA)
+			if (n.isFatherOfInput(currentAgent)) {
+				m = checkAnyTimeUpDirection(currentAgent, m);
+			}
+
+			
+			// father(currentA) <-- son(n)
+			if (currentAgent.isFatherOfInput(n)) {
+				m = checkAnyTimeDownDirection(currentAgent, m);
+			}
+			
+			
+			this.messageBox.add(m);
+		}
+	}
+	
+	private Message checkAnyTimeUpDirection(AgentField currentAgent, Message m) {
+		
+		
+		boolean flag = false;
+		int costUp = currentAgent.calSelfCost();
+		Message anyTimeUp;
+		if (currentAgent.isLeaf()) {
+			//create any time up with self cost
+			//any time message will be include counter and self cost
+			anyTimeUp = new MessageAnyTimeUp(m, costUp);
+			flag = true;
+		}
+
+			
+		if (currentAgent.hasUpMessage()) {	
+			//add the permutations that the current agent had kept
+			anyTimeUp = currentAgent.updateATUpMessage(m, costUp);
+			flag = true;
+		}
+		
+		if (flag) {
+			anyTimeUp.clearInfPermutations();
+			if (!anyTimeUp.permutationEmpty()) {
+				return anyTimeUp;
+			}
+		}
+		return m;
+	}
+	
+
+	private Message checkAnyTimeDownDirection(AgentField currentAgent, Message m) {
+		
+		Message anyTimeUp;
+		Message downAT;
+		if (currentAgent.isTop() && currentAgent.revcieveAnyTimeFromAllSons()) {
+			downAT = new MessageAnyTimeDown(m); // null if did not improve
+			if (downAT ==null) {
+				return m;
+			}
+		}
+		if (currentAgent.hasDownMessage()) {
+			// needs to know the sub tree of each son
+			downAT = currentAgent.splitATDownMsg(m);
+		}
+		return downAT;
+	}
+
+	
+
+	private Message createUnsynchOneMsg(AgentField sender, AgentField reciever, int currentIteration) {
+
+		int senderValue = sender.getValue();
+		int delay = this.createDelay();
+
+		return new Message(sender, reciever, senderValue, delay, currentIteration);
 		
 	}
 

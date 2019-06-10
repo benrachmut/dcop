@@ -15,31 +15,23 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, MessageRecieve> neighbor; // id and value
 	private Map<Integer, MessageRecieve> neighborR;
 	
+	
 
-	// private AgentZero agentZero;
-	//private Map<Integer, Boolean> allRecieve;
-	//private Map<Integer, Boolean> allRecieveR;
-	private List<Integer>numOfInterationForChange;
-	private int numOfInterationForChangeCounter;
+
+	//private List<Integer>numOfInterationForChange;
+	//private int numOfInterationForChangeCounter;
 	private PotentialCost minPC;
 	private int r;
 	
 	//---tree stuff
 	private AgentField father;
 	private List<AgentField> sons;
-	//private int levelInTree;
-	//private Map<Integer, Boolean> isNeighborAbove;
 	private Map<Integer, Integer> aboveMap;
 	private Map<Integer, Integer> belowMap;
 
 	private int decisonCounter;
-	//private List<AgentField> aboveMeInTree;
-
-	//private int timeStemp;
-	//private MessageRecieve fatherMsg;
-	
-	//private Set<Agent>neigbors;
-	//private Map <Agent, Integer> neiborsConstraint;
+	private Message msgDown;
+	private Message msgUp;
 
 	public AgentField(int domainSize, int id) {
 		super(id);
@@ -52,33 +44,31 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		decisonCounter = 0;
 		this.setFirstValueToValue();
-		//this.fatherMsg = new MessageRecieve(-1, -1);
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
-		//this.allRecieve = new HashMap<Integer, Boolean>();
-		//this.allRecieveR = new HashMap<Integer, Boolean>();
 		this.sons = new ArrayList<AgentField>();
 		
 		//--- tree stuff
 		this.father = null;
-		//this.levelInTree = 0;
 		aboveMap = new HashMap<Integer,Integer>();
 		belowMap=  new HashMap<Integer,Integer>();
-		resetNumOfInterationForChange();
-		numOfInterationForChangeCounter = 0;
+		msgDown=null;
+		msgUp=null;
+		//resetNumOfInterationForChange();
+		//numOfInterationForChangeCounter = 0;
 		setR();
 	
 	}
 
 
-
+/*
 	public void resetNumOfInterationForChange() {
 		this.numOfInterationForChange = new ArrayList<Integer>();
 		numOfInterationForChangeCounter = 0;
-		//this.timeStemp = 0;
-		//this.fatherMsg = new MessageRecieve(-1, -1);
+	
 	}
+	*/
 	public void setFather(AgentField father) {
 		this.father = father;
 	}
@@ -93,7 +83,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public int getDomainSize() {
-		// TODO Auto-generated method stub
 		return this.domain.length;
 	}
 
@@ -112,7 +101,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public int[] getDomain() {
-		// TODO Auto-generated method stub
 		return this.domain;
 	}
 
@@ -201,12 +189,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 	}
-/*
-	private boolean checkIfAllNeighborsReported() {
-		boolean allReport = !this.allRecieve.values().contains(false);
-		return allReport;
-	}
-*/
+
 	private void maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {
 			double rnd = Main.rDsa.nextDouble();
@@ -270,17 +253,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
 		}
 
-		//this.allRecieve.put(senderId, true);
 	
 	}
-/*
-	public void setReciveAll(boolean b) {
-		for (Entry<Integer, Boolean> aR : allRecieve.entrySet()) {
-			aR.setValue(b);
-		}
 
-	}
-	*/
 
 	public void setR() {
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -301,7 +276,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public int getR() {
-		// TODO Auto-generated method stub
 		return this.r;
 	}
 
@@ -315,7 +289,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.neighborR.put(senderId, new MessageRecieve(senderR, dateOfOther));
 		}
 
-		//this.allRecieveR.put(senderId, true);
 
 	}
 
@@ -328,17 +301,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.neighbor.put(agentId, new MessageRecieve(-1, -1));
 
 	}
-/*
-	public void addReciveveAllR(int idOther) {
-		this.allRecieveR.put(idOther, false);
 
-	}
-
-	public void addReciveveAll(int j) {
-		this.allRecieve.put(j, false);
-
-	}
-*/
 	public void mgmDecide() {
 		Entry<Integer, MessageRecieve> maxRInMap = getMaxRFromNeighbors();
 
@@ -400,60 +363,13 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public Set<Integer> getNSetId() {
 		return this.neighbor.keySet();
 	}
-/*
-	public void setTimeStemp(int input) {
-		this.timeStemp = input;
 
-	}
-
-	public int getTimeStemp() {
-		// TODO Auto-generated method stub
-		return this.timeStemp;
-	}
-*/
 	public List<AgentField> getSons() {
 		return sons;
 	}
-/*
-	public void reciveTimeStempMsg(int senderId, int senderValue, int dateOfOther) {
-		if (senderId != this.father.getId()) {
-			System.err.println("I have logical bug from reciveTimeStempMsg because senderId != this.father.getId() ");
-		}
 
-		if (senderValue > this.fatherMsg.getValue()) {
-			this.fatherMsg = new MessageRecieve(senderValue, dateOfOther);
-		}
-
-	}
-/*
-	public void unsynchMono() {
-		
-		boolean timeStempFatherValid = this.fatherMsg.getValue()-1 == this.timeStemp;
-		if (this.father ==null) {
-			timeStempFatherValid = true;
-		}
-		
-		boolean recieveFromAll = checkIfAllNeighborsReported();
-		
-		
-		
-		
-		if (timeStempFatherValid && recieveFromAll) {
-			this.numOfInterationForChange.add(numOfInterationForChangeCounter);
-			this.numOfInterationForChangeCounter = 0;
-			timeStemp++;
-			this.setReciveAll(false);
-			this.dsaDecide(1);
-		}
-		else {
-			numOfInterationForChangeCounter++;
-		}
-		
-	}
-*/
 
 	public AgentField getFather() {
-		// TODO Auto-generated method stub
 		return this.father;
 	}
 
@@ -469,7 +385,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	
 
 	public int sonsSize() {
-		// TODO Auto-generated method stub
 		return this.sons.size();
 	}
 
@@ -496,7 +411,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 
 	public int getDecisonCounter() {
-		// TODO Auto-generated method stub
 		return this.decisonCounter;
 	}
 
@@ -530,7 +444,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void reciveUnsynchMsg(int senderId, int senderValue, int date) {
 		this.reciveMsg(senderId, senderValue, date);// TODO Auto-generated method stub
 		boolean isAbove = this.aboveMap.containsKey(senderId);
-		int currentCounter=0;
+		int currentCounter;
 		if (isAbove) {
 			currentCounter = aboveMap.get(senderId);
 			aboveMap.put(senderId, currentCounter+1);
@@ -546,7 +460,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		boolean aboveOneMoreThenMe= checkAllOneAboveMe();
 		boolean belowLikeMe = checkbelowLikeMe();
 		if (belowLikeMe&&aboveOneMoreThenMe) {
-			//this.decisonCounter = this.decisonCounter+1;
 			return true;
 		}
 		return false;
@@ -591,6 +504,48 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.value = randomInt;
 		
 	}
+
+
+
+	public boolean isFatherOfInput(AgentField input) {
+		
+		return this.father.getId()==input.getId();
+	}
+
+
+
+	public boolean isTop() {
+		return this.father == null;
+	}
+
+
+
+	public boolean isLeaf() {
+		return this.sons.size()==0;
+	}
+
+
+	public void setMsgUpAndDown(Message m) {
+		this.msgDown = m;
+		this.msgUp = m;
+		
+	}
+
+
+	public boolean hasUpMessage() {
+		return this.msgUp!=null;
+	}
+
+
+	public boolean hasDownMessage() {
+		return this.msgDown!=null;
+	}
+
+
+
+	
+	
+	
 
 
 	

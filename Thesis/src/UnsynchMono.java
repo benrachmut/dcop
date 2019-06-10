@@ -17,9 +17,7 @@ public class UnsynchMono extends Solution {
 		for (int i = 0; i < this.itiration; i++) {
 			updateWhoCanDecide(i);
 			agentDecide();
-			
-			
-			agentZero.createUnsynchMessage(this.whoCanDecide, i);
+			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
 			agentZero.sendUnsynchMsgs();
 			addCostToList();
 		}
