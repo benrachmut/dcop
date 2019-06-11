@@ -446,6 +446,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		if (p.feasiblePermutation()) {
 			this.permutations.add(p);
 			matchPermutationToBelow(p); // add to permutations to send
+			
 		}
 	}
 

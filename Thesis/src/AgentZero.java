@@ -258,6 +258,7 @@ public class AgentZero {
 				if(reciver.isLeaf()) {
 					recieverIsALeaf(reciver);
 				}
+				s
 
 			}// if msg is with value
 			
