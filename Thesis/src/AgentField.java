@@ -17,7 +17,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	
 	
 
-
+	private Set<Permutation>permutations;
 	//private List<Integer>numOfInterationForChange;
 	//private int numOfInterationForChangeCounter;
 	private PotentialCost minPC;
@@ -48,7 +48,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
 		this.sons = new ArrayList<AgentField>();
-		
+		this.permutations = new HashSet<Permutation>();
 		//--- tree stuff
 		this.father = null;
 		aboveMap = new HashMap<Integer,Integer>();
@@ -57,6 +57,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		msgUp=null;
 		//resetNumOfInterationForChange();
 		//numOfInterationForChangeCounter = 0;
+		
 		setR();
 	
 	}
@@ -242,19 +243,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return ans;
 	}
 
-	public void reciveMsg(int senderId, int senderValue, int dateOfOther) {
-
-		if (Main.dateKnown) {
-			int currentDate = this.neighbor.get(senderId).getDate();
-			if (dateOfOther > currentDate) {
-				this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
-			}
-		} else {
-			this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
-		}
-
 	
-	}
 
 
 	public void setR() {
@@ -452,6 +441,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			currentCounter = belowMap.get(senderId);
 			belowMap.put(senderId, currentCounter+1);
 		}
+		
+		Permutation p  = this.createCurrentPermutation();
+		if (p.feasiblePermutation()) {
+			this.permutations.add(p);
+			matchPermutationToBelow(p); // add to permutations to send
+		}
 	}
 
 
@@ -554,14 +549,103 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 
-	public Permutation createPermutation() {
-		
-		return new Permutation();
+
+
+
+	public void reciveMsgAnyTimeUp(Message msg) {
+		MessageAnyTimeUp msgATU = (MessageAnyTimeUp) msg;
+		Permutation p = msgATU.getPermutation();
+		int upCost = p.getCost();
 	}
 
 
+	public void setPermutations(HashSet<Permutation> input) {
+		this.permutations = input;
+		
+	}
+
+
+	public void reciveMsg(int senderId, int senderValue, int dateOfOther) {
+
+		if (Main.dateKnown) {
+			int currentDate = this.neighbor.get(senderId).getDate();
+			if (dateOfOther > currentDate) {
+				this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
+			}
+		} else {
+			this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
+		}
+		/*
+		if(Main.anyTime) {
+			whenRecieveDoAnyTime();
+		}
+		*/
 
 	
+	}
+	
+	/*
+	private void whenRecieveDoAnyTime() {
+		if (neighborIsMinusOne()) {
+			return;
+		}
+		boolean amILeaf = this.sons.size() ==0;
+		if (amILeaf) {
+			Permutation firstPermutation = this.createCurrentPermutation();
+			// create any time up with self cost
+			// any time message will be include counter and self cost
+						
+			AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration,
+			
+			Message anyTimeUp = new MessageAnyTimeUp(this,this.father, , firstPermutation);
+		}
+		
+		boolean fisible = checkCounterFisibility();
+		if (fisible) {
+			Permutation p = createCurrentPermutation();
+			this.permutations.add(p);
+		}
+		
+	}
+
+*/
+	public boolean neighborIsMinusOne() {
+		for (MessageRecieve i : this.neighbor.values()) {
+			if (i.getValue()==-1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	public Permutation createCurrentPermutation() {
+		Map<Integer,Integer> m = new HashMap<Integer,Integer>();
+		for ( Entry<Integer, Integer> b : this.belowMap.entrySet()) {
+			m.put(b.getKey(), b.getValue());
+		}
+		
+		m.put(this.id,this.decisonCounter);
+		
+		for ( Entry<Integer, Integer> a : this.aboveMap.entrySet()) {
+			m.put(a.getKey(), a.getValue());
+		}
+		
+		int selfCost = this.calSelfCost();
+		return new Permutation(m, selfCost);
+	}
+
+
+	
+
+	public Message recieveAnyTimeUp(MessageAnyTimeUp msg) {
+		Set<Permutation> permutationsFromMsg = msg.getCurrentPermutations();
+		for (Permutation p : permutationsFromMsg) {
+			this.permutationsFromBelow.add();
+		}
+		
+		return null;
+	}
 	
 	
 

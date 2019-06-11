@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -267,6 +268,7 @@ public class Main {
 			agents[i].setAllAboveMap(0);
 			agents[i].setMsgUpAndDown(null);
 			agents[i].setDecisionCounter(0);
+			agents[i].setPermutations(new HashSet<Permutation>());
 		}
 
 	}

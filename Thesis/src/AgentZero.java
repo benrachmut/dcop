@@ -129,18 +129,21 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			reciver.reciveMsg(senderId, senderValue, msg.getDate());
-
+/*
 			if (Main.anyTime) {
 				
 				if (msg instanceof MessageAnyTimeUp) {
-					reciver.reciveMsgAnyTimeUp(___);
+					
+					reciver.reciveMsgAnyTimeUp(msg);
 				}
 				if (msg instanceof MessageAnyTimeDown) {
 					reciver.reciveMsgAnyTimeDowm(___);
 				}
 				
 			}
+			*/
 		}
+		
 
 	}
 
@@ -233,11 +236,48 @@ public class AgentZero {
 
 		List<Message> msgToSend = handleDelay(this.messageBox);
 		for (Message msg : msgToSend) {
+			 
+			
 			int senderId = msg.getSender().getId();
-			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-			reciver.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
+			
+			
+			if (msg instanceof MessageAnyTimeUp) {
+				// message received is any time up
+				Message upMessage = reciver.recieveAnyTimeUp((MessageAnyTimeUp)msg);
+				upMessage.setDelay(this.createDelay());
+			}
+			else {
+				int senderValue = msg.getSenderValue();
+				reciver.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
+				
+				if (reciver.neighborIsMinusOne()) {
+					return;
+				}
+							
+				if(reciver.isLeaf()) {
+					recieverIsALeaf(reciver);
+				}
+
+			}// if msg is with value
+			
+			
+		
+			
+			
+			
 		}
+	}
+
+	private void recieverIsALeaf(AgentField recieveNowSend) {
+		
+		Permutation p = recieveNowSend.createCurrentPermutation();
+		List<AgentField>leafsNeighbors = getNeighborsAgents(recieveNowSend);
+		for (AgentField n : leafsNeighbors) {
+			Message m = createLeafUpAnyTime(recieveNowSend, n, p);
+			this.messageBox.add(m);
+		}
+		
 	}
 
 	public void iterateOverWhoCanDecide(List<AgentField> whoCanDecide, int currentIteration) {
@@ -255,7 +295,9 @@ public class AgentZero {
 		List<AgentField> neighborsAgents = getNeighborsAgents(currentAgent);
 		for (AgentField n : neighborsAgents) {
 			Message m = createUnsynchOneMsg(currentAgent, n, currentIteration);
+			this.messageBox.add(m);
 
+/*
 			// father(n) <-- son(currentA)
 			if (n.isFatherOfInput(currentAgent)) {
 				m = checkAnyTimeUpDirection(currentAgent, m);
@@ -265,22 +307,22 @@ public class AgentZero {
 			if (currentAgent.isFatherOfInput(n)) {
 				m = checkAnyTimeDownDirection(currentAgent, m);
 			}
-
-			this.messageBox.add(m);
+*/
 		}
 	}
-
+/*
 	private Message checkAnyTimeUpDirection(AgentField currentAgent, Message m) {
 
 		boolean flag = false;
-		int costUp = currentAgent.calSelfCost();
+		//int costUp = currentAgent.calSelfCost();
 		Message anyTimeUp;
 		if (currentAgent.isLeaf()) {
 			
-			Permutation firstPermutation = currentAgent.createPermutation();
+			// send the first Permutation up
+			Permutation firstPermutation = currentAgent.createCurrentPermutation();
 			// create any time up with self cost
 			// any time message will be include counter and self cost
-			anyTimeUp = new MessageAnyTimeUp(m, costUp);
+			anyTimeUp = new MessageAnyTimeUp(m, firstPermutation);
 			flag = true;
 		}
 
@@ -315,7 +357,7 @@ public class AgentZero {
 		}
 		return downAT;
 	}
-
+*/
 	private Message createUnsynchOneMsg(AgentField sender, AgentField reciever, int currentIteration) {
 
 		int senderValue = sender.getValue();
@@ -323,6 +365,11 @@ public class AgentZero {
 
 		return new Message(sender, reciever, senderValue, delay, currentIteration);
 
+	} 
+	private Message createLeafUpAnyTime(AgentField sender, AgentField reciever, Permutation p ) {
+		 int delay = this.createDelay();
+		 return new MessageAnyTimeUp(sender, reciever, delay, p);
+		
 	}
 
 }
