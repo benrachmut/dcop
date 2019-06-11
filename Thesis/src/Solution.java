@@ -35,10 +35,23 @@ public abstract class Solution {
 	public void addCostToList() {
 
 		this.realCost.add(dcop.calRealCost());
-		/*
-		 * int temp = 0; for (AgentField a : this.agents) { temp +=
-		 * a.getCurrentThinkCost(); } this.agentThinkCost.add(temp/2);
-		 */
+		
+		// try cal self cost, for debbuging
+		//trySelfCost();
+		
+		
+		
+	}
+
+	private void trySelfCost() {
+		
+		int ans = 0;
+		for (AgentField a : this.agents) {
+			ans = ans+ a.calSelfCost();
+		}
+		ans = ans/2;
+		this.realCost.add(ans);
+		
 	}
 
 	public abstract void solve();

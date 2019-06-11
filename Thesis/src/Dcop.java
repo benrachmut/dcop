@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -174,22 +176,9 @@ public class Dcop {
 		int ans = 0;
 		
 		for (Neighbors n : neighbors) {
+			ans = ans+ calRealCostPerNeighbor(n);
 			
-			Agent an1 = n.getA1();
-			Agent an2 = n.getA2();
 			
-			for (Constraint c : constraints) {
-				
-				Agent ac1 = c.getNeighbors().getA1();
-				Agent ac2 = c.getNeighbors().getA2();
-				boolean sameId = an1.getId()==ac1.getId() &&an2.getId()==ac2.getId();
-				boolean sameValue = an1.getValue()==ac1.getValue() &&an2.getValue()==ac2.getValue();
-
-				if (sameValue&&sameId ) {
-					ans+=c.getCost();
-
-				}
-			}
 		}
 		
 		return ans;
@@ -197,6 +186,25 @@ public class Dcop {
 
 
 
+	public int  calRealCostPerNeighbor(Neighbors n) {
+		Agent an1 = n.getA1();
+		Agent an2 = n.getA2();
+		
+		for (Constraint c : constraints) {
+			
+			Agent ac1 = c.getNeighbors().getA1();
+			Agent ac2 = c.getNeighbors().getA2();
+			boolean sameId = an1.getId()==ac1.getId() &&an2.getId()==ac2.getId();
+			boolean sameValue = an1.getValue()==ac1.getValue() && an2.getValue()==ac2.getValue();
+
+			if (sameValue&&sameId ) {
+				return c.getCost();
+			}
+		}
+		
+		return 0;
+		
+	}
 	public Set<Neighbors> getNeighbors() {
 		// TODO Auto-generated method stub
 		return this.neighbors;
@@ -222,25 +230,28 @@ public class Dcop {
 		
 	}
 	*/
-
-
-
 	public AgentField[] getAgentsF() {
 		return agentsF;
 	}
 
 
-
-	
-
-
-
-	
-
-
-
 	public Set<Constraint> getConstraints() {
 		return constraints;
+	}
+
+
+	public List<Neighbors> getHisNeighbors(AgentField input) {
+		List<Neighbors>ans = new ArrayList<Neighbors>();
+		for (Neighbors n : this.neighbors) {
+			Agent n1 = n.getA1();
+			Agent n2 = n.getA2();
+			boolean isInputInN = n1.getId() == input.getId() || n2.getId() == input.getId();
+			if (isInputInN ) {
+				ans.add(n);
+			}
+			
+		}
+		return ans;
 	}
 	
 	

@@ -542,6 +542,24 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 
+	public int calSelfCost() {
+		
+		List<Neighbors> myNeighbors = Main.dcop.getHisNeighbors(this);		
+		int ans=0;
+		for (Neighbors n : myNeighbors) {
+			ans = ans+ Main.dcop.calRealCostPerNeighbor(n);
+		}
+		
+		return ans;
+	}
+
+
+	public Permutation createPermutation() {
+		
+		return new Permutation();
+	}
+
+
 
 	
 	

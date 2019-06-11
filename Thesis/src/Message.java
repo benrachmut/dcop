@@ -24,6 +24,15 @@ public class Message implements Comparable<Message> {
 	}
 	*/
 
+	public Message(Message m) {
+		super();
+		this.sender = m.getSender();
+		this.reciever = m.getReciever();
+		this.senderValue = m.getSenderValue();
+		this.delay = m.getDelay();
+		this.date = m.getDate();
+	}
+
 	public int getDate() {
 		return this.date;
 	}

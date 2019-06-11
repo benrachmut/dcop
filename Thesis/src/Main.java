@@ -12,29 +12,31 @@ public class Main {
 
 
 	// versions
-		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";
-		static String date = "2805";
-		static boolean synch = true;
+		static String algo = "dsa7";// "unsynchMono";//"mgmUb";
+		static String date = "1206";
+		static boolean synch = false;
 		static boolean dateKnown;
+		static boolean anyTime=false;
 
 		// -- variables of dcop problem
-		static int A = 50;// 50; // 50 number of agents
+		static int A = 10;// 50; // 50 number of agents
 		static int D = 10; // 10 size of domain for each agent
 		static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 		static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 		static int costMax = 100; // 100 the max value of cost
 
 		// -- communication protocol
-		static double[] p3s =  { 0,0.5,1 }; // prob of communication to have delay
+		static double[] p3s =  { 0 }; // prob of communication to have delay
 		static boolean[] dateKnowns = { true };// { true, false };
-		static int[] delayUBs = { 5, 10, 25, 50 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+		static int[] delayUBs = { 5};// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 													// 10, 25, 50, 100 };
 		static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 									// have delay
 
 		// -- Experiment time
-		static int meanReps = 10;// 10; // number of reps for every solve process
-		static int iterations = 4000;// 1000;
+		static int meanReps = 1;// 10; // number of reps for every solve process
+		static int iterations = 200;// 1000;
+		static Dcop dcop;
 
 	// -- characters
 	static AgentField[] agents;
@@ -110,7 +112,7 @@ public class Main {
 
 					// only here change the tree
 					dcopSeeds(meanRun);
-					Dcop dcop = createDcop();
+					dcop = createDcop();
 					differentCommunicationProtocols(dcop, meanRun);
 
 				} // means run
@@ -278,7 +280,6 @@ public class Main {
 	}
 
 	public static int getRandomInt(Random r, int min, int max) {
-
 		return r.nextInt(max - min + 1) + min;
 	}
 

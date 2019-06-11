@@ -129,13 +129,16 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			reciver.reciveMsg(senderId, senderValue, msg.getDate());
-			
-			
-			if (msg instanceof MessageAnyTimeUp) {
-				reciver.reciveMsgAnyTimeUp(___);
-			}
-			if (msg instanceof MessageAnyTimeDown) {
-				reciver.reciveMsgAnyTimeDowm(___);
+
+			if (Main.anyTime) {
+				
+				if (msg instanceof MessageAnyTimeUp) {
+					reciver.reciveMsgAnyTimeUp(___);
+				}
+				if (msg instanceof MessageAnyTimeDown) {
+					reciver.reciveMsgAnyTimeDowm(___);
+				}
+				
 			}
 		}
 
@@ -234,10 +237,9 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			reciver.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
-			}
+		}
 	}
 
-	
 	public void iterateOverWhoCanDecide(List<AgentField> whoCanDecide, int currentIteration) {
 		for (AgentField a : whoCanDecide) {
 			a.setDecisionCounter(a.getDecisonCounter() + 1);
@@ -253,47 +255,41 @@ public class AgentZero {
 		List<AgentField> neighborsAgents = getNeighborsAgents(currentAgent);
 		for (AgentField n : neighborsAgents) {
 			Message m = createUnsynchOneMsg(currentAgent, n, currentIteration);
-			
-			
-			
-			
-			
+
 			// father(n) <-- son(currentA)
 			if (n.isFatherOfInput(currentAgent)) {
 				m = checkAnyTimeUpDirection(currentAgent, m);
 			}
 
-			
 			// father(currentA) <-- son(n)
 			if (currentAgent.isFatherOfInput(n)) {
 				m = checkAnyTimeDownDirection(currentAgent, m);
 			}
-			
-			
+
 			this.messageBox.add(m);
 		}
 	}
-	
+
 	private Message checkAnyTimeUpDirection(AgentField currentAgent, Message m) {
-		
-		
+
 		boolean flag = false;
 		int costUp = currentAgent.calSelfCost();
 		Message anyTimeUp;
 		if (currentAgent.isLeaf()) {
-			//create any time up with self cost
-			//any time message will be include counter and self cost
+			
+			Permutation firstPermutation = currentAgent.createPermutation();
+			// create any time up with self cost
+			// any time message will be include counter and self cost
 			anyTimeUp = new MessageAnyTimeUp(m, costUp);
 			flag = true;
 		}
 
-			
-		if (currentAgent.hasUpMessage()) {	
-			//add the permutations that the current agent had kept
+		if (currentAgent.hasUpMessage()) {
+			// add the permutations that the current agent had kept
 			anyTimeUp = currentAgent.updateATUpMessage(m, costUp);
 			flag = true;
 		}
-		
+
 		if (flag) {
 			anyTimeUp.clearInfPermutations();
 			if (!anyTimeUp.permutationEmpty()) {
@@ -302,15 +298,14 @@ public class AgentZero {
 		}
 		return m;
 	}
-	
 
 	private Message checkAnyTimeDownDirection(AgentField currentAgent, Message m) {
-		
+
 		Message anyTimeUp;
 		Message downAT;
 		if (currentAgent.isTop() && currentAgent.revcieveAnyTimeFromAllSons()) {
 			downAT = new MessageAnyTimeDown(m); // null if did not improve
-			if (downAT ==null) {
+			if (downAT == null) {
 				return m;
 			}
 		}
@@ -321,15 +316,13 @@ public class AgentZero {
 		return downAT;
 	}
 
-	
-
 	private Message createUnsynchOneMsg(AgentField sender, AgentField reciever, int currentIteration) {
 
 		int senderValue = sender.getValue();
 		int delay = this.createDelay();
 
 		return new Message(sender, reciever, senderValue, delay, currentIteration);
-		
+
 	}
 
 }
