@@ -255,6 +255,7 @@ public class Main {
 		agentZero.emptyTimeStempBoxMessage();
 
 	}
+	c
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {

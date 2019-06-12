@@ -14,7 +14,7 @@ public class MessageAnyTimeUp extends Message {
 				
 		this.pastPermutations = new HashSet<Permutation>();
 		//this.pastPermutations.add(p);
-		y
+		
 	}
 	
 	

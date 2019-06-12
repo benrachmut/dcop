@@ -11,5 +11,6 @@ public class Permutation {
 		singlePermutation = m;
 		this.cost = cost;
 	}
+	c
 
 }
