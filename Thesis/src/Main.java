@@ -255,7 +255,7 @@ public class Main {
 		agentZero.emptyTimeStempBoxMessage();
 
 	}
-	c
+	
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {
@@ -269,7 +269,9 @@ public class Main {
 			agents[i].setAllAboveMap(0);
 			agents[i].setMsgUpAndDown(null);
 			agents[i].setDecisionCounter(0);
-			agents[i].setPermutations(new HashSet<Permutation>());
+			agents[i].setPermutationsAbove(new HashSet<Permutation>());
+			agents[i].setPermutationsBelow(new HashSet<Permutation>());
+			agents[i].setPermutationsToSend(new HashSet<Permutation>());
 		}
 
 	}

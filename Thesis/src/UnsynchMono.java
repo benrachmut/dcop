@@ -19,6 +19,7 @@ public class UnsynchMono extends Solution {
 			agentDecide();
 			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
 			agentZero.sendUnsynchMsgs();
+			agentZero.sendAnyTimeUp();
 			addCostToList();
 		}
 	}

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,16 +15,14 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, Set<ConstraintNeighbor>> constraint;
 	private Map<Integer, MessageRecieve> neighbor; // id and value
 	private Map<Integer, MessageRecieve> neighborR;
-	
-	
 
-	private Set<Permutation>permutations;
-	//private List<Integer>numOfInterationForChange;
-	//private int numOfInterationForChangeCounter;
+	// private Set<Permutation>permutations;
+	// private List<Integer>numOfInterationForChange;
+	// private int numOfInterationForChangeCounter;
 	private PotentialCost minPC;
 	private int r;
-	
-	//---tree stuff
+
+	// ---tree stuff
 	private AgentField father;
 	private List<AgentField> sons;
 	private Map<Integer, Integer> aboveMap;
@@ -32,14 +31,17 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private int decisonCounter;
 	private Message msgDown;
 	private Message msgUp;
+	private Set<Permutation> permutationsBelow;
+	private Set<Permutation> permutationsAbove;
+	private Set<Permutation> permutationsToSend;
 
 	public AgentField(int domainSize, int id) {
 		super(id);
 		this.domain = createDomain(domainSize);
-		
+
 		if (Main.synch) {
 			this.firstValue = Main.getRandomInt(Main.rFirstValue, 0, domainSize - 1);
-		}else {
+		} else {
 			this.firstValue = -1;
 		}
 		decisonCounter = 0;
@@ -48,28 +50,29 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
 		this.sons = new ArrayList<AgentField>();
-		this.permutations = new HashSet<Permutation>();
-		//--- tree stuff
+		// this.permutations = new HashSet<Permutation>();
+		// --- tree stuff
 		this.father = null;
-		aboveMap = new HashMap<Integer,Integer>();
-		belowMap=  new HashMap<Integer,Integer>();
-		msgDown=null;
-		msgUp=null;
-		//resetNumOfInterationForChange();
-		//numOfInterationForChangeCounter = 0;
-		
+		aboveMap = new HashMap<Integer, Integer>();
+		belowMap = new HashMap<Integer, Integer>();
+		msgDown = null;
+		msgUp = null;
+		// resetNumOfInterationForChange();
+		// numOfInterationForChangeCounter = 0;
+
 		setR();
-	
+
+		this.permutationsBelow = new HashSet<Permutation>();
+		this.permutationsAbove = new HashSet<Permutation>();
+		this.permutationsToSend = new HashSet<Permutation>();
 	}
 
-
-/*
-	public void resetNumOfInterationForChange() {
-		this.numOfInterationForChange = new ArrayList<Integer>();
-		numOfInterationForChangeCounter = 0;
-	
-	}
-	*/
+	/*
+	 * public void resetNumOfInterationForChange() { this.numOfInterationForChange =
+	 * new ArrayList<Integer>(); numOfInterationForChangeCounter = 0;
+	 * 
+	 * }
+	 */
 	public void setFather(AgentField father) {
 		this.father = father;
 	}
@@ -166,7 +169,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
-	
+
 	public void unsynchDecide() {
 
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -243,9 +246,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return ans;
 	}
 
-	
-
-
 	public void setR() {
 		List<PotentialCost> pCosts = findPotentialCost();
 		PotentialCost minPotentialCost = Collections.min(pCosts);
@@ -277,7 +277,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		} else {
 			this.neighborR.put(senderId, new MessageRecieve(senderR, dateOfOther));
 		}
-
 
 	}
 
@@ -357,78 +356,64 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return sons;
 	}
 
-
 	public AgentField getFather() {
 		return this.father;
 	}
 
-
-
 	public Set<Integer> getNeighborIds() {
 		return this.neighbor.keySet();
-		
-	}
 
-	
-	
-	
+	}
 
 	public int sonsSize() {
 		return this.sons.size();
 	}
 
-
-
 	public void addBelow() {
-		List<Integer>temp = new ArrayList<Integer>();
+		List<Integer> temp = new ArrayList<Integer>();
 		for (int n : this.neighbor.keySet()) {
 			Set<Integer> isAbove = this.aboveMap.keySet();
-			
+
 			boolean isAlreadyInMap = isAbove.contains(n);
 			if (!isAlreadyInMap) {
 				temp.add(n);
 			}
-			
+
 		}
 		for (Integer idTemp : temp) {
-			this.putInBelowMap(idTemp,0);
+			this.putInBelowMap(idTemp, 0);
 		}
-	
-		
+
 	}
-
-
 
 	public int getDecisonCounter() {
 		return this.decisonCounter;
 	}
 
-
-
 	public void setDecisionCounter(int i) {
-		this.decisonCounter=i; 
-		
+		this.decisonCounter = i;
+
 	}
-	
+
 	public void putInAboveMap(Integer agentId, Integer counter) {
-		this.aboveMap.put(agentId, counter );
+		this.aboveMap.put(agentId, counter);
 	}
+
 	public void putInBelowMap(Integer agentId, Integer counter) {
-		this.belowMap.put(agentId, counter );
+		this.belowMap.put(agentId, counter);
 	}
-	
+
 	public void setAllAboveMap(int input) {
 		for (Entry<Integer, Integer> e : aboveMap.entrySet()) {
 			e.setValue(input);
 		}
 	}
+
 	public void setAllBelowMap(int input) {
 		for (Entry<Integer, Integer> e : belowMap.entrySet()) {
 			e.setValue(input);
 		}
 	}
-
-
 
 	public void reciveUnsynchMsg(int senderId, int senderValue, int date) {
 		this.reciveMsg(senderId, senderValue, date);// TODO Auto-generated method stub
@@ -436,40 +421,30 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		int currentCounter;
 		if (isAbove) {
 			currentCounter = aboveMap.get(senderId);
-			aboveMap.put(senderId, currentCounter+1);
-		}else {
+			aboveMap.put(senderId, currentCounter + 1);
+		} else {
 			currentCounter = belowMap.get(senderId);
-			belowMap.put(senderId, currentCounter+1);
+			belowMap.put(senderId, currentCounter + 1);
 		}
-		
-		Permutation p  = this.createCurrentPermutation();
-		if (p.feasiblePermutation()) {
-			this.permutations.add(p);
-			matchPermutationToBelow(p); // add to permutations to send
-			
-		}
+
 	}
 
-
-
 	public boolean unsynchAbilityToDecide() {
-		boolean aboveOneMoreThenMe= checkAllOneAboveMe();
+		boolean aboveOneMoreThenMe = checkAllOneAboveMe();
 		boolean belowLikeMe = checkbelowLikeMe();
-		if (belowLikeMe&&aboveOneMoreThenMe) {
+		if (belowLikeMe && aboveOneMoreThenMe) {
 			return true;
 		}
 		return false;
 	}
 
-
-
 	private boolean checkbelowLikeMe() {
-		
-		if (belowMap.keySet().size() ==0) {
+
+		if (belowMap.keySet().size() == 0) {
 			return true;
 		}
-		
-		for (int counterBelow : belowMap.values()){
+
+		for (int counterBelow : belowMap.values()) {
 			if (counterBelow != this.decisonCounter) {
 				return false;
 			}
@@ -477,94 +452,64 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return true;
 	}
 
-
-
 	private boolean checkAllOneAboveMe() {
-		
-		if (aboveMap.keySet().size() ==0) {
+
+		if (aboveMap.keySet().size() == 0) {
 			return true;
 		}
-		
-		
-		for (int counterAbove : aboveMap.values()){
-			if (counterAbove != this.decisonCounter+1) {
+
+		for (int counterAbove : aboveMap.values()) {
+			if (counterAbove != this.decisonCounter + 1) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-
-
 	public void setValue(int randomInt) {
 		this.value = randomInt;
-		
+
 	}
-
-
 
 	public boolean isFatherOfInput(AgentField input) {
-		
-		return this.father.getId()==input.getId();
+
+		return this.father.getId() == input.getId();
 	}
-
-
 
 	public boolean isTop() {
 		return this.father == null;
 	}
 
-
-
 	public boolean isLeaf() {
-		return this.sons.size()==0;
+		return this.sons.size() == 0;
 	}
-
 
 	public void setMsgUpAndDown(Message m) {
 		this.msgDown = m;
 		this.msgUp = m;
-		
-	}
 
+	}
 
 	public boolean hasUpMessage() {
-		return this.msgUp!=null;
+		return this.msgUp != null;
 	}
-
 
 	public boolean hasDownMessage() {
-		return this.msgDown!=null;
+		return this.msgDown != null;
 	}
 
-
 	public int calSelfCost() {
-		
-		List<Neighbors> myNeighbors = Main.dcop.getHisNeighbors(this);		
-		int ans=0;
+
+		List<Neighbors> myNeighbors = Main.dcop.getHisNeighbors(this);
+		int ans = 0;
 		for (Neighbors n : myNeighbors) {
-			ans = ans+ Main.dcop.calRealCostPerNeighbor(n);
+			ans = ans + Main.dcop.calRealCostPerNeighbor(n);
 		}
-		
+
 		return ans;
 	}
 
-
-
-
-
-	public void reciveMsgAnyTimeUp(Message msg) {
-		MessageAnyTimeUp msgATU = (MessageAnyTimeUp) msg;
-		Permutation p = msgATU.getPermutation();
-		int upCost = p.getCost();
-	}
-
-
-	public void setPermutations(HashSet<Permutation> input) {
-		this.permutations = input;
-		
-	}
-
+	
 
 	public void reciveMsg(int senderId, int senderValue, int dateOfOther) {
 
@@ -577,79 +522,181 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.neighbor.put(senderId, new MessageRecieve(senderValue, dateOfOther));
 		}
 		/*
-		if(Main.anyTime) {
-			whenRecieveDoAnyTime();
-		}
-		*/
+		 * if(Main.anyTime) { whenRecieveDoAnyTime(); }
+		 */
 
-	
 	}
-	
+
 	/*
-	private void whenRecieveDoAnyTime() {
-		if (neighborIsMinusOne()) {
-			return;
-		}
-		boolean amILeaf = this.sons.size() ==0;
-		if (amILeaf) {
-			Permutation firstPermutation = this.createCurrentPermutation();
-			// create any time up with self cost
-			// any time message will be include counter and self cost
-						
-			AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration,
-			
-			Message anyTimeUp = new MessageAnyTimeUp(this,this.father, , firstPermutation);
-		}
-		
-		boolean fisible = checkCounterFisibility();
-		if (fisible) {
-			Permutation p = createCurrentPermutation();
-			this.permutations.add(p);
-		}
-		
-	}
-
-*/
+	 * private void whenRecieveDoAnyTime() { if (neighborIsMinusOne()) { return; }
+	 * boolean amILeaf = this.sons.size() ==0; if (amILeaf) { Permutation
+	 * firstPermutation = this.createCurrentPermutation(); // create any time up
+	 * with self cost // any time message will be include counter and self cost
+	 * 
+	 * AgentField sender, AgentField reciever, int senderValue, int delay, int
+	 * currentIteration,
+	 * 
+	 * Message anyTimeUp = new MessageAnyTimeUp(this,this.father, ,
+	 * firstPermutation); }
+	 * 
+	 * boolean fisible = checkCounterFisibility(); if (fisible) { Permutation p =
+	 * createCurrentPermutation(); this.permutations.add(p); }
+	 * 
+	 * }
+	 * 
+	 */
 	public boolean neighborIsMinusOne() {
 		for (MessageRecieve i : this.neighbor.values()) {
-			if (i.getValue()==-1) {
+			if (i.getValue() == -1) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-
 	public Permutation createCurrentPermutation() {
-		Map<Integer,Integer> m = new HashMap<Integer,Integer>();
-		for ( Entry<Integer, Integer> b : this.belowMap.entrySet()) {
+		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+		for (Entry<Integer, Integer> b : this.belowMap.entrySet()) {
 			m.put(b.getKey(), b.getValue());
 		}
-		
-		m.put(this.id,this.decisonCounter);
-		
-		for ( Entry<Integer, Integer> a : this.aboveMap.entrySet()) {
+
+		m.put(this.id, this.decisonCounter);
+
+		for (Entry<Integer, Integer> a : this.aboveMap.entrySet()) {
 			m.put(a.getKey(), a.getValue());
 		}
-		
 		int selfCost = this.calSelfCost();
 		return new Permutation(m, selfCost);
 	}
 
-
-	
-
-	public Message recieveAnyTimeUp(MessageAnyTimeUp msg) {
-		Set<Permutation> permutationsFromMsg = msg.getCurrentPermutations();
-		for (Permutation p : permutationsFromMsg) {
-			this.permutationsFromBelow.add();
+	private void addPartialPermutation(Permutation p, boolean above) {
+		if (above) {
+			this.permutationsAbove.add(p);
+		} else {
+			this.permutationsBelow.add(p);
 		}
-		
-		return null;
+		addPermutationToSend(p, above);
+
+	}
+
+	private void addPermutationToSend(Permutation pInput, boolean above) {
+		boolean cohirent;
+
+		Set<Permutation> iteratePermutations;
+
+		if (above) {
+			iteratePermutations = permutationsBelow;
+		} else {
+			iteratePermutations = permutationsAbove;
+		}
+
+		for (Permutation checked : iteratePermutations) {
+			cohirent = checked.isChoirent(pInput);
+			if (cohirent) {
+				Permutation pToAdd = combinePermutations(checked, pInput);
+				if (pToAdd.feasible()) {
+					this.permutationsToSend.add(pToAdd);
+				}
+			}
+		}
+
+		/*
+		 * if (above) { Permutation pAbove = p; for (Permutation pBelow :
+		 * permutationsBelow) { cohirent = pBelow.isChoirent(pAbove); if (cohirent) {
+		 * 
+		 * } } } else { Permutation pBelow = p; for (Permutation pAbove :
+		 * permutationsAbove) { cohirent = pBelow.isChoirent(pAbove); }
+		 * 
+		 * }
+		 */
+
+	}
+
+	private static Permutation combinePermutations(Permutation p1, Permutation p2) {
+
+		int cost = p1.getCost() + p2.getCost();
+
+		Map<Integer, Integer> m = combineMaps(p1, p2);
+
+		boolean isCohirent = p1.isChoirent(p2);
+		if (!isCohirent) {
+			System.out.println("we have a bug");
+		}
+
+		return new Permutation(m, cost);
+	}
+
+	private static Map<Integer, Integer> combineMaps(Permutation p1, Permutation p2) {
+		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+		for (Entry<Integer, Integer> e : p1.getM().entrySet()) {
+			m.put(e.getKey(), e.getValue());
+		}
+
+		for (Entry<Integer, Integer> e : p2.getM().entrySet()) {
+			m.put(e.getKey(), e.getValue());
+		}
+		return m;
+	}
+
+	public void leafAddAnytimeUp() {
+		Permutation p = createCurrentPermutation();
+		this.permutationsToSend.add(p);
+	}
+
+	public void setPermutationsToSend(HashSet<Permutation> input) {
+		this.permutationsToSend = input;
+	}
+
+	public void setPermutationsAbove(HashSet<Permutation> input) {
+		this.permutationsAbove = input;
+
+	}
+
+	public void setPermutationsBelow(HashSet<Permutation> input) {
+		this.permutationsBelow = input;
+
+	}
+
+	/**
+	 * case 1- called from agentZero when message is sent, the agent immdiatly trys
+	 * to create an anytime up. try current permutation with all messages that
+	 * recived from below
+	 */
+
+	public void addAnytimeUp() {
+		Permutation p = this.createCurrentPermutation();
+		if (p.feasible()) {
+			this.addPartialPermutation(p, true);
+		}
+
+	}
+
+	/**
+	 * case 2- called when messaged recieved is anyTimeUp from agent zero
+	 */
+	public void recieveAnyTimeUpAndAddPermutation(MessageAnyTimeUp msg) {
+		Permutation p = msg.getCurrentPermutation();
+		this.addPartialPermutation(p, false);
+	}
+	/*
+	public void reciveMsgAnyTimeUp(Message msg) {
+		MessageAnyTimeUp msgATU = (MessageAnyTimeUp) msg;
+		Permutation p = msgATU.getPermutation();
+		int upCost = p.getCost();
+	}
+	*/
+
+	public boolean hasAnytimeUpToSend() {
+		return !this.permutationsToSend.isEmpty();
+	}
+	public Set<Permutation> getPermutationsToSend(){
+		return this.permutationsToSend;
 	}
 	
-	
-
-
-	
+	public void removeAllPermutationToSend() {
+		Iterator<Permutation>it = this.permutationsToSend.iterator();
+		while (it.hasNext()) {
+			it.remove();
+		}
+	}
 }

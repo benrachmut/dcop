@@ -2,31 +2,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MessageAnyTimeUp extends Message {
-	private Set<Permutation> pastPermutations;
-	private Set<Permutation> currentPermutations;
+	//private Set<Permutation> pastPermutations;
+	private Permutation currentPermutation;
 	
 	public MessageAnyTimeUp(AgentField sender, AgentField reciever, int delay,
 			Permutation p) {
 		
 		super(sender, reciever, -100, delay, -100);
-		this.currentPermutations = new HashSet<Permutation>();
-		this.currentPermutations.add(p);
+		this.currentPermutation = p;
+		//this.currentPermutations.add(p);
 				
-		this.pastPermutations = new HashSet<Permutation>();
+		//this.pastPermutations = new HashSet<Permutation>();
 		//this.pastPermutations.add(p);
 		
 	}
 	
 	
 
-	/*
+	
 	public Permutation getCurrentPermutation() {
 		// TODO Auto-generated method stub
 		return this.currentPermutation;
 	}
-*/
 
-
+/*
 
 	public Set<Permutation> getCurrentPermutations() {
 		// TODO Auto-generated method stub
@@ -36,5 +35,5 @@ public class MessageAnyTimeUp extends Message {
 	public void setCurrentPermutations(Set<Permutation> input) {
 		this.currentPermutations = input;
 	}
-
+*/
 }
