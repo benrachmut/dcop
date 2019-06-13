@@ -233,26 +233,38 @@ public class AgentZero {
 		List<Message> msgToSend = handleDelay(this.messageBox);
 		for (Message msg : msgToSend) {
 			int senderId = msg.getSender().getId();
-			AgentField reciver = msg.getReciever();
+			AgentField reciever = msg.getReciever();
 			if (msg instanceof MessageAnyTimeUp) {
-				reciver.recieveAnyTimeUpAndAddPermutation((MessageAnyTimeUp) msg);
+				msgIsAnytimeup(msg, reciever);
+				
 			} else {
 
 				int senderValue = msg.getSenderValue();
-				reciver.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
+				reciever.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
 
+				
 				boolean canSendAnytimeUp = true;
-				if (reciver.neighborIsMinusOne()) {
+				if (reciever.neighborIsMinusOne()) {
 					canSendAnytimeUp = false;
 				}
 
 				if (canSendAnytimeUp) {
-					doAnytimeUp(reciver);
+					doAnytimeUp(reciever);
 				}
 
 			} // if msg is with value
 
 		}
+	}
+
+	private void msgIsAnytimeup(Message msg,AgentField reciever) {
+		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
+		if (msg.getReciever().isTop()) {
+			reciever.headAddPermutationToSend(mau);
+		} else {
+			reciever.recieveAnyTimeUpAndAddPermutation(mau);
+		}
+		
 	}
 
 	private void doAnytimeUp(AgentField currentAgent) {
@@ -355,10 +367,8 @@ public class AgentZero {
 					this.messageBox.add(m);
 				}
 				a.removeAllPermutationToSend();
-			}// if not had and have something to send
+			} // if not had and have something to send
 		}
 	}
-
-
 
 }// class

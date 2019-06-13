@@ -64,5 +64,11 @@ public class Permutation {
 		// TODO Auto-generated method stub
 		return this.cost;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return "cost = "+ this.cost;
+	}
 
 }

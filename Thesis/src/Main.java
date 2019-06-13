@@ -13,16 +13,16 @@ public class Main {
 
 
 	// versions
-		static String algo = "dsa7";// "unsynchMono";//"mgmUb";
+		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";
 		static String date = "1206";
-		static boolean synch = false;
+		static boolean synch = true;
 		static boolean dateKnown;
-		static boolean anyTime=false;
+		static boolean anyTime=true;
 
 		// -- variables of dcop problem
-		static int A = 10;// 50; // 50 number of agents
+		static int A = 5;// 50; // 50 number of agents
 		static int D = 10; // 10 size of domain for each agent
-		static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+		static double[] p1s = { 0.99 }; // 0.2 prob for agents to be neighbors
 		static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 		static int costMax = 100; // 100 the max value of cost
 
@@ -36,7 +36,7 @@ public class Main {
 
 		// -- Experiment time
 		static int meanReps = 1;// 10; // number of reps for every solve process
-		static int iterations = 200;// 1000;
+		static int iterations = 500;// 1000;
 		static Dcop dcop;
 
 	// -- characters

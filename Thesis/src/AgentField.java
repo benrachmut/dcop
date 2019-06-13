@@ -594,9 +594,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			cohirent = checked.isChoirent(pInput);
 			if (cohirent) {
 				Permutation pToAdd = combinePermutations(checked, pInput);
-				if (pToAdd.feasible()) {
+				//if (pToAdd.feasible()) {
 					this.permutationsToSend.add(pToAdd);
-				}
+				//}
 			}
 		}
 
@@ -665,9 +665,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void addAnytimeUp() {
 		Permutation p = this.createCurrentPermutation();
-		if (p.feasible()) {
+		//if (p.feasible()) {
 			this.addPartialPermutation(p, true);
-		}
+		//}
 
 	}
 
@@ -694,9 +694,19 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 	
 	public void removeAllPermutationToSend() {
-		Iterator<Permutation>it = this.permutationsToSend.iterator();
-		while (it.hasNext()) {
-			it.remove();
+		
+		this.permutationsToSend = new HashSet<Permutation>();
+		
+	}
+
+	public void headAddPermutationToSend(MessageAnyTimeUp mau) {
+		Permutation pFromMsg = mau.getCurrentPermutation();
+		Permutation pMyPermutation = createCurrentPermutation();
+		
+		if (pFromMsg.isChoirent(pMyPermutation)) {
+			Permutation comb = combinePermutations(pFromMsg,pMyPermutation);
+			this.permutationsToSend.add(comb);
 		}
+		
 	}
 }
