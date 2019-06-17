@@ -231,49 +231,60 @@ public class AgentZero {
 	public void sendUnsynchMsgs() {
 
 		List<Message> msgToSend = handleDelay(this.messageBox);
+		//boolean hasMsgUpFlag = false;
+		Set<MessageAnyTimeUp> anyUps = new HashSet<MessageAnyTimeUp>();
+		Set<AgentField> recivers= new HashSet<AgentField>();
+
 		for (Message msg : msgToSend) {
 			int senderId = msg.getSender().getId();
 			AgentField reciever = msg.getReciever();
+
 			if (msg instanceof MessageAnyTimeUp) {
-				msgIsAnytimeup(msg, reciever);
+				anyUps.add((MessageAnyTimeUp)msg);
+
+				//
 				
 			} else {
 
 				int senderValue = msg.getSenderValue();
 				reciever.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
 
-				
 				boolean canSendAnytimeUp = true;
 				if (reciever.neighborIsMinusOne()) {
 					canSendAnytimeUp = false;
 				}
 
 				if (canSendAnytimeUp) {
-					doAnytimeUp(reciever);
+					recivers.add(reciever);
 				}
 
 			} // if msg is with value
 
 		}
-	}
+		
+		
+		
+		for (MessageAnyTimeUp msg : anyUps) {
+			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
+			msg.getReciever().createPermutataionsDueToMessage(mau);
 
-	private void msgIsAnytimeup(Message msg,AgentField reciever) {
-		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
-		if (msg.getReciever().isTop()) {
-			reciever.headAddPermutationToSend(mau);
-		} else {
-			reciever.recieveAnyTimeUpAndAddPermutation(mau);
 		}
+		
+		for (AgentField r : recivers) {
+			if (r.isLeaf()) {
+				r.leafAddAnytimeUp();
+			} else {
+				r.createPermutataionsDueChangeInCounter();
+			}
+
+		}
+		
+		
 		
 	}
 
-	private void doAnytimeUp(AgentField currentAgent) {
-		if (currentAgent.isLeaf()) {
-			currentAgent.leafAddAnytimeUp();
-		} else {
-			currentAgent.addAnytimeUp();
-		}
-	}
+	
+
 	/*
 	 * private void recieverIsALeaf(AgentField recieveNowSend) {
 	 * 
@@ -363,6 +374,7 @@ public class AgentZero {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
 					int delay = this.createDelay();
+					
 					Message m = new MessageAnyTimeUp(a, a.getFather(), delay, p);
 					this.messageBox.add(m);
 				}

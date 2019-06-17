@@ -270,7 +270,7 @@ public class Main {
 			agents[i].setMsgUpAndDown(null);
 			agents[i].setDecisionCounter(0);
 			agents[i].setPermutationsAbove(new HashSet<Permutation>());
-			agents[i].setPermutationsBelow(new HashSet<Permutation>());
+			agents[i].initSonsAnytimeMessages();
 			agents[i].setPermutationsToSend(new HashSet<Permutation>());
 		}
 

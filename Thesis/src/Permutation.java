@@ -10,7 +10,10 @@ public class Permutation {
 	private int cost;
 
 	Permutation(Map<Integer, Integer> m, int cost) {
-		this.m = m;
+		
+		for ( Entry<Integer, Integer> e : m.entrySet()) {
+			this.m.put(e.getKey(), e.getValue());
+		}
 		this.cost = cost;
 	}
 	
@@ -37,7 +40,7 @@ public class Permutation {
 		return this.m;
 	}
 
-	public boolean isChoirent(Permutation input) {
+	public boolean isCoherent(Permutation input) {
 		
 		Set<Integer>similarKeys = similarKeySet(input);
 		for (Integer i : similarKeys) {
