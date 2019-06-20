@@ -231,59 +231,65 @@ public class AgentZero {
 	public void sendUnsynchMsgs() {
 
 		List<Message> msgToSend = handleDelay(this.messageBox);
-		//boolean hasMsgUpFlag = false;
+		// boolean hasMsgUpFlag = false;
 		Set<MessageAnyTimeUp> anyUps = new HashSet<MessageAnyTimeUp>();
-		Set<AgentField> recivers= new HashSet<AgentField>();
+		Set<AgentField> recivers = new HashSet<AgentField>();
 
 		for (Message msg : msgToSend) {
 			int senderId = msg.getSender().getId();
 			AgentField reciever = msg.getReciever();
 
 			if (msg instanceof MessageAnyTimeUp) {
-				anyUps.add((MessageAnyTimeUp)msg);
-
-				//
+				// anyUps.add((MessageAnyTimeUp)msg);
 				
+				System.out.println("sender: "+msg.getSender()+" reciver: "+msg.getReciever());
+				
+				if (msg.getSender().isLeaf()) {
+					System.out.println("sender "+msg.getSender()+" is a leaf" );
+				}
+				
+				if (msg.getReciever().isTop()) {
+					System.out.println("reciever "+msg.getReciever()+" is a top" );
+				}
+				//System.out.println(reciever.getId());
+				MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
+				msg.getReciever().createPermutataionsDueToMessage(mau);
+				//
+
 			} else {
 
 				int senderValue = msg.getSenderValue();
 				reciever.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
 
-				boolean canSendAnytimeUp = true;
-				if (reciever.neighborIsMinusOne()) {
-					canSendAnytimeUp = false;
-				}
+				//boolean canSendAnytimeUp = true;
+				//if (!reciever.neighborIsMinusOne()) {
+					if (reciever.isLeaf()) {
+						reciever.leafAddAnytimeUp();
+					} else {
+						reciever.createPermutataionsDueChangeInCounter();
+					}
+				//}
 
-				if (canSendAnytimeUp) {
-					recivers.add(reciever);
-				}
+				// if (canSendAnytimeUp) {
+				//recivers.add(reciever);
+				// }
+
+				
 
 			} // if msg is with value
 
 		}
-		
-		
-		
+/*
 		for (MessageAnyTimeUp msg : anyUps) {
-			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
-			msg.getReciever().createPermutataionsDueToMessage(mau);
 
 		}
-		
+
 		for (AgentField r : recivers) {
-			if (r.isLeaf()) {
-				r.leafAddAnytimeUp();
-			} else {
-				r.createPermutataionsDueChangeInCounter();
-			}
 
 		}
-		
-		
-		
-	}
+		*/
 
-	
+	}
 
 	/*
 	 * private void recieverIsALeaf(AgentField recieveNowSend) {
@@ -370,11 +376,12 @@ public class AgentZero {
 		for (AgentField a : agents) {
 			boolean isHead = a.getFather() == null;
 
+			
 			if (a.hasAnytimeUpToSend() && !isHead) {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
 					int delay = this.createDelay();
-					
+
 					Message m = new MessageAnyTimeUp(a, a.getFather(), delay, p);
 					this.messageBox.add(m);
 				}

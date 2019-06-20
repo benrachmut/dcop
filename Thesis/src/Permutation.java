@@ -10,7 +10,7 @@ public class Permutation {
 	private int cost;
 
 	Permutation(Map<Integer, Integer> m, int cost) {
-		
+		this.m = new HashMap<Integer, Integer>();
 		for ( Entry<Integer, Integer> e : m.entrySet()) {
 			this.m.put(e.getKey(), e.getValue());
 		}
@@ -71,7 +71,12 @@ public class Permutation {
 	@Override
 	public String toString() {
 		
-		return "cost = "+ this.cost;
+		return "p: "+ this.m+" cost = "+ this.cost;
+	}
+
+	public boolean containsId(int sonId) {
+		// TODO Auto-generated method stub
+		return this.m.containsKey(sonId);
 	}
 
 }

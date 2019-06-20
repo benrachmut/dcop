@@ -14,5 +14,10 @@ public int getDate() {
 	return date;
 }
 
+@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "value: "+value+" date: "+date;
+	}
 
 }
