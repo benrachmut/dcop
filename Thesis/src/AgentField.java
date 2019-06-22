@@ -29,12 +29,15 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, Integer> belowMap;
 
 	private int decisonCounter;
-	private Message msgDown;
-	private Message msgUp;
+	private MessageNormal msgDown;
+	private MessageNormal msgUp;
 	// private Set<Permutation> permutationsBelow;
 	private Set<Permutation> permutationsPast;
 	private Set<Permutation> permutationsToSend;
 	private Set<Permutation> sonsAnytimePermutations;
+	private Map<Integer, Integer> counterAndValue;
+	private Permutation bestPermuation; 
+
 
 	public AgentField(int domainSize, int id) {
 		super(id);
@@ -58,6 +61,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		belowMap = new HashMap<Integer, Integer>();
 		msgDown = null;
 		msgUp = null;
+		this.bestPermuation =null;
 		// resetNumOfInterationForChange();
 		// numOfInterationForChangeCounter = 0;
 
@@ -66,6 +70,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		initSonsAnytimeMessages();
 		this.permutationsPast = new HashSet<Permutation>();
 		this.permutationsToSend = new HashSet<Permutation>();
+		this.counterAndValue = new HashMap<Integer, Integer>();
+		
 	}
 
 	public void initSonsAnytimeMessages() {
@@ -84,6 +90,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	 */
 	public void setFather(AgentField father) {
 		this.father = father;
+	}
+	
+	public void resetBestPermutation() {
+		this.permutationsPast = null;
 	}
 
 	public void addSon(AgentField son) {
@@ -198,8 +208,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 		if (shouldChange) {
 			this.value = minPotentialCost.getValue();
-
 		}
+		
+		
 
 	}
 
@@ -401,9 +412,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void setDecisionCounter(int i) {
 		this.decisonCounter = i;
-		if (this.id == 9) {
-			System.out.println("blah");
-		}
+		//if (this.id == 9) {
+		//	System.out.println("blah");
+		//}
 		
 		Permutation myPermutation = this.createCurrentPermutation();
 		this.permutationsPast.add(myPermutation);
@@ -441,9 +452,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			currentCounter = belowMap.get(senderId);
 			belowMap.put(senderId, currentCounter + 1);
 		}
-		if (this.id == 9) {
-			System.out.println("blah");
-		}
+		//if (this.id == 9) {
+		//	System.out.println("blah");
+		//}
 		
 		Permutation myPermutation = this.createCurrentPermutation();
 		this.permutationsPast.add(myPermutation);
@@ -505,9 +516,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return this.sons.size() == 0;
 	}
 
-	public void setMsgUpAndDown(Message m) {
-		this.msgDown = m;
-		this.msgUp = m;
+	public void resetMsgUpAndDown() {
+		this.msgDown = null;
+		this.msgUp = null;
 
 	}
 
@@ -548,24 +559,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	/*
-	 * private void whenRecieveDoAnyTime() { if (neighborIsMinusOne()) { return; }
-	 * boolean amILeaf = this.sons.size() ==0; if (amILeaf) { Permutation
-	 * firstPermutation = this.createCurrentPermutation(); // create any time up
-	 * with self cost // any time message will be include counter and self cost
-	 * 
-	 * AgentField sender, AgentField reciever, int senderValue, int delay, int
-	 * currentIteration,
-	 * 
-	 * Message anyTimeUp = new MessageAnyTimeUp(this,this.father, ,
-	 * firstPermutation); }
-	 * 
-	 * boolean fisible = checkCounterFisibility(); if (fisible) { Permutation p =
-	 * createCurrentPermutation(); this.permutations.add(p); }
-	 * 
-	 * }
-	 * 
-	 */
+	
 	public boolean neighborIsMinusOne() {
 		for (MessageRecieve i : this.neighbor.values()) {
 			if (i.getValue() == -1) {
@@ -589,37 +583,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		int selfCost = this.calSelfCost();
 		return new Permutation(m, selfCost);
 	}
-	/*
-	 * private void addPartialPermutation(Permutation p, boolean above) { //if
-	 * (above) { // this.permutationsAbove.add(p); //} else {
-	 * //this.permutationsBelow.add(p); //} //addPermutationToSend(p, above);
-	 * 
-	 * }
-	 */
-
-	/*
-	 * private void addPermutationToSend(Permutation pInput, boolean above) {
-	 * boolean cohirent;
-	 * 
-	 * Set<Permutation> iteratePermutations;
-	 * 
-	 * if (above) { iteratePermutations = permutationsBelow; } else {
-	 * iteratePermutations = permutationsAbove; }
-	 * 
-	 * for (Permutation checked : iteratePermutations) { cohirent =
-	 * checked.isCoherent(pInput); if (cohirent) { Permutation pToAdd =
-	 * combinePermutations(checked, pInput); // if (pToAdd.feasible()) {
-	 * this.permutationsToSend.add(pToAdd); // } } }
-	 */
-	/*
-	 * if (above) { Permutation pAbove = p; for (Permutation pBelow :
-	 * permutationsBelow) { cohirent = pBelow.isChoirent(pAbove); if (cohirent) {
-	 * 
-	 * } } } else { Permutation pBelow = p; for (Permutation pAbove :
-	 * permutationsAbove) { cohirent = pBelow.isChoirent(pAbove); }
-	 * 
-	 * }
-	 */
+	
 
 	private static Permutation combinePermutations(Permutation p1, Permutation p2) {
 		int cost;
@@ -630,10 +594,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		Map<Integer, Integer> m = combineMaps(p1, p2);
 
-		boolean isCohirent = p1.isCoherent(p2);
-		if (!isCohirent) {
-			System.out.println("we have a bug");
-		}
+		//boolean isCohirent = p1.isCoherent(p2);
+		//if (!isCohirent) {
+		//	System.out.println("we have a bug");
+		//}
 
 		return new Permutation(m, cost);
 	}
@@ -656,57 +620,50 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.permutationsToSend.add(p);
 	}
 
-	public void setPermutationsToSend(HashSet<Permutation> input) {
-		this.permutationsToSend = input;
+	public void resetPermutationsToSend() {
+		this.permutationsToSend = null;
 	}
 
-	public void setPermutationsPast(HashSet<Permutation> input) {
-		this.permutationsPast = input;
+	public void resetPermutationsPast() {
+		this.permutationsPast = new HashSet<Permutation>();
 
 	}
 
-	/**
-	 * case 1- called from agentZero when message is sent, the agent immdiatly trys
-	 * to create an anytime up. try current permutation with all messages that
-	 * recived from below
-	 */
-	/*
-	 * public void addAnytimeUp() { Permutation p = this.createCurrentPermutation();
-	 * // if (p.feasible()) { createPossiblePermutations();
-	 * //addPermutationToSend(p, above); //} this.permutationsAbove.add(p);
-	 * 
-	 * //this.addPartialPermutation(p, true); // }
-	 * 
-	 * }
-	 */
+
 
 	/**
 	 * case 2- called when messaged recieved is anyTimeUp from agent zero
+	 * @return 
 	 */
 	public void createPermutataionsDueToMessage(MessageAnyTimeUp msg) {
 
 		Permutation p = msg.getCurrentPermutation();
-		if (this.id == 9) {
-			System.out.println("blah");
-		}
+		//if (this.id == 9) {
+		//	System.out.println("blah");
+		//}
 		Set<Permutation> belowCombinedWithMessage = updateSonAnytimePerm(p);
 		Set<Permutation> aboveCoherentWithMessage = aboveCoherent(p);
 
 		
 		if (belowCombinedWithMessage.isEmpty() || aboveCoherentWithMessage.isEmpty()) {
-			return;
+			return ;
 		}
 		for (Permutation belowP : belowCombinedWithMessage) {
 			for (Permutation aboveP : aboveCoherentWithMessage) {
 				if (belowP.isCoherent(aboveP)) {
 
 					Permutation pToSend = combinePermutations(belowP, aboveP);
-
+					if (this.isTop()) {
+						this.potentialAnytimePermutation
+						return ;
+					}
 					this.permutationsToSend.add(pToSend);
-
+					
+					
 				}
 			}
 		}
+		
 
 	}
 
@@ -942,6 +899,16 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			}
 		}
 
+	}
+
+	public void resetCounterAndValue() {
+		this.counterAndValue = new HashMap<Integer, Integer> ();
+		
+	}
+
+	public void setCounterAndValueHistory() {
+		this.counterAndValue.put(decisonCounter, value);
+		
 	}
 
 }

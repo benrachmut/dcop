@@ -268,11 +268,14 @@ public class Main {
 			//agents[i].resetNumOfInterationForChange();
 			agents[i].setAllBelowMap(0);
 			agents[i].setAllAboveMap(0);
-			agents[i].setMsgUpAndDown(null);
+			agents[i].resetMsgUpAndDown();
 			agents[i].setDecisionCounter(0);
-			agents[i].setPermutationsPast(new HashSet<Permutation>());
+			agents[i].resetPermutationsPast();
 			agents[i].initSonsAnytimeMessages();
-			agents[i].setPermutationsToSend(new HashSet<Permutation>());
+			agents[i].resetPermutationsToSend();
+			agents[i].resetCounterAndValue();
+			agents[i].resetBestPermutation();
+
 		}
 
 	}

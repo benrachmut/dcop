@@ -1,12 +1,12 @@
 
-public class Message implements Comparable<Message> {
+public class MessageNormal implements Comparable<MessageNormal> {
 	private AgentField sender;
 	private AgentField reciever;
 	private int senderValue;
 	private int delay;
 	private int date;
 
-	public Message(AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration) {
+	public MessageNormal(AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration) {
 		super();
 		this.sender = sender;
 		this.reciever = reciever;
@@ -24,7 +24,7 @@ public class Message implements Comparable<Message> {
 	}
 	*/
 
-	public Message(Message m) {
+	public MessageNormal(MessageNormal m) {
 		super();
 		this.sender = m.getSender();
 		this.reciever = m.getReciever();
@@ -37,7 +37,7 @@ public class Message implements Comparable<Message> {
 		return this.date;
 	}
 	@Override
-	public int compareTo(Message o) {
+	public int compareTo(MessageNormal o) {
 		return this.delay - o.getDelay();
 	}
 

@@ -1,7 +1,7 @@
 import java.util.HashSet;
 import java.util.Set;
 
-public class MessageAnyTimeUp extends Message {
+public class MessageAnyTimeUp extends MessageNormal {
 	//private Set<Permutation> pastPermutations;
 	private Permutation currentPermutation;
 	
