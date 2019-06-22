@@ -401,6 +401,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void setDecisionCounter(int i) {
 		this.decisonCounter = i;
+		if (this.id == 9) {
+			System.out.println("blah");
+		}
+		
+		Permutation myPermutation = this.createCurrentPermutation();
+		this.permutationsPast.add(myPermutation);
 
 	}
 
@@ -435,6 +441,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			currentCounter = belowMap.get(senderId);
 			belowMap.put(senderId, currentCounter + 1);
 		}
+		if (this.id == 9) {
+			System.out.println("blah");
+		}
+		
+		Permutation myPermutation = this.createCurrentPermutation();
+		this.permutationsPast.add(myPermutation);
 
 	}
 
@@ -674,10 +686,13 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void createPermutataionsDueToMessage(MessageAnyTimeUp msg) {
 
 		Permutation p = msg.getCurrentPermutation();
-
+		if (this.id == 9) {
+			System.out.println("blah");
+		}
 		Set<Permutation> belowCombinedWithMessage = updateSonAnytimePerm(p);
 		Set<Permutation> aboveCoherentWithMessage = aboveCoherent(p);
 
+		
 		if (belowCombinedWithMessage.isEmpty() || aboveCoherentWithMessage.isEmpty()) {
 			return;
 		}
@@ -912,7 +927,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void createPermutataionsDueChangeInCounter() {
 		Permutation myPermutation = this.createCurrentPermutation();
-		this.permutationsPast.add(myPermutation);
+		//this.permutationsPast.add(myPermutation);
 		
 		
 		for (Permutation sonPermutation : this.sonsAnytimePermutations) {
