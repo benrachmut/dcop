@@ -275,6 +275,8 @@ public class Main {
 			agents[i].resetPermutationsToSend();
 			agents[i].resetCounterAndValue();
 			agents[i].resetBestPermutation();
+			agents[i].resettopHasAnytimeNews();
+
 
 		}
 

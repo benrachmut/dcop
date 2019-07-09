@@ -241,27 +241,22 @@ public class AgentZero {
 
 			if (msg instanceof MessageAnyTimeUp) {				
 				MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;	
-				reciever.createPermutataionsDueToMessage(mau);			
-				
-				//
-
+				reciever.createPermutataionsDueToMessage(mau);	
+								
 			} else {
 
 				int senderValue = msg.getSenderValue();
 				reciever.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
 				
-				if (reciever.isLeaf()) {
-				reciever.leafAddAnytimeUp();
-				} else {
-				reciever.createPermutataionsDueChangeInCounter();
+				if (Main.anyTime) {
+					if (reciever.isLeaf()) {
+						reciever.leafAddAnytimeUp();
+					} else {
+						reciever.createPermutataionsDueChangeInCounter();
+					}
 				}
-				
-
 			} // if msg is with value
-
 		}
-
-
 	}
 
 
@@ -271,9 +266,7 @@ public class AgentZero {
 			a.setDecisionCounter(a.getDecisonCounter() + 1);
 			a.setCounterAndValueHistory();
 			createUnsynchMsgs(a, currentIteration);
-
 		}
-
 	}
 
 	private void createUnsynchMsgs(AgentField currentAgent, int currentIteration) {
@@ -296,12 +289,11 @@ public class AgentZero {
 
 	}
 
-	public void sendAnyTimeUp() {
+	public void createAnyTimeUp() {
 		// List<AgentField> agentsSendAnytime = new ArrayList<AgentField>()
 		for (AgentField a : agents) {
 			boolean isHead = a.getFather() == null;
 			
-
 			if (a.hasAnytimeUpToSend() && !isHead) {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
@@ -313,8 +305,32 @@ public class AgentZero {
 				a.removeAllPermutationToSend();
 			} // if not had and have something to send
 			
-			
+		
 		}
 	}
 
+	public void createAnyTimeDownFather(List<AgentField> fathers, int date) {
+		for (AgentField top : fathers) {
+			if (top.isTopHasAnytimeNews()) {
+				top.resettopHasAnytimeNews();
+				placeMessageInBox(top, date);
+			}
+		}
+		
+	}
+
+	private void placeMessageInBox(AgentField from, int date) {
+		
+		for (AgentField son : from.getSons()) {
+			AgentField sender = from;
+			AgentField reciever = son;
+			int delay = this.createDelay();
+			int currentIteration = date;
+			Permutation permutationToSend = from.getBestPermutation();
+			MessageNormal m = new MessageAnyTimeDown(sender, reciever, -100, delay, currentIteration, permutationToSend);
+			
+		}
+
+	}
+	
 }// class

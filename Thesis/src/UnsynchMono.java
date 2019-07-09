@@ -14,13 +14,18 @@ public class UnsynchMono extends Solution {
 
 	@Override
 	public void solve() {
+		
+		
+		List<AgentField> fathers = 	 findHeadOfTree();
+
 		for (int i = 0; i < this.itiration; i++) {
 			updateWhoCanDecide(i);
 			agentDecide();
 			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
 			agentZero.sendUnsynchMsgs();
 			if (Main.anyTime) {
-				agentZero.sendAnyTimeUp();
+				agentZero.createAnyTimeUp();
+				agentZero.createAnyTimeDownFather(fathers, i );
 			}
 			addCostToList();
 		}
