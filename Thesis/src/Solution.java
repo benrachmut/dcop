@@ -11,6 +11,7 @@ public abstract class Solution {
 	protected AgentZero agentZero;
 	protected List<Integer> realCost;
 	protected List<Integer> fatherCost;
+	protected List<Integer> anytimeCost;
 	protected List<Integer> agentThinkCost;
 	protected int currentItiration;
 	protected String algo;
@@ -23,8 +24,11 @@ public abstract class Solution {
 		this.cost = 0;
 		this.agentZero = aZ;
 		this.algo = "";
+		
 		this.realCost = new ArrayList<Integer>();
 		this.fatherCost = new ArrayList<Integer>();
+		this.anytimeCost = new ArrayList<Integer>();
+		
 		this.agentThinkCost = new ArrayList<Integer>();
 		addCostToList();
 		
@@ -33,18 +37,16 @@ public abstract class Solution {
 	}
 
 	public int calRealCost() {
-		return dcop.calRealCost();
+		return dcop.calCost(true);
 	}
 
 	public void addCostToList() {
 
-		this.realCost.add(dcop.calRealCost());
-		
-		// try cal self cost, for debbuging
-		//trySelfCost();
-		
-		
-		
+		this.realCost.add(dcop.calCost(true));
+	}
+	
+	public void addAnytimeCost() {
+		this.anytimeCost.add(dcop.calCost(false));
 	}
 
 	private void trySelfCost() {
@@ -81,12 +83,21 @@ public abstract class Solution {
 	}
 
 	public int getFatherCost(int i ) {
-		// TODO Auto-generated method stub
 		return this.fatherCost.get(i);
 	}
 	
 	public int getRealCost(int i ) {
 		return realCost.get(i);
+	}
+
+	public void addAnytimeCostToList() {
+		this.anytimeCost.add(dcop.calCost(false));
+		
+	}
+
+	public int getAnytimeCost(int i) {
+		// TODO Auto-generated method stub
+		return this.anytimeCost.get(i);
 	}
 
 }

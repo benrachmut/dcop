@@ -7,7 +7,9 @@ import java.util.Set;
 public class Agent {
 	protected int id;
 	protected int value;
-	
+
+	protected int anytimeValue;
+
 	public Agent(int id) {
 		super();
 		this.id = id;
@@ -42,6 +44,9 @@ public class Agent {
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "A"+this.id+"="+this.value;
+	}
+	public int getAnytimeValue () {
+		return this.anytimeValue;
 	}
 	
 }

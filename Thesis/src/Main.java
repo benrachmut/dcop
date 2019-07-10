@@ -91,7 +91,7 @@ public class Main {
 			out = new BufferedWriter(s);
 			String header = "";
 			if (anyTime) {
-				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,father_cost";
+				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,father_cost,anytime_cost";
 			}else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			}
@@ -226,7 +226,7 @@ public class Main {
 			
 			String s = "";
 			if (anyTime) {
-				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getFatherCost(i));
+				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getFatherCost(i)+","+sol.getAnytimeCost(i));
 				
 			}else {
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i));

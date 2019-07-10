@@ -7,5 +7,9 @@ public class MessageAnyTimeDown extends MessageNormal {
 		super(sender, reciever, -100, delay, currentIteration);
 		this.permutationSent = bestPermutation;
 	}
+	
+	public Permutation getPermutationSent() {
+		return this.permutationSent;
+	}
 
 }

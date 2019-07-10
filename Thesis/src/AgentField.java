@@ -28,19 +28,19 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, Integer> aboveMap;
 	private Map<Integer, Integer> belowMap;
 
-	private int anytimeValue;
 	private int anytimeFirstValue;
 	private boolean iHaveAnytimeNews;
 
 	private int decisonCounter;
-	private MessageNormal msgDown;
-	private MessageNormal msgUp;
+	private MessageAnyTimeDown msgDown;
+	private MessageAnyTimeUp msgUp;
 	// private Set<Permutation> permutationsBelow;
 	private Set<Permutation> permutationsPast;
 	private Set<Permutation> permutationsToSend;
 	private Set<Permutation> sonsAnytimePermutations;
 	private Map<Integer, Integer> counterAndValue;
 	private Permutation bestPermuation;
+	private int currentAnyTimeDate;
 
 	public AgentField(int domainSize, int id) {
 		super(id);
@@ -48,7 +48,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 		if (Main.synch) {
 			this.firstValue = Main.getRandomInt(Main.rFirstValue, 0, domainSize - 1);
-			this.anytimeFirstValue =firstValue;
+			this.anytimeFirstValue = firstValue;
 		} else {
 			this.firstValue = -1;
 			this.anytimeFirstValue = -1;
@@ -69,7 +69,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.bestPermuation = null;
 		// resetNumOfInterationForChange();
 		// numOfInterationForChangeCounter = 0;
-
+		currentAnyTimeDate = 0;
 		setR();
 
 		initSonsAnytimeMessages();
@@ -522,6 +522,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void resetMsgUpAndDown() {
 		this.msgDown = null;
 		this.msgUp = null;
+		currentAnyTimeDate = 0;
+
 
 	}
 
@@ -540,7 +542,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		List<Neighbors> myNeighbors = Main.dcop.getHisNeighbors(this);
 		int ans = 0;
 		for (Neighbors n : myNeighbors) {
-			ans = ans + Main.dcop.calRealCostPerNeighbor(n);
+			ans = ans + Main.dcop.calCostPerNeighbor(n, true);
 		}
 
 		return ans;
@@ -682,9 +684,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private void doPermutationToSend(Permutation pToSend) {
 		bestPermuation = pToSend;
 		int bestCounter = bestPermuation.getM().get(id);
-		if (!counterAndValue.keySet().contains(bestCounter)) {
-			System.out.println(5);
-		}
 		this.anytimeValue = counterAndValue.get(bestCounter);
 		//this.counterAndValue = new HashMap<Integer,Integer>();
 		// it is questionalbe!!!!
@@ -786,5 +785,23 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void addFirstCoupleToCounterAndVal() {
 		this.counterAndValue.put(0, value);
 	}
+
+	public void recieveAnyTimeDown(MessageAnyTimeDown mad) {
+		//// maybe bug here
+		if (mad.getDate()> this.currentAnyTimeDate) {
+			this.msgDown = mad;
+			mad = (MessageAnyTimeDown)mad;
+			doPermutationToSend(mad.getPermutationSent());
+			this.currentAnyTimeDate = mad.getDate();
+		}
+	}
+
+	public MessageAnyTimeDown moveDownToSend() {
+		MessageAnyTimeDown ans = this.msgDown;
+		this.msgDown = null;
+		return ans;
+	}
+
+	
 
 }

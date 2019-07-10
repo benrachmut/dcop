@@ -14,22 +14,29 @@ public class UnsynchMono extends Solution {
 
 	@Override
 	public void solve() {
-		
-		
 		List<AgentField> fathers = 	 findHeadOfTree();
-
 		for (int i = 0; i < this.itiration; i++) {
 			updateWhoCanDecide(i);
 			agentDecide();
 			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
-			agentZero.sendUnsynchMsgs();
+			agentZero.manageUnsynchMsgs();
 			if (Main.anyTime) {
 				agentZero.createAnyTimeUp();
-				agentZero.createAnyTimeDownFather(fathers, i );
+				agentZero.createAnyTimeDown(fathers, i );
 			}
 			addCostToList();
 			addFatherCost(fathers);
+			addAnytimeCostToList();
 		}
+	}
+
+	public void addAnytimeCostToList() {
+		if (atlistOneAgentMinusOne(false)) {
+			this.anytimeCost.add(Integer.MAX_VALUE);
+		} else {
+			super.addAnytimeCostToList();
+		}
+		
 	}
 
 	private void addFatherCost(List<AgentField> fathers) {
@@ -49,7 +56,6 @@ public class UnsynchMono extends Solution {
 			this.fatherCost.add(Integer.MAX_VALUE);
 			return;
 		}
-	
 		this.fatherCost.add(ans/2);
 	}
 
@@ -86,19 +92,28 @@ public class UnsynchMono extends Solution {
 
 	@Override
 	public void addCostToList() {
-		if (atlistOneAgentMinusOne()) {
+		if (atlistOneAgentMinusOne(true)) {
 			this.realCost.add(Integer.MAX_VALUE);
 		} else {
 			super.addCostToList();
 		}
 	}
 
-	private boolean atlistOneAgentMinusOne() {
+	private boolean atlistOneAgentMinusOne(boolean real) {
 
 		for (AgentField a : agents) {
-			if (a.getValue() == -1) {
-				return true;
+			
+			if (real) {
+				if (a.getValue() == -1) {
+					return true;
+				}
 			}
+			else {
+				if (a.getAnytimeValue() == -1) {
+					return true;
+				}
+			}
+			
 		}
 		return false;
 	}
