@@ -664,9 +664,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private boolean fatherCheckForPermutationDown(Permutation pToSend) {
 		boolean noBestPermutation = bestPermuation == null;
 		boolean costIsNotInf = pToSend.getCost() < Integer.MAX_VALUE-10000;
-		if (noBestPermutation && costIsNotInf) {
+		if (noBestPermutation || costIsNotInf) {
 			doPermutationToSend(pToSend);
-			return true;
+			return false;
 		}
 		else {
 			int bestPermutationCost = this.bestPermuation.getCost();
@@ -682,8 +682,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private void doPermutationToSend(Permutation pToSend) {
 		bestPermuation = pToSend;
 		int bestCounter = bestPermuation.getM().get(id);
+		if (!counterAndValue.keySet().contains(bestCounter)) {
+			System.out.println(5);
+		}
 		this.anytimeValue = counterAndValue.get(bestCounter);
-		this.counterAndValue = new HashMap<Integer,Integer>();
+		//this.counterAndValue = new HashMap<Integer,Integer>();
 		// it is questionalbe!!!!
 	}
 
@@ -778,7 +781,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void setCounterAndValueHistory() {
 		this.counterAndValue.put(decisonCounter, value);
-
+	}
+	
+	public void addFirstCoupleToCounterAndVal() {
+		this.counterAndValue.put(0, value);
 	}
 
 }

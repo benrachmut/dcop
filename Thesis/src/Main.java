@@ -14,7 +14,7 @@ public class Main {
 
 	// versions
 		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";
-		static String date = "1206";
+		static String date = "1007";
 		static boolean synch = true;
 		static boolean anyTime=true;
 
@@ -26,16 +26,16 @@ public class Main {
 		static int costMax = 100; // 100 the max value of cost
 
 		// -- communication protocol
-		static double[] p3s =  { 0 }; // prob of communication to have delay
+		static double[] p3s =  { 0.5 }; // prob of communication to have delay
 		static boolean[] dateKnowns = { true };// { true, false };
-		static int[] delayUBs = {5};// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+		static int[] delayUBs = {10};// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 													// 10, 25, 50, 100 };
 		static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 									// have delay
 
 		// -- Experiment time
 		static int meanReps = 1;// 10; // number of reps for every solve process
-		static int iterations = 500;// 1000;
+		static int iterations = 1000;// 1000;
 		static Dcop dcop;
 		static boolean dateKnown;
 
@@ -45,7 +45,9 @@ public class Main {
 	static AgentZero agentZero;
 
 	// -- other
-	static List<String> solutions = new ArrayList<String>();;
+	static List<String> solutions = new ArrayList<String>();
+	static List<String> fatherSolutions = new ArrayList<String>();
+
 
 	static Random rP1 = new Random();
 	static Random rP2 = new Random();
@@ -87,7 +89,12 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
-			String header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
+			String header = "";
+			if (anyTime) {
+				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,father_cost";
+			}else {
+				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
+			}
 			out.write(header);
 			out.newLine();
 
@@ -216,10 +223,16 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			String o = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost().get(i));
-			solutions.add(o);
+			
+			String s = "";
+			if (anyTime) {
+				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getFatherCost(i));
+				
+			}else {
+				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i));
+			}
+			solutions.add(s);
 		}
-
 	}
 
 	private static Dcop createDcop() {
@@ -245,6 +258,8 @@ public class Main {
 
 	private static void restartBetweenAlgo(Solution sol, String protocol) {
 		addToSolutionString(sol, protocol);
+		
+		
 		restartOther();
 
 	}
@@ -276,6 +291,7 @@ public class Main {
 			agents[i].resetCounterAndValue();
 			agents[i].resetBestPermutation();
 			agents[i].resettopHasAnytimeNews();
+			agents[i].addFirstCoupleToCounterAndVal();
 
 
 		}

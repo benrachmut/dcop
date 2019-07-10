@@ -114,31 +114,19 @@ public class AgentZero {
 			int senderId = msg.getSender().getId();
 			int senderR = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-
 			reciver.reciveRMsg(senderId, senderR, msg.getDate());
-
 		}
 
 	}
 
 	public void sendMsgs() {
-
 		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
 		for (MessageNormal msg : msgToSend) {
 			int senderId = msg.getSender().getId();
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			reciver.reciveMsg(senderId, senderValue, msg.getDate());
-			/*
-			 * if (Main.anyTime) {
-			 * 
-			 * if (msg instanceof MessageAnyTimeUp) {
-			 * 
-			 * reciver.reciveMsgAnyTimeUp(msg); } if (msg instanceof MessageAnyTimeDown) {
-			 * reciver.reciveMsgAnyTimeDowm(___); }
-			 * 
-			 * }
-			 */
+	
 		}
 
 	}
@@ -148,54 +136,14 @@ public class AgentZero {
 	}
 
 	public int getUb() {
-		// TODO Auto-generated method stub
 		return this.delayUb;
 	}
 
 	public double getP3() {
-		// TODO Auto-generated method stub
 		return this.p3;
 	}
 
-	/*
-	 * public void createTimeStempMsgs(int currentIteration) {
-	 * 
-	 * for (AgentField father : agents) { for (AgentField son : father.getSons()) {
-	 * 
-	 * int fatherId = father.getId(); int sonId = son.getId(); Neighbors n; int
-	 * delayFatherSon; if (fatherId<sonId) { n = lookForNeighbor(father, son);
-	 * delayFatherSon = n.getDelay12(currentIteration); }else { n =
-	 * lookForNeighbor(son, father); delayFatherSon =
-	 * n.getDelay21(currentIteration); }
-	 * 
-	 * 
-	 * Message m = new Message(father,son, father.getTimeStemp(), delayFatherSon,
-	 * currentIteration); this.timeStempMessageBox.add(m); // Neighbor n =
-	 * 
-	 * 
-	 * } }
-	 * 
-	 * 
-	 * 
-	 * }
-	 */
-	/*
-	 * private Neighbors lookForNeighbor(AgentField a1, AgentField a2) {
-	 * 
-	 * Neighbors inputN = new Neighbors(a1, a2); for (Neighbors n : this.neighbors)
-	 * { if (inputN.equals(n)) { return n; } } return null; }
-	 */
-	/*
-	 * public void sendTimeStempMsgs() { List<Message> msgToSend =
-	 * handleDelay(this.timeStempMessageBox); for (Message msg : msgToSend) { int
-	 * senderId = msg.getSender().getId(); int senderValue = msg.getSenderValue();
-	 * AgentField reciver = msg.getReciever(); reciver.reciveTimeStempMsg(senderId,
-	 * senderValue, msg.getDate());
-	 * 
-	 * }
-	 * 
-	 * }
-	 */
+
 	public void emptyTimeStempBoxMessage() {
 		this.timeStempMessageBox.clear();
 

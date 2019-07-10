@@ -28,7 +28,29 @@ public class UnsynchMono extends Solution {
 				agentZero.createAnyTimeDownFather(fathers, i );
 			}
 			addCostToList();
+			addFatherCost(fathers);
 		}
+	}
+
+	private void addFatherCost(List<AgentField> fathers) {
+		int ans = 0;
+		for (AgentField f : fathers) {
+			Permutation p = f.getBestPermutation();
+			if (p == null) {
+				this.fatherCost.add(Integer.MAX_VALUE);
+				return;
+			}
+			else {
+				ans = ans + p.getCost();
+			}
+		}
+		
+		if (ans == 0) {
+			this.fatherCost.add(Integer.MAX_VALUE);
+			return;
+		}
+	
+		this.fatherCost.add(ans/2);
 	}
 
 	private void updateWhoCanDecide(int i) {

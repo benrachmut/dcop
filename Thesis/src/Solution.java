@@ -10,6 +10,7 @@ public abstract class Solution {
 	protected int cost;
 	protected AgentZero agentZero;
 	protected List<Integer> realCost;
+	protected List<Integer> fatherCost;
 	protected List<Integer> agentThinkCost;
 	protected int currentItiration;
 	protected String algo;
@@ -23,8 +24,11 @@ public abstract class Solution {
 		this.agentZero = aZ;
 		this.algo = "";
 		this.realCost = new ArrayList<Integer>();
+		this.fatherCost = new ArrayList<Integer>();
 		this.agentThinkCost = new ArrayList<Integer>();
 		addCostToList();
+		
+
 
 	}
 
@@ -65,9 +69,7 @@ public abstract class Solution {
 		return algo + "," + Main.currentP1 + "," + Main.currentP2 + "," + meanRun;
 	}
 
-	public List<Integer> getRealCost() {
-		return realCost;
-	}
+	
 
 	public List<Integer> getAgentThinkCost() {
 		return agentThinkCost;
@@ -76,6 +78,15 @@ public abstract class Solution {
 	public void sendAndRecieve(int i) {
 		this.agentZero.createMsgs(i);
 		this.agentZero.sendMsgs();
+	}
+
+	public int getFatherCost(int i ) {
+		// TODO Auto-generated method stub
+		return this.fatherCost.get(i);
+	}
+	
+	public int getRealCost(int i ) {
+		return realCost.get(i);
 	}
 
 }
