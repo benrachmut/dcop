@@ -158,7 +158,7 @@ public class Dcop {
 			if (real) {
 				sameValue = an1.getValue() == ac1.getValue() && an2.getValue() == ac2.getValue();
 			}else {// any time
-				sameValue = an1.getAnytimeValue() == ac1.getAnytimeValue()&& an2.getAnytimeValue()== ac2.getAnytimeValue();
+				sameValue = an1.getAnytimeValue() == ac1.getValue()&& an2.getAnytimeValue()== ac2.getValue();
 
 			}
 			

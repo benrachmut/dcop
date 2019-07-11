@@ -48,15 +48,19 @@ public class UnsynchMono extends Solution {
 				return;
 			}
 			else {
-				ans = ans + p.getCost();
+				if (ans + p.getCost() >Integer.MAX_VALUE-200) {
+					this.fatherCost.add(Integer.MAX_VALUE);
+					return;
+				}
+				ans = (ans + p.getCost())/2;
 			}
 		}
-		
 		if (ans == 0) {
 			this.fatherCost.add(Integer.MAX_VALUE);
 			return;
 		}
-		this.fatherCost.add(ans/2);
+		
+		this.fatherCost.add(ans);
 	}
 
 	private void updateWhoCanDecide(int i) {

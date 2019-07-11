@@ -242,7 +242,6 @@ public class AgentZero {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
 					int delay = this.createDelay();
-
 					MessageNormal m = new MessageAnyTimeUp(a, a.getFather(), delay, p);
 					this.messageBox.add(m);
 				}
@@ -260,7 +259,7 @@ public class AgentZero {
 		}
 		
 		for (AgentField a : this.agents) {
-			if (!a.isTop() && !a.isLeaf()) {
+			if (!a.isTop() ) {
 				MessageAnyTimeDown m= a.moveDownToSend();
 				if (m!=null) {
 					placeAnytimeDownMessageInBox(a, date);

@@ -76,6 +76,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.permutationsPast = new HashSet<Permutation>();
 		this.permutationsToSend = new HashSet<Permutation>();
 		this.counterAndValue = new HashMap<Integer, Integer>();
+		this.counterAndValue.put(decisonCounter, value);
+
 		iHaveAnytimeNews = false;
 	}
 
@@ -668,7 +670,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		boolean costIsNotInf = pToSend.getCost() < Integer.MAX_VALUE-10000;
 		if (noBestPermutation || costIsNotInf) {
 			doPermutationToSend(pToSend);
-			return false;
+			return true;
 		}
 		else {
 			int bestPermutationCost = this.bestPermuation.getCost();
@@ -684,6 +686,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private void doPermutationToSend(Permutation pToSend) {
 		bestPermuation = pToSend;
 		int bestCounter = bestPermuation.getM().get(id);
+		
+		
 		this.anytimeValue = counterAndValue.get(bestCounter);
 		//this.counterAndValue = new HashMap<Integer,Integer>();
 		// it is questionalbe!!!!
@@ -776,7 +780,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void resetCounterAndValue() {
 		this.counterAndValue = new HashMap<Integer, Integer>();
-	}
+		this.counterAndValue.put(decisonCounter, value);
+		}
 
 	public void setCounterAndValueHistory() {
 		this.counterAndValue.put(decisonCounter, value);
