@@ -4,11 +4,12 @@ import java.util.List;
 public class UnsynchMono extends Solution {
 
 	private List<AgentField> whoCanDecide;
-
-	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
+	private double stochastic;
+	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stoch) {
 		super(dcop, agents, aZ, meanRun);
 		this.algo = "UnsynchMono";
 		this.whoCanDecide = new ArrayList<AgentField>();
+		this.stochastic = stoch;
 
 	}
 
@@ -25,7 +26,7 @@ public class UnsynchMono extends Solution {
 				agentZero.createAnyTimeDown(fathers, i );
 			}
 			addCostToList();
-			addFatherCost(fathers);
+			//addFatherCost(fathers);
 			addAnytimeCostToList();
 		}
 	}
@@ -38,7 +39,7 @@ public class UnsynchMono extends Solution {
 		}
 		
 	}
-
+/*
 	private void addFatherCost(List<AgentField> fathers) {
 		int ans = 0;
 		for (AgentField f : fathers) {
@@ -62,6 +63,7 @@ public class UnsynchMono extends Solution {
 		
 		this.fatherCost.add(ans);
 	}
+	*/
 
 	private void updateWhoCanDecide(int i) {
 		List<AgentField> temp = new ArrayList<AgentField>();
@@ -125,7 +127,7 @@ public class UnsynchMono extends Solution {
 	@Override
 	public void agentDecide() {
 		for (AgentField a : this.whoCanDecide) {
-			a.unsynchDecide();
+			a.dsaDecide(stochastic);
 		}
 	}
 }

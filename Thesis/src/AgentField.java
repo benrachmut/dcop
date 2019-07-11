@@ -197,7 +197,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
-
+/*
 	public void unsynchDecide() {
 
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -219,7 +219,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.value = minPotentialCost.getValue();
 		}
 
+		maybeChange(shouldChange, minPotentialCost, stochastic);
+
 	}
+	*/
 
 	private void maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {

@@ -19,14 +19,14 @@ public class Main {
 		static boolean anyTime=true;
 
 		// -- variables of dcop problem
-		static int A = 10;// 50; // 50 number of agents
+		static int A = 50;// 50; // 50 number of agents
 		static int D = 10; // 10 size of domain for each agent
-		static double[] p1s = { 0.7 }; // 0.2 prob for agents to be neighbors
+		static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 		static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 		static int costMax = 100; // 100 the max value of cost
 
 		// -- communication protocol
-		static double[] p3s =  { 0.5 }; // prob of communication to have delay
+		static double[] p3s =  { 1 }; // prob of communication to have delay
 		static boolean[] dateKnowns = { true };// { true, false };
 		static int[] delayUBs = {10};// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 													// 10, 25, 50, 100 };
@@ -35,7 +35,7 @@ public class Main {
 
 		// -- Experiment time
 		static int meanReps = 1;// 10; // number of reps for every solve process
-		static int iterations = 1000;// 1000;
+		static int iterations = 2000;// 1000;
 		static Dcop dcop;
 		static boolean dateKnown;
 
@@ -91,7 +91,7 @@ public class Main {
 			out = new BufferedWriter(s);
 			String header = "";
 			if (anyTime) {
-				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,father_cost,anytime_cost";
+				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost";
 			}else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			}
@@ -226,7 +226,7 @@ public class Main {
 			
 			String s = "";
 			if (anyTime) {
-				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getFatherCost(i)+","+sol.getAnytimeCost(i));
+				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getAnytimeCost(i));
 				
 			}else {
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i));
