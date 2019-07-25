@@ -17,7 +17,7 @@ public class Main {
 		static boolean synch = false;
 		static boolean anyTime=true;
 
-		static String date = "1407";
+		static String date = "2507";
 
 		// -- variables of dcop problem
 		static int A = 50;// 50; // 50 number of agents
@@ -35,7 +35,7 @@ public class Main {
 									// have delay
 
 		// -- Experiment time
-		static int meanReps = 10;// 10; // number of reps for every solve process
+		static int meanReps = 1;// 10; // number of reps for every solve process
 		static int iterations = 4000;// 1000;
 		static Dcop dcop;
 		static boolean dateKnown;

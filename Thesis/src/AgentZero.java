@@ -130,6 +130,15 @@ public class AgentZero {
 		}
 
 	}
+	
+	
+	public void sendUnsynchMsgs() {
+		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
+		for (MessageNormal msg : msgToSend) {
+			manageUnsynchMsgToRecieve(msg);
+		}
+	}
+
 
 	public void emptyMessageBox() {
 		this.messageBox.clear();
@@ -176,36 +185,39 @@ public class AgentZero {
 		return ans;
 	}
 
-	public void manageUnsynchMsgs() {
 
-		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
-		for (MessageNormal msg : msgToSend) {
-			int senderId = msg.getSender().getId();
-			AgentField reciever = msg.getReciever();
-			if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
 
-				int senderValue = msg.getSenderValue();
-				reciever.reciveUnsynchMsg(senderId, senderValue, msg.getDate());
-				
-				if (Main.anyTime) {
-					if (reciever.isLeaf()) {
-						reciever.leafAddAnytimeUp();
-					} else {
-						reciever.createPermutataionsDueChangeInCounter();
-					}
-				}
-			} // normal message
+
+	private void manageUnsynchMsgToRecieve(MessageNormal msg) {
+		int senderId = msg.getSender().getId();
+		AgentField reciever = msg.getReciever();
+
+		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
+
+			int senderValue = msg.getSenderValue();
+			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
+			Permutation currPermutation = reciever.createCurrentPermutation();
+			reciever.addToPermutationPast(currPermutation);	
 			if (Main.anyTime) {
-				if (msg instanceof MessageAnyTimeUp) {				
-					MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;	
-					reciever.createPermutataionsDueToMessage(mau);						
-				} 
-				if (msg instanceof MessageAnyTimeDown) {				
-					MessageAnyTimeDown mad = (MessageAnyTimeDown) msg;	
-					reciever.recieveAnyTimeDown(mad);						
-				} 
-			}		
-		}
+				//anytimeNormalMessage(currPermutation);
+				if (reciever.isLeaf()) {
+					reciever.addToPermutationToSend(currPermutation);
+					//reciever.leafAddAnytimeUp();
+				} else {
+					reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
+				}
+			}
+		} // normal message
+
+		if (Main.anyTime) {
+			if (msg instanceof MessageAnyTimeUp) {				
+				reciever.recieveAnytimeUp(msg);						
+			} 
+			if (msg instanceof MessageAnyTimeDown) {				
+				reciever.recieveAnytimeDown(msg);						
+			} 
+		}	
+		
 	}
 
 

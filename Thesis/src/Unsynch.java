@@ -21,7 +21,7 @@ public class Unsynch extends Solution {
 			updateWhoCanDecide(i);
 			agentDecide();
 			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
-			agentZero.manageUnsynchMsgs();
+			agentZero.sendUnsynchMsgs();
 			if (Main.anyTime) {
 				agentZero.createAnyTimeUp();
 				agentZero.createAnyTimeDown(fathers, i);
