@@ -1,13 +1,14 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnsynchMono extends Solution {
+public class Unsynch extends Solution {
 
 	private List<AgentField> whoCanDecide;
 	private double stochastic;
-	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stoch) {
+
+	public Unsynch(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stoch) {
 		super(dcop, agents, aZ, meanRun);
-		this.algo = "UnsynchMono";
+		this.algo = "Unsynch" + stoch;
 		this.whoCanDecide = new ArrayList<AgentField>();
 		this.stochastic = stoch;
 
@@ -15,7 +16,7 @@ public class UnsynchMono extends Solution {
 
 	@Override
 	public void solve() {
-		List<AgentField> fathers = 	 findHeadOfTree();
+		List<AgentField> fathers = findHeadOfTree();
 		for (int i = 0; i < this.itiration; i++) {
 			updateWhoCanDecide(i);
 			agentDecide();
@@ -23,10 +24,10 @@ public class UnsynchMono extends Solution {
 			agentZero.manageUnsynchMsgs();
 			if (Main.anyTime) {
 				agentZero.createAnyTimeUp();
-				agentZero.createAnyTimeDown(fathers, i );
+				agentZero.createAnyTimeDown(fathers, i);
 			}
 			addCostToList();
-			//addFatherCost(fathers);
+			// addFatherCost(fathers);
 			addAnytimeCostToList();
 		}
 	}
@@ -37,33 +38,18 @@ public class UnsynchMono extends Solution {
 		} else {
 			super.addAnytimeCostToList();
 		}
-		
+
 	}
-/*
-	private void addFatherCost(List<AgentField> fathers) {
-		int ans = 0;
-		for (AgentField f : fathers) {
-			Permutation p = f.getBestPermutation();
-			if (p == null) {
-				this.fatherCost.add(Integer.MAX_VALUE);
-				return;
-			}
-			else {
-				if (ans + p.getCost() >Integer.MAX_VALUE-200) {
-					this.fatherCost.add(Integer.MAX_VALUE);
-					return;
-				}
-				ans = (ans + p.getCost())/2;
-			}
-		}
-		if (ans == 0) {
-			this.fatherCost.add(Integer.MAX_VALUE);
-			return;
-		}
-		
-		this.fatherCost.add(ans);
-	}
-	*/
+	/*
+	 * private void addFatherCost(List<AgentField> fathers) { int ans = 0; for
+	 * (AgentField f : fathers) { Permutation p = f.getBestPermutation(); if (p ==
+	 * null) { this.fatherCost.add(Integer.MAX_VALUE); return; } else { if (ans +
+	 * p.getCost() >Integer.MAX_VALUE-200) { this.fatherCost.add(Integer.MAX_VALUE);
+	 * return; } ans = (ans + p.getCost())/2; } } if (ans == 0) {
+	 * this.fatherCost.add(Integer.MAX_VALUE); return; }
+	 * 
+	 * this.fatherCost.add(ans); }
+	 */
 
 	private void updateWhoCanDecide(int i) {
 		List<AgentField> temp = new ArrayList<AgentField>();
@@ -108,18 +94,17 @@ public class UnsynchMono extends Solution {
 	private boolean atlistOneAgentMinusOne(boolean real) {
 
 		for (AgentField a : agents) {
-			
+
 			if (real) {
 				if (a.getValue() == -1) {
 					return true;
 				}
-			}
-			else {
+			} else {
 				if (a.getAnytimeValue() == -1) {
 					return true;
 				}
 			}
-			
+
 		}
 		return false;
 	}
@@ -127,7 +112,12 @@ public class UnsynchMono extends Solution {
 	@Override
 	public void agentDecide() {
 		for (AgentField a : this.whoCanDecide) {
-			a.dsaDecide(stochastic);
+			if (a.getValue() == -1) {
+				a.unsynchDecide();
+
+			} else {
+				a.dsaDecide(stochastic);
+			}
 		}
 	}
 }

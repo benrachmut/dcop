@@ -13,10 +13,11 @@ public class Main {
 
 
 	// versions
-		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";
-		static String date = "1007";
-		static boolean synch = true;
+		static String algo = "unsynch7";// "unsynchMono";//"mgmUb";//"unsynch0";
+		static boolean synch = false;
 		static boolean anyTime=true;
+
+		static String date = "1407";
 
 		// -- variables of dcop problem
 		static int A = 50;// 50; // 50 number of agents
@@ -34,12 +35,12 @@ public class Main {
 									// have delay
 
 		// -- Experiment time
-		static int meanReps = 1;// 10; // number of reps for every solve process
-		static int iterations = 2000;// 1000;
+		static int meanReps = 10;// 10; // number of reps for every solve process
+		static int iterations = 4000;// 1000;
 		static Dcop dcop;
 		static boolean dateKnown;
 
-
+ 
 	// -- characters
 	static AgentField[] agents;
 	static AgentZero agentZero;
@@ -68,7 +69,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// initVariables();
-		setSynchBoolean();
+		//setSynchBoolean();
 		runExperiment();
 		printDcops();
 	}
@@ -198,10 +199,29 @@ public class Main {
 		boolean mgm = algo.equals("mgm");
 		boolean mgmUb = algo.equals("mgmUb");
 
-		boolean unsynchMono = algo.equals("unsynchMono");
+		boolean unsynch1 = algo.equals("unsynch1");
+		boolean unsynch3 = algo.equals("unsynch3");
+		boolean unsynch5 = algo.equals("unsynch5");
+		boolean unsynch7 = algo.equals("unsynch7");
 
-		if (unsynchMono) {
-			ans = new UnsynchMono(dcop, agents, agentZero, meanRun);
+
+
+		if (unsynch1) {
+			ans = new Unsynch(dcop, agents, agentZero, meanRun,1);
+
+		}
+		
+		if (unsynch3) {
+			ans = new Unsynch(dcop, agents, agentZero, meanRun,0.3);
+
+		}
+		
+		if (unsynch5) {
+			ans = new Unsynch(dcop, agents, agentZero, meanRun,0.5);
+
+		}
+		if (unsynch7) {
+			ans = new Unsynch(dcop, agents, agentZero, meanRun,0.7);
 
 		}
 		if (dsa7) {
@@ -240,7 +260,7 @@ public class Main {
 		Dcop dcop = new Dcop(agents, D, iterations);
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
 
-		if (algo.equals("unsynchMono")) {
+		if (!synch) {
 			Tree pT = new Tree(agents);
 			pT.dfs();
 			pT.setIsAboveBelow();

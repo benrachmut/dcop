@@ -177,6 +177,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	 * 
 	 * }
 	 */
+	
 	public void dsaDecide(double stochastic) {
 
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -197,7 +198,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
-/*
+	
+
 	public void unsynchDecide() {
 
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -219,10 +221,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.value = minPotentialCost.getValue();
 		}
 
-		maybeChange(shouldChange, minPotentialCost, stochastic);
+		//maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
-	*/
+	
 
 	private void maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {
@@ -457,6 +459,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			currentCounter = aboveMap.get(senderId);
 			aboveMap.put(senderId, currentCounter + 1);
 		} else {
+		
 			currentCounter = belowMap.get(senderId);
 			belowMap.put(senderId, currentCounter + 1);
 		}
