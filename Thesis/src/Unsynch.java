@@ -16,13 +16,13 @@ public class Unsynch extends Solution {
 
 	@Override
 	public void solve() {
-		List<AgentField> fathers = findHeadOfTree();
+		List<AgentField> fathers = findDfsHeadOfTree();
 		for (int i = 0; i < this.itiration; i++) {
 			updateWhoCanDecide(i);
 			agentDecide();
 			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
 			agentZero.sendUnsynchMsgs();
-			if (Main.anyTime) {
+			if (Main.anytimeBfs ||Main.anytimeDfs) {
 				agentZero.createAnyTimeUp();
 				agentZero.createAnyTimeDown(fathers, i);
 			}
@@ -54,7 +54,7 @@ public class Unsynch extends Solution {
 	private void updateWhoCanDecide(int i) {
 		List<AgentField> temp = new ArrayList<AgentField>();
 		if (i == 0) {
-			temp = findHeadOfTree();
+			temp = findDfsHeadOfTree();
 		} else {
 			temp = iterateAgentsWhoCan();
 		}
@@ -72,10 +72,10 @@ public class Unsynch extends Solution {
 		return ans;
 	}
 
-	private List<AgentField> findHeadOfTree() {
+	private List<AgentField> findDfsHeadOfTree() {
 		List<AgentField> ans = new ArrayList<AgentField>();
 		for (AgentField a : agents) {
-			if (a.getFather() == null) {
+			if (a.getDfsFather() == null) {
 				ans.add(a);
 			}
 		}

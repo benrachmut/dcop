@@ -84,8 +84,8 @@ public class Tree {
 		List<AgentField> sons = getSons(currentA);
 		for (AgentField agentFieldSon : sons) {
 			if (!visited.get(agentFieldSon)) {
-				agentFieldSon.setFather(currentA);
-				currentA.addSon(agentFieldSon);
+				agentFieldSon.setDfsFather(currentA);
+				currentA.addDfsSon(agentFieldSon);
 				// setLevelInTreeForCurrentAgent(currentA);
 				// currentA.setLevelInTree(counter++);
 				dfs(agentFieldSon);
@@ -177,7 +177,7 @@ public class Tree {
 		
 		
 		for (AgentField a : breathingArray) {
-			AgentField father = a.getFather();
+			AgentField father = a.getDfsFather();
 			if (father!=null) {
 				if (!temp.contains(father) && !color.get(father)) {
 					temp.add(father);
@@ -189,7 +189,7 @@ public class Tree {
 					a.putInAboveMap(father.getId(),0);	
 				}
 				
-				father = father.getFather();
+				father = father.getDfsFather();
 			}
 		}
 				
@@ -199,7 +199,7 @@ public class Tree {
 	private List<AgentField> getAllLeaves() {
 		List<AgentField>ans = new ArrayList<AgentField>();
 		for (AgentField a : afs) {
-			if (a.sonsSize()==0) {
+			if (a.sonsDfsSize()==0) {
 				ans.add(a);
 			}
 		}

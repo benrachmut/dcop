@@ -13,9 +13,10 @@ public class Main {
 
 
 	// versions
-		static String algo = "unsynch7";// "unsynchMono";//"mgmUb";//"unsynch0";
+		static String algo = "unsynch1";// "unsynchMono";//"mgmUb";//"unsynch0";
 		static boolean synch = false;
-		static boolean anyTime=true;
+		static boolean anytimeDfs=true;
+		static boolean anytimeBfs=false;
 
 		static String date = "2507";
 
@@ -91,7 +92,7 @@ public class Main {
 			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
 			String header = "";
-			if (anyTime) {
+			if (anytimeDfs || anytimeBfs) {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost";
 			}else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
@@ -245,7 +246,7 @@ public class Main {
 		for (int i = 0; i < iterations; i++) {
 			
 			String s = "";
-			if (anyTime) {
+			if (anytimeBfs || anytimeDfs) {
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getAnytimeCost(i));
 				
 			}else {
@@ -260,10 +261,18 @@ public class Main {
 		Dcop dcop = new Dcop(agents, D, iterations);
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
 
+		Tree pT = new Tree(agents);
+
 		if (!synch) {
-			Tree pT = new Tree(agents);
 			pT.dfs();
 			pT.setIsAboveBelow();
+			
+		}
+		if (anytimeDfs ) {
+			for (AgentField a : agents) {
+				a.setAnytimeFather(a.getDfsFather());
+				a.setAnytimeSons(a.getDfsSons());
+			} 
 		}
 
 		return dcop;

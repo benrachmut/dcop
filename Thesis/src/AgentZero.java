@@ -198,9 +198,9 @@ public class AgentZero {
 			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
 			Permutation currPermutation = reciever.createCurrentPermutation();
 			reciever.addToPermutationPast(currPermutation);	
-			if (Main.anyTime) {
+			if (Main.anytimeBfs || Main.anytimeDfs) {
 				//anytimeNormalMessage(currPermutation);
-				if (reciever.isLeaf()) {
+				if (reciever.isAnytimeLeaf()) {
 					reciever.addToPermutationToSend(currPermutation);
 					//reciever.leafAddAnytimeUp();
 				} else {
@@ -209,7 +209,7 @@ public class AgentZero {
 			}
 		} // normal message
 
-		if (Main.anyTime) {
+		if ((Main.anytimeBfs || Main.anytimeDfs) ) {
 			if (msg instanceof MessageAnyTimeUp) {				
 				reciever.recieveAnytimeUp(msg);						
 			} 
@@ -249,12 +249,12 @@ public class AgentZero {
 	public void createAnyTimeUp() {
 		// List<AgentField> agentsSendAnytime = new ArrayList<AgentField>()
 		for (AgentField a : agents) {
-			boolean isHead = a.getFather() == null;		
+			boolean isHead = a.getAnytimeFather() == null;		
 			if (a.hasAnytimeUpToSend() && !isHead) {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
 					int delay = this.createDelay();
-					MessageNormal m = new MessageAnyTimeUp(a, a.getFather(), delay, p);
+					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay, p);
 					this.messageBox.add(m);
 				}
 				a.removeAllPermutationToSend();
@@ -271,7 +271,7 @@ public class AgentZero {
 		}
 		
 		for (AgentField a : this.agents) {
-			if (!a.isTop() ) {
+			if (!a.isAnytimeTop() ) {
 				MessageAnyTimeDown m= a.moveDownToSend();
 				if (m!=null) {
 					placeAnytimeDownMessageInBox(a, date);
@@ -281,7 +281,7 @@ public class AgentZero {
 	}
 
 	private void placeAnytimeDownMessageInBox(AgentField from, int date) {
-		for (AgentField son : from.getSons()) {
+		for (AgentField son : from.getAnytimeSons()) {
 			AgentField sender = from;
 			AgentField reciever = son;
 			int delay = this.createDelay();
