@@ -7,7 +7,7 @@ public class UnsynchMono extends Solution {
 
 	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
-		this.algo = "Unsynch" ;
+		this.algo = "Unsynch";
 		this.whoCanDecide = new ArrayList<AgentField>();
 
 	}
@@ -18,10 +18,10 @@ public class UnsynchMono extends Solution {
 		for (int i = 0; i < this.itiration; i++) {
 			agentsChangeValue(i);
 			agentZero.sendUnsynchMsgs();
-			if (Main.anytimeDfs) {
-				agentZero.createAnyTimeUp();
-				agentZero.createAnyTimeDown(fathers, i);
-			}
+
+			agentZero.createAnyTimeUp();
+			agentZero.createAnyTimeDown(fathers, i);
+
 			addCostToList();
 			// addFatherCost(fathers);
 			addAnytimeCostToList();
@@ -32,7 +32,7 @@ public class UnsynchMono extends Solution {
 		updateWhoCanDecide(i);
 		agentDecide();
 		agentZero.afterDecideTakeAction(this.whoCanDecide, i);
-		
+
 	}
 
 	public void addAnytimeCostToList() {

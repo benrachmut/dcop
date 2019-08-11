@@ -126,19 +126,17 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
 			reciver.reciveMsg(senderId, senderValue, msg.getDate());
-	
+
 		}
 
 	}
-	
-	
+
 	public void sendUnsynchMsgs() {
 		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
 		for (MessageNormal msg : msgToSend) {
 			manageUnsynchMsgToRecieve(msg);
 		}
 	}
-
 
 	public void emptyMessageBox() {
 		this.messageBox.clear();
@@ -151,7 +149,6 @@ public class AgentZero {
 	public double getP3() {
 		return this.p3;
 	}
-
 
 	public void emptyTimeStempBoxMessage() {
 		this.timeStempMessageBox.clear();
@@ -185,9 +182,6 @@ public class AgentZero {
 		return ans;
 	}
 
-
-
-
 	private void manageUnsynchMsgToRecieve(MessageNormal msg) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
@@ -197,30 +191,26 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
 			Permutation currPermutation = reciever.createCurrentPermutation();
-			reciever.addToPermutationPast(currPermutation);	
-			if (Main.anytimeBfs || Main.anytimeDfs) {
-				//anytimeNormalMessage(currPermutation);
-				if (reciever.isAnytimeLeaf()) {
-					reciever.addToPermutationToSend(currPermutation);
-					//reciever.leafAddAnytimeUp();
-				} else {
-					reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
-				}
+			reciever.addToPermutationPast(currPermutation);
+
+			// anytimeNormalMessage(currPermutation);
+			if (reciever.isAnytimeLeaf()) {
+				reciever.addToPermutationToSend(currPermutation);
+				// reciever.leafAddAnytimeUp();
+			} else {
+				reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
 			}
+
 		} // normal message
 
-		if ((Main.anytimeBfs || Main.anytimeDfs) ) {
-			if (msg instanceof MessageAnyTimeUp) {				
-				reciever.recieveAnytimeUp(msg);						
-			} 
-			if (msg instanceof MessageAnyTimeDown) {				
-				reciever.recieveAnytimeDown(msg);						
-			} 
-		}	
-		
+		if (msg instanceof MessageAnyTimeUp) {
+			reciever.recieveAnytimeUp(msg);
+		}
+		if (msg instanceof MessageAnyTimeDown) {
+			reciever.recieveAnytimeDown(msg);
+		}
+
 	}
-
-
 
 	public void afterDecideTakeAction(List<AgentField> whoCanDecide, int currentIteration) {
 		for (AgentField a : whoCanDecide) {
@@ -239,7 +229,6 @@ public class AgentZero {
 		}
 	}
 
-	
 	private MessageNormal createUnsynchOneMsg(AgentField sender, AgentField reciever, int currentIteration) {
 		int senderValue = sender.getValue();
 		int delay = this.createDelay();
@@ -249,7 +238,7 @@ public class AgentZero {
 	public void createAnyTimeUp() {
 		// List<AgentField> agentsSendAnytime = new ArrayList<AgentField>()
 		for (AgentField a : agents) {
-			boolean isHead = a.getAnytimeFather() == null;		
+			boolean isHead = a.getAnytimeFather() == null;
 			if (a.hasAnytimeUpToSend() && !isHead) {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
@@ -258,7 +247,7 @@ public class AgentZero {
 					this.messageBox.add(m);
 				}
 				a.removeAllPermutationToSend();
-			} // if not had and have something to send	
+			} // if not had and have something to send
 		}
 	}
 
@@ -269,15 +258,15 @@ public class AgentZero {
 				placeAnytimeDownMessageInBox(top, date);
 			}
 		}
-		
+
 		for (AgentField a : this.agents) {
-			if (!a.isAnytimeTop() ) {
-				MessageAnyTimeDown m= a.moveDownToSend();
-				if (m!=null) {
+			if (!a.isAnytimeTop()) {
+				MessageAnyTimeDown m = a.moveDownToSend();
+				if (m != null) {
 					placeAnytimeDownMessageInBox(a, date);
 				}
 			}
-		}	
+		}
 	}
 
 	private void placeAnytimeDownMessageInBox(AgentField from, int date) {
@@ -287,14 +276,11 @@ public class AgentZero {
 			int delay = this.createDelay();
 			int currentIteration = date;
 			Permutation permutationToSend = from.getBestPermutation();
-			MessageNormal m = new MessageAnyTimeDown(sender, reciever, -100, delay, currentIteration, permutationToSend);
+			MessageNormal m = new MessageAnyTimeDown(sender, reciever, -100, delay, currentIteration,
+					permutationToSend);
 			this.messageBox.add(m);
 		}
-		
+
 	}
-	
-	
-	
-	
-	
+
 }// class

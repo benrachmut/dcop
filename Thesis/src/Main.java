@@ -11,37 +11,35 @@ import java.util.Random;
 
 public class Main {
 
-
 	// versions
-		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";//"unsynch0";
-		static boolean synch = false;
-		static boolean anytimeDfs=true;
-		//static boolean anytimeBfs=false;
+	static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";//"unsynch0";
+	static boolean synch = false;
+	//static boolean anytimeDfs = true;
+	// static boolean anytimeBfs=false;
 
-		static String date = "2507";
+	static String date = "1108";
 
-		// -- variables of dcop problem
-		static int A = 50;// 50; // 50 number of agents
-		static int D = 10; // 10 size of domain for each agent
-		static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
-		static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
-		static int costMax = 100; // 100 the max value of cost
+	// -- variables of dcop problem
+	static int A = 50;// 50; // 50 number of agents
+	static int D = 10; // 10 size of domain for each agent
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
+	static int costMax = 100; // 100 the max value of cost
 
-		// -- communication protocol
-		static double[] p3s =  { 1 }; // prob of communication to have delay
-		static boolean[] dateKnowns = { true };// { true, false };
-		static int[] delayUBs = {10};// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
-													// 10, 25, 50, 100 };
-		static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
-									// have delay
+	// -- communication protocol
+	static double[] p3s = { 1 }; // prob of communication to have delay
+	static boolean[] dateKnowns = { true };// { true, false };
+	static int[] delayUBs = { 10 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+									// 10, 25, 50, 100 };
+	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
+								// have delay
 
-		// -- Experiment time
-		static int meanReps = 1;// 10; // number of reps for every solve process
-		static int iterations = 4000;// 1000;
-		static Dcop dcop;
-		static boolean dateKnown;
+	// -- Experiment time
+	static int meanReps = 1;// 10; // number of reps for every solve process
+	static int iterations = 4000;// 1000;
+	static Dcop dcop;
+	static boolean dateKnown;
 
- 
 	// -- characters
 	static AgentField[] agents;
 	static AgentZero agentZero;
@@ -49,7 +47,6 @@ public class Main {
 	// -- other
 	static List<String> solutions = new ArrayList<String>();
 	static List<String> fatherSolutions = new ArrayList<String>();
-
 
 	static Random rP1 = new Random();
 	static Random rP2 = new Random();
@@ -70,11 +67,12 @@ public class Main {
 
 	public static void main(String[] args) {
 		// initVariables();
-		//setSynchBoolean();
+		// setSynchBoolean();
 		runExperiment();
 		printDcops();
 	}
 
+	/*
 	private static void setSynchBoolean() {
 		boolean unsynchMono = algo.equals("unsynchMono");
 
@@ -85,6 +83,7 @@ public class Main {
 		}
 
 	}
+	*/
 
 	private static void printDcops() {
 		BufferedWriter out = null;
@@ -92,9 +91,9 @@ public class Main {
 			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
 			String header = "";
-			if (anytimeDfs) {
+			if (!synch) {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost";
-			}else {
+			} else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			}
 			out.write(header);
@@ -201,16 +200,12 @@ public class Main {
 		boolean mgmUb = algo.equals("mgmUb");
 
 		boolean unsynchMono = algo.equals("unsynchMono");
-		
-
-
 
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents, agentZero, meanRun);
 
 		}
-		
-		
+
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
 
@@ -230,12 +225,13 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			
+
 			String s = "";
-			if (anytimeDfs) {
-				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getAnytimeCost(i));
-				
-			}else {
+			if (!synch) {
+				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) + ","
+						+ sol.getAnytimeCost(i));
+
+			} else {
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i));
 			}
 			solutions.add(s);
@@ -249,17 +245,21 @@ public class Main {
 
 		Tree pT = new Tree(agents);
 
-		if (!synch) {
+		
+			
+		if (algo.equals("unsynchMono")) {
 			pT.dfs();
 			pT.setIsAboveBelow();
 			
-		}
-		if (anytimeDfs ) {
 			for (AgentField a : agents) {
 				a.setAnytimeFather(a.getDfsFather());
 				a.setAnytimeSons(a.getDfsSons());
-			} 
+			}
 		}
+			
+
+		
+		
 
 		return dcop;
 	}
@@ -273,8 +273,7 @@ public class Main {
 
 	private static void restartBetweenAlgo(Solution sol, String protocol) {
 		addToSolutionString(sol, protocol);
-		
-		
+
 		restartOther();
 
 	}
@@ -286,7 +285,6 @@ public class Main {
 		agentZero.emptyTimeStempBoxMessage();
 
 	}
-	
 
 	private static void restartAgent() {
 		for (int i = 0; i < agents.length; i++) {
@@ -295,7 +293,7 @@ public class Main {
 			agents[i].setFirstValueToValue();
 			// agents[i].setReciveAll(false);
 			// agents[i].setTimeStemp(0);
-			//agents[i].resetNumOfInterationForChange();
+			// agents[i].resetNumOfInterationForChange();
 			agents[i].setAllBelowMap(0);
 			agents[i].setAllAboveMap(0);
 			agents[i].resetMsgUpAndDown();
@@ -307,7 +305,6 @@ public class Main {
 			agents[i].resetBestPermutation();
 			agents[i].resettopHasAnytimeNews();
 			agents[i].addFirstCoupleToCounterAndVal();
-
 
 		}
 
