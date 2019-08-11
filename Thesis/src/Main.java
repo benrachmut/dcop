@@ -13,10 +13,10 @@ public class Main {
 
 
 	// versions
-		static String algo = "unsynch1";// "unsynchMono";//"mgmUb";//"unsynch0";
+		static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";//"unsynch0";
 		static boolean synch = false;
 		static boolean anytimeDfs=true;
-		static boolean anytimeBfs=false;
+		//static boolean anytimeBfs=false;
 
 		static String date = "2507";
 
@@ -92,7 +92,7 @@ public class Main {
 			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
 			String header = "";
-			if (anytimeDfs || anytimeBfs) {
+			if (anytimeDfs) {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost";
 			}else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
@@ -200,31 +200,17 @@ public class Main {
 		boolean mgm = algo.equals("mgm");
 		boolean mgmUb = algo.equals("mgmUb");
 
-		boolean unsynch1 = algo.equals("unsynch1");
-		boolean unsynch3 = algo.equals("unsynch3");
-		boolean unsynch5 = algo.equals("unsynch5");
-		boolean unsynch7 = algo.equals("unsynch7");
+		boolean unsynchMono = algo.equals("unsynchMono");
+		
 
 
 
-		if (unsynch1) {
-			ans = new Unsynch(dcop, agents, agentZero, meanRun,1);
+		if (unsynchMono) {
+			ans = new UnsynchMono(dcop, agents, agentZero, meanRun);
 
 		}
 		
-		if (unsynch3) {
-			ans = new Unsynch(dcop, agents, agentZero, meanRun,0.3);
-
-		}
 		
-		if (unsynch5) {
-			ans = new Unsynch(dcop, agents, agentZero, meanRun,0.5);
-
-		}
-		if (unsynch7) {
-			ans = new Unsynch(dcop, agents, agentZero, meanRun,0.7);
-
-		}
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
 
@@ -246,7 +232,7 @@ public class Main {
 		for (int i = 0; i < iterations; i++) {
 			
 			String s = "";
-			if (anytimeBfs || anytimeDfs) {
+			if (anytimeDfs) {
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) +","+sol.getAnytimeCost(i));
 				
 			}else {

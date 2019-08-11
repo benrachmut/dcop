@@ -866,5 +866,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.anytimeSons = input;
 		
 	}
+	
+	public void addAnytimeSon(AgentField input) {
+		this.anytimeSons.add(input);
+		
+	}
 
 }

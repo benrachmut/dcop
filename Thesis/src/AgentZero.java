@@ -222,7 +222,7 @@ public class AgentZero {
 
 
 
-	public void iterateOverWhoCanDecide(List<AgentField> whoCanDecide, int currentIteration) {
+	public void afterDecideTakeAction(List<AgentField> whoCanDecide, int currentIteration) {
 		for (AgentField a : whoCanDecide) {
 			a.setDecisionCounter(a.getDecisonCounter() + 1);
 			a.setCounterAndValueHistory();

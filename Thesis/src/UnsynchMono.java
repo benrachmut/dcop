@@ -1,16 +1,14 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Unsynch extends Solution {
+public class UnsynchMono extends Solution {
 
 	private List<AgentField> whoCanDecide;
-	private double stochastic;
 
-	public Unsynch(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stoch) {
+	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
-		this.algo = "Unsynch" + stoch;
+		this.algo = "Unsynch" ;
 		this.whoCanDecide = new ArrayList<AgentField>();
-		this.stochastic = stoch;
 
 	}
 
@@ -18,11 +16,9 @@ public class Unsynch extends Solution {
 	public void solve() {
 		List<AgentField> fathers = findDfsHeadOfTree();
 		for (int i = 0; i < this.itiration; i++) {
-			updateWhoCanDecide(i);
-			agentDecide();
-			agentZero.iterateOverWhoCanDecide(this.whoCanDecide, i);
+			agentsChangeValue(i);
 			agentZero.sendUnsynchMsgs();
-			if (Main.anytimeBfs ||Main.anytimeDfs) {
+			if (Main.anytimeDfs) {
 				agentZero.createAnyTimeUp();
 				agentZero.createAnyTimeDown(fathers, i);
 			}
@@ -30,6 +26,13 @@ public class Unsynch extends Solution {
 			// addFatherCost(fathers);
 			addAnytimeCostToList();
 		}
+	}
+
+	private void agentsChangeValue(int i) {
+		updateWhoCanDecide(i);
+		agentDecide();
+		agentZero.afterDecideTakeAction(this.whoCanDecide, i);
+		
 	}
 
 	public void addAnytimeCostToList() {
@@ -116,7 +119,7 @@ public class Unsynch extends Solution {
 				a.unsynchDecide();
 
 			} else {
-				a.dsaDecide(stochastic);
+				a.dsaDecide(1);
 			}
 		}
 	}
