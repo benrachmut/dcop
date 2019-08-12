@@ -3,7 +3,7 @@ import java.util.List;
 
 public abstract class Solution {
 
-	protected int itiration;
+	protected int iteration;
 	protected int meanRun;
 	protected Dcop dcop;
 	protected AgentField[] agents;
@@ -19,7 +19,7 @@ public abstract class Solution {
 	public Solution(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		this.meanRun = meanRun + 1;
 		this.dcop = dcop;
-		this.itiration = Main.iterations;
+		this.iteration = Main.iterations;
 		this.agents = agents;
 		this.cost = 0;
 		this.agentZero = aZ;
@@ -62,7 +62,7 @@ public abstract class Solution {
 
 	public abstract void solve();
 
-	public abstract void agentDecide();
+	public abstract void agentDecide(int i);
 
 	@Override
 	public String toString() {

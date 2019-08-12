@@ -17,7 +17,7 @@ public class MGMub extends MGM {
 	public void solve() {
 		boolean first = true;
 		int counter = 0;
-		for (int i = 0; i < this.itiration; i++) {
+		for (int i = 0; i < this.iteration; i++) {
 			if (!first) {
 				sendAndRecieve(i);
 				first = true;
@@ -25,11 +25,11 @@ public class MGMub extends MGM {
 				agentsSetR();
 				sendAndRecieveRi(i);
 				if (ub == 0) {
-					agentDecide();
+					agentDecide(i);
 
 				}else {
 					if (counter == ub) {
-						agentDecide();
+						agentDecide(i);
 						counter = 0;
 					}
 					counter++;

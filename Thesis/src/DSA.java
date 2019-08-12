@@ -12,24 +12,23 @@ public class DSA extends Solution {
 		Main.rDsa.setSeed(0);
 
 		
-		//this.solve();
 
 	}
 
 	@Override
 	public void solve() {
 
-		for (int i = 0; i < this.itiration; i++) {
+		for (int i = 0; i < this.iteration; i++) {
 			this.sendAndRecieve(i);
 			
-			agentDecide();
+			agentDecide(i);
 			addCostToList();
 
 		}
 	}
 	@Override
 
-	public void agentDecide() {
+	public void agentDecide(int i) {
 		for (AgentField a : agents) {
 			a.dsaDecide(this.stochastic);
 		}

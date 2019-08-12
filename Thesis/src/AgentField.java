@@ -26,11 +26,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private AgentField dfsFather;
 	private List<AgentField> dfsSons;
 
-	
 	private AgentField anytimeFather;
 	private List<AgentField> anytimeSons;
 
-	
+	private Map<Integer, Integer> neigborCounter;
+
 	private Map<Integer, Integer> aboveMap;
 	private Map<Integer, Integer> belowMap;
 
@@ -47,13 +47,16 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, Integer> counterAndValue;
 	private Permutation bestPermuation;
 	private int currentAnyTimeDate;
+	private boolean unsynchFlag;
 
 	public AgentField(int domainSize, int id) {
 		super(id);
 		this.domain = createDomain(domainSize);
 
 		if (Main.synch) {
-			this.firstValue = Main.getRandomInt(Main.rFirstValue, 0, domainSize - 1);
+			this.firstValue = createRandFirstValue(); 
+					
+					
 			this.anytimeFirstValue = firstValue;
 		} else {
 			this.firstValue = -1;
@@ -64,17 +67,16 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
 		this.neighbor = new HashMap<Integer, MessageRecieve>();
 		this.neighborR = new HashMap<Integer, MessageRecieve>();
-		// this.permutations = new HashSet<Permutation>();
 		// --- tree stuff
 		this.dfsFather = null;
 		this.dfsSons = new ArrayList<AgentField>();
 
-		
 		this.anytimeFather = null;
 		this.anytimeSons = new ArrayList<AgentField>();
-		
+
 		aboveMap = new HashMap<Integer, Integer>();
 		belowMap = new HashMap<Integer, Integer>();
+
 		msgDown = null;
 		msgUp = null;
 		this.bestPermuation = null;
@@ -90,11 +92,30 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.counterAndValue.put(decisonCounter, value);
 
 		iHaveAnytimeNews = false;
+		unsynchFlag = false;
+
+	}
+
+	public int createRandFirstValue() {
+		return Main.getRandomInt(Main.rFirstValue, 0, this.domain.length - 1);
+	}
+
+	public void restartNeighborCounter() {
+		
+		neigborCounter = new HashMap<Integer, Integer>();
+		for (Integer i : neighbor.keySet()) {
+			this.neigborCounter.put(i, 0);
+		}
+
 	}
 
 	public void initSonsAnytimeMessages() {
 		this.sonsAnytimePermutations = new HashSet<Permutation>();
 
+	}
+
+	public void setUnsynchFlag(boolean input) {
+		this.unsynchFlag = input;
 	}
 
 	public void setDfsFather(AgentField father) {
@@ -116,8 +137,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public boolean isTopHasAnytimeNews() {
 		return this.iHaveAnytimeNews;
 	}
-
-	
 
 	public void setFirstValueToValue() {
 		this.value = firstValue;
@@ -406,7 +425,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-
 	public void addBelow() {
 		List<Integer> temp = new ArrayList<Integer>();
 		for (int n : this.neighbor.keySet()) {
@@ -458,10 +476,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void reciveUnsynchMonoMsg(int senderId, int senderValue, int date) {
 		this.reciveMsg(senderId, senderValue, date);
-		this.updateCounterAboveOrBelow( senderId,  senderValue,  date);
+		// this.updateCounterAboveOrBelow( senderId, senderValue, date);
 	}
 
-	private void updateCounterAboveOrBelow(int senderId, int senderValue, int date) {
+	public void updateCounterAboveOrBelowMono(int senderId) {
 		boolean isAbove = this.aboveMap.containsKey(senderId);
 		int currentCounter;
 		if (isAbove) {
@@ -472,10 +490,18 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			currentCounter = belowMap.get(senderId);
 			belowMap.put(senderId, currentCounter + 1);
 		}
-		// if (this.id == 9) {
-		// System.out.println("blah");
-		// }
+
+	}
+
+	public void updateCounterAboveOrBelowNonMono(int senderId) {
+
+		if (!neigborCounter.keySet().contains(senderId)) {
+			System.out.println();
+		}
 		
+		int currentCounter = neigborCounter.get(senderId);
+		neigborCounter.put(senderId, currentCounter + 1);
+
 	}
 
 	public boolean unsynchAbilityToDecide() {
@@ -608,13 +634,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		return m;
 	}
-/*
-	public void leafAddAnytimeUp() {
-		Permutation p = createCurrentPermutation();
-		// this.permutationsPast.add(p);
-		this.permutationsToSend.add(p);
-	}
-	*/
+	/*
+	 * public void leafAddAnytimeUp() { Permutation p = createCurrentPermutation();
+	 * // this.permutationsPast.add(p); this.permutationsToSend.add(p); }
+	 */
 
 	public void resetPermutationsToSend() {
 		this.permutationsToSend = null;
@@ -631,12 +654,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	 * @return
 	 */
 	public void recieveAnytimeUp(MessageNormal msg) {
-		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;	
+		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 
 		Permutation p = mau.getCurrentPermutation();
 
 		Set<Permutation> belowCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(p);
-		Set<Permutation> pastCoherentWithMessage  = combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(p);
+		Set<Permutation> pastCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(p);
 
 		if (belowCoherentWithMessage.isEmpty() || pastCoherentWithMessage.isEmpty()) {
 			return;
@@ -655,7 +678,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 				}
 			}
 		}
-		
+
 	}
 
 	private void handlePToSend(Permutation pToSend) {
@@ -686,11 +709,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private void doPermutationToSend(Permutation pToSend) {
 		bestPermuation = pToSend;
-		
+
 		if (bestPermuation.getM().get(id) == null) {
 			System.out.println();
 		}
-		
+
 		int bestCounter = bestPermuation.getM().get(id);
 
 		this.anytimeValue = counterAndValue.get(bestCounter);
@@ -698,7 +721,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		// it is questionalbe!!!!
 	}
 
-	private Set<Permutation> combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(Permutation permutationFromMessage) {
+	private Set<Permutation> combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(
+			Permutation permutationFromMessage) {
 		Set<Permutation> ans = new HashSet<Permutation>();
 		for (Permutation pastPermutation : permutationsPast) {
 			if (pastPermutation.isCoherent(permutationFromMessage)) {
@@ -726,7 +750,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		boolean flag = false;
 		Set<Permutation> pToAdd = new HashSet<Permutation>();
 		Set<Permutation> pToRemove = new HashSet<Permutation>();
-		
+
 		for (Permutation sonsPermutation : sonsAnytimePermutations) {
 			if (msgPermutation.isCoherent(sonsPermutation)) {
 				flag = true;
@@ -757,10 +781,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return pToAdd;
 	}
 
-	
-
 	public void iterateOverSonsAndCombineWithInputPermutation(Permutation input) {
-		//Permutation myPermutation = this.createCurrentPermutation();
+		// Permutation myPermutation = this.createCurrentPermutation();
 
 		for (Permutation sonPermutation : this.sonsAnytimePermutations) {
 			if (sonPermutation.isCoherent(input)) {
@@ -808,23 +830,19 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void addToPermutationToSend(Permutation input) {
 		this.permutationsToSend.add(input);
-		
+
 	}
-	
-	
+
 	/*
-	public boolean isFatherOfInput(AgentField input) {
+	 * public boolean isFatherOfInput(AgentField input) {
+	 * 
+	 * return this.father.getId() == input.getId(); }
+	 * 
+	 * public boolean isTop() { return this.father == null; }
+	 * 
+	 * 
+	 */
 
-		return this.father.getId() == input.getId();
-	}
-
-	public boolean isTop() {
-		return this.father == null;
-	}
-
-	
-*/
-	
 	private boolean permutationContainAllSon(Permutation itPermutation) {
 		for (AgentField son : anytimeSons) {
 			int sonId = son.getId();
@@ -835,11 +853,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		return true;
 	}
-	
+
 	public void addDfsSon(AgentField son) {
 		dfsSons.add(son);
 	}
-	
+
 	public int sonsDfsSize() {
 		return this.dfsSons.size();
 	}
@@ -865,17 +883,21 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void setAnytimeFather(AgentField input) {
 		this.anytimeFather = input;
-		
+
 	}
 
 	public void setAnytimeSons(List<AgentField> input) {
 		this.anytimeSons = input;
-		
+
 	}
-	
+
 	public void addAnytimeSon(AgentField input) {
 		this.anytimeSons.add(input);
-		
+
+	}
+
+	public boolean getUnsynchFlag() {
+		return this.unsynchFlag;
 	}
 
 }

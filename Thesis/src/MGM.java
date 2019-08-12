@@ -10,11 +10,11 @@ public class MGM extends Solution {
 	@Override
 	public void solve() {
 		boolean first = true;
-		for (int i = 0; i < this.itiration; i++) {
+		for (int i = 0; i < this.iteration; i++) {
 			if (!first) {
 				agentsSetR();
 				sendAndRecieveRi(i);
-				agentDecide();
+				agentDecide(i);
 				first = true;
 			} else {
 
@@ -41,7 +41,7 @@ public class MGM extends Solution {
 	}
 
 	@Override
-	public void agentDecide() {
+	public void agentDecide(int i) {
 		for (AgentField a : agents) {
 			a.mgmDecide();
 		}

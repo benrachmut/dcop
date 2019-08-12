@@ -10,59 +10,18 @@ import java.util.Vector;
 public class Dcop {
 
 	private AgentField[] agentsF;
-	// private double p1;// prob for neighbors
-	// private double p2;// prob for domain of neigbors to have cost
-	// private double p3;// prob of connection between neighbors to have delay;
-	// private int itirationGap;//
 	private Set<Constraint> constraints;
-	// private Map<AgentField, Set<AgentField>> neighbors;
-	// private AgentZero agentZero
 	private Set<Neighbors> neighbors;
 	private int iterations;
-	// private AgentZero agentZero;
-	// private int delayUpperBound;
-
+	
 	public Dcop(AgentField[] agents, int d, int iterations) {
 		this.agentsF = agents;
-		// this.p1 = p1;
-		// this.p2 = p2;
-		// this.p3 = p3;
-		// this.itirationGap = itirationGap;
-		// this.delayUpperBound = upperBound;
-
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
 		this.constraints = createConstraints();
-		// createConnectionFlud();
-
-		// this.agentZero = az;
-		// this.neighbors = new HashMap<AgentField, Set<AgentField>>();
+	
 	}
-	/*
-	 * public Dcop(Dcop dcop, double p3) { this.agentsF= dcop.getAgentsF(); this.p1
-	 * =dcop.getP1(); this.p2 = dcop.getP2(); this.p3 = p3; //this.itirationGap =
-	 * itirationGap; this.neighbors = dcop.getNeighbors();
-	 * 
-	 * setAllNeighborFludToFalse(); this.constraints = dcop.getConstraints();
-	 * //createConnectionFlud(); }
-	 */
 
-	/*
-	 * private void setAllNeighborFludToFalse() { for (Neighbors n : neighbors) {
-	 * n.setDelay12(false); n.setDelay21(false);
-	 * 
-	 * 
-	 * } }
-	 */
-	/*
-	 * private void createConnectionFlud() { double rnd; for (Neighbors n :
-	 * this.neighbors) { n.createFlud();
-	 * 
-	 * rnd = Main.r.nextDouble(); if (rnd <p3 ) { n.setDelay12(true); } rnd =
-	 * Main.r.nextDouble(); if ( rnd < p3) { n.setDelay21(true); } }
-	 * 
-	 * }
-	 */
 
 	private Set<Constraint> createConstraints() {
 		Set<Constraint> ans = new HashSet<Constraint>();
@@ -124,26 +83,10 @@ public class Dcop {
 
 	private void addToMapsAgents(AgentField agentInput, int idOther) {
 		agentInput.addNeighbor(idOther);
-		// agentInput.addReciveveAll(idOther);
 		agentInput.addNeighborR(idOther);
-		// agentInput.addReciveveAllR(idOther);
 
 	}
-	/*
-	 * public void addToNeighbors(AgentField af1, AgentField af2) {
-	 * 
-	 * addOneWay(af1, af2); addOneWay(af2, af1);
-	 * 
-	 * }
-	 */
-	/*
-	 * private void addOneWay(AgentField af1, AgentField af2) { if
-	 * (!neighbors.containsKey(af1)) { this.neighbors.put(af1, new
-	 * HashSet<AgentField>()); } Set<AgentField> n = this.neighbors.get(af1);
-	 * n.add(af2);
-	 * 
-	 * }
-	 */
+	
 
 	public int calCostPerNeighbor(Neighbors n, boolean real) {
 		Agent an1 = (AgentField)n.getA1();
@@ -173,23 +116,10 @@ public class Dcop {
 	}
 
 	public Set<Neighbors> getNeighbors() {
-		// TODO Auto-generated method stub
 		return this.neighbors;
 	}
 
-	/*
-	 * public void changeCommunicationProtocol(double p) { restartDelayFalse();
-	 * this.p3=p; createConnectionFlud();
-	 * 
-	 * }
-	 */
-
-	/*
-	 * private void restartDelayFalse() { for (Neighbors n : this.neighbors) {
-	 * n.setDelay12(false); n.setDelay21(false); }
-	 * 
-	 * }
-	 */
+	
 	public AgentField[] getAgentsF() {
 		return agentsF;
 	}
@@ -222,17 +152,6 @@ public class Dcop {
 		return ans;
 	}
 
-	//private int calRealAnytimeCostPerNeighbor(Neighbors n) {
-	/*
-	public int calRealCost() {
-		int ans = 0;
 
-		for (Neighbors n : neighbors) {
-			ans = ans + calCostPerNeighbor(n, true);
-		}
-
-		return ans;
-	}
-	*/
 
 }

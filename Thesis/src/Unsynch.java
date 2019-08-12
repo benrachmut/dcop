@@ -12,17 +12,19 @@ public abstract class Unsynch  extends Solution {
 	@Override
 	public void solve() {		
 		List<AgentField> fathers = findHeadOfTree();
-		for (int i = 0; i < this.itiration; i++) {
-			agentsChangeValue(i);
+		for (int i = 0; i < this.iteration; i++) {
+
+			
+			updateWhoCanDecide(i);
+			agentDecide(i);
+			afterDecideTakeAction(i);
 			agentsSendMsgs();
 			createAnytime(fathers, i);
 			addCostToTables();
+
 		}
 	}
 	
-
-	
-
 	private void addCostToTables() {
 		addCostToList();
 		addAnytimeCostToList();
@@ -37,9 +39,55 @@ public abstract class Unsynch  extends Solution {
 		}
 		return ans;
 	}
-	protected abstract void agentsSendMsgs();
-	protected abstract void agentsChangeValue(int i);
-	protected abstract void createAnytime(List<AgentField> fathers, int i);
+	protected abstract void updateWhoCanDecide(int i);
+	// protected abstract void agentDecide();
+	protected abstract void afterDecideTakeAction(int i);
+
+	public abstract void agentsSendMsgs();
+
+	protected void createAnytime(List<AgentField> fathers, int i) {
+		agentZero.createAnyTimeUpUnsynchMono();
+		agentZero.createAnyTimeDownUnsynchMono(fathers, i);	
+	}
+
+	protected boolean atlistOneAgentMinusOne(boolean real) {
+
+		for (AgentField a : agents) {
+
+			if (real) {
+				if (a.getValue() == -1) {
+					return true;
+				}
+			} else {
+				if (a.getAnytimeValue() == -1) {
+					return true;
+				}
+			}
+
+		}
+		return false;
+	}
+	
+	@Override
+	public void addCostToList() {
+		if (atlistOneAgentMinusOne(true)) {
+			this.realCost.add(Integer.MAX_VALUE);
+		} else {
+			super.addCostToList();
+		}
+	}
+	
+	
+	@Override
+	public void addAnytimeCostToList() {
+		if (atlistOneAgentMinusOne(false)) {
+			this.anytimeCost.add(Integer.MAX_VALUE);
+		} else {
+			super.addAnytimeCostToList();
+		}
+
+	}
+	
 
 	
 	

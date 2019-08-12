@@ -131,12 +131,17 @@ public class AgentZero {
 
 	}
 
-	public void sendUnsynchMonoMsgs() {
+	public List<MessageNormal> sendUnsynchMonoMsgs(boolean isMonotonic) {
 		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
 		for (MessageNormal msg : msgToSend) {
-			manageUnsynchMonoMsgToRecieve(msg);
+			manageUnsynchMsgToRecieve(msg, isMonotonic);
 		}
+		return msgToSend;
 	}
+	
+	
+	
+	
 
 	public void emptyMessageBox() {
 		this.messageBox.clear();
@@ -182,7 +187,7 @@ public class AgentZero {
 		return ans;
 	}
 
-	private void manageUnsynchMonoMsgToRecieve(MessageNormal msg) {
+	private void manageUnsynchMsgToRecieve(MessageNormal msg, boolean isMonotonic) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
 
@@ -190,13 +195,18 @@ public class AgentZero {
 
 			int senderValue = msg.getSenderValue();
 			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
+			
+			if (isMonotonic) {
+				reciever.updateCounterAboveOrBelowMono( senderId);
+			}
+			else {
+				reciever.updateCounterAboveOrBelowNonMono(senderId);
+			}
 			Permutation currPermutation = reciever.createCurrentPermutation();
 			reciever.addToPermutationPast(currPermutation);
 
-			// anytimeNormalMessage(currPermutation);
 			if (reciever.isAnytimeLeaf()) {
 				reciever.addToPermutationToSend(currPermutation);
-				// reciever.leafAddAnytimeUp();
 			} else {
 				reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
 			}
@@ -211,14 +221,18 @@ public class AgentZero {
 		}
 
 	}
+	
+	
 
-	public void afterDecideTakeAction(List<AgentField> whoCanDecide, int currentIteration) {
+	public void afterDecideTakeActionUnsynch(List<AgentField> whoCanDecide, int currentIteration) {
 		for (AgentField a : whoCanDecide) {
 			a.setDecisionCounter(a.getDecisonCounter() + 1);
 			a.setCounterAndValueHistory();
 			createUnsynchMsgs(a, currentIteration);
 		}
 	}
+	
+	
 
 	private void createUnsynchMsgs(AgentField currentAgent, int currentIteration) {
 
@@ -282,5 +296,7 @@ public class AgentZero {
 		}
 
 	}
+
+	
 
 }// class

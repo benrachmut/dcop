@@ -12,7 +12,7 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";//"unsynch0";
+	static String algo = "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
 	//static boolean anytimeDfs = true;
 	static boolean anytimeBfs=false;
@@ -36,7 +36,7 @@ public class Main {
 
 	// -- Experiment time
 	static int meanReps = 1;// 10; // number of reps for every solve process
-	static int iterations = 4000;// 1000;
+	static int iterations = 1000;// 1000;
 	static Dcop dcop;
 	static boolean dateKnown;
 
@@ -196,6 +196,8 @@ public class Main {
 		Solution ans = null;
 
 		boolean dsa7 = algo.equals("dsa7");
+		boolean dsaUnsynch7 = algo.equals("dsaUnsynch7");
+
 		boolean mgm = algo.equals("mgm");
 		boolean mgmUb = algo.equals("mgmUb");
 
@@ -203,13 +205,16 @@ public class Main {
 
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents, agentZero, meanRun);
-
 		}
 
 		if (dsa7) {
 			ans = new DSA(dcop, agents, agentZero, meanRun, 0.7);
 
 		}
+		if (dsaUnsynch7) {
+			ans = new UnsynchDsa(dcop, agents, agentZero, meanRun, 0.7);
+		}
+		
 		if (mgm) {
 			ans = new MGM(dcop, agents, agentZero, meanRun);
 
@@ -241,6 +246,9 @@ public class Main {
 	private static Dcop createDcop() {
 		agents = initAgentsFieldArray();
 		Dcop dcop = new Dcop(agents, D, iterations);
+		for (AgentField a : agents) {
+			a.restartNeighborCounter();
+		}
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
 
 
@@ -306,7 +314,8 @@ public class Main {
 			agents[i].resetBestPermutation();
 			agents[i].resettopHasAnytimeNews();
 			agents[i].addFirstCoupleToCounterAndVal();
-
+			agents[i].setUnsynchFlag(false);
+			agents[i].restartNeighborCounter();
 		}
 
 	}
