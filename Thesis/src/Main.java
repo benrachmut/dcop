@@ -15,14 +15,14 @@ public class Main {
 	static String algo = "unsynchMono";// "unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
 	//static boolean anytimeDfs = true;
-	// static boolean anytimeBfs=false;
+	static boolean anytimeBfs=false;
 
-	static String date = "1108";
+	static String date = "1308";
 
 	// -- variables of dcop problem
-	static int A = 50;// 50; // 50 number of agents
+	static int A = 10;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
@@ -243,24 +243,25 @@ public class Main {
 		Dcop dcop = new Dcop(agents, D, iterations);
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
 
-		Tree pT = new Tree(agents);
 
 		
 			
 		if (algo.equals("unsynchMono")) {
-			pT.dfs();
-			pT.setIsAboveBelow();
+			Tree psaduoTree = new Tree(agents);
+			psaduoTree.dfs();
+			psaduoTree.setIsAboveBelow();
 			
 			for (AgentField a : agents) {
 				a.setAnytimeFather(a.getDfsFather());
 				a.setAnytimeSons(a.getDfsSons());
 			}
+
 		}
-			
-
 		
-		
-
+		if (anytimeBfs) {
+			Tree bfs = new Tree(agents);
+			bfs.bfs();
+		}
 		return dcop;
 	}
 

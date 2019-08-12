@@ -131,10 +131,10 @@ public class AgentZero {
 
 	}
 
-	public void sendUnsynchMsgs() {
+	public void sendUnsynchMonoMsgs() {
 		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
 		for (MessageNormal msg : msgToSend) {
-			manageUnsynchMsgToRecieve(msg);
+			manageUnsynchMonoMsgToRecieve(msg);
 		}
 	}
 
@@ -182,7 +182,7 @@ public class AgentZero {
 		return ans;
 	}
 
-	private void manageUnsynchMsgToRecieve(MessageNormal msg) {
+	private void manageUnsynchMonoMsgToRecieve(MessageNormal msg) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
 
@@ -235,7 +235,7 @@ public class AgentZero {
 		return new MessageNormal(sender, reciever, senderValue, delay, currentIteration);
 	}
 
-	public void createAnyTimeUp() {
+	public void createAnyTimeUpUnsynchMono() {
 		// List<AgentField> agentsSendAnytime = new ArrayList<AgentField>()
 		for (AgentField a : agents) {
 			boolean isHead = a.getAnytimeFather() == null;
@@ -251,7 +251,7 @@ public class AgentZero {
 		}
 	}
 
-	public void createAnyTimeDown(List<AgentField> fathers, int date) {
+	public void createAnyTimeDownUnsynchMono(List<AgentField> fathers, int date) {
 		for (AgentField top : fathers) {
 			if (top.isTopHasAnytimeNews()) {
 				top.resettopHasAnytimeNews();

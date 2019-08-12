@@ -1,34 +1,18 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnsynchMono extends Solution {
+public class UnsynchMono extends Unsynch {
 
-	private List<AgentField> whoCanDecide;
 
 	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
-		this.algo = "Unsynch";
-		this.whoCanDecide = new ArrayList<AgentField>();
+		this.algo = "unsynchMono";
 
 	}
 
-	@Override
-	public void solve() {
-		List<AgentField> fathers = findDfsHeadOfTree();
-		for (int i = 0; i < this.itiration; i++) {
-			agentsChangeValue(i);
-			agentZero.sendUnsynchMsgs();
 
-			agentZero.createAnyTimeUp();
-			agentZero.createAnyTimeDown(fathers, i);
 
-			addCostToList();
-			// addFatherCost(fathers);
-			addAnytimeCostToList();
-		}
-	}
-
-	private void agentsChangeValue(int i) {
+	public void agentsChangeValue(int i) {
 		updateWhoCanDecide(i);
 		agentDecide();
 		agentZero.afterDecideTakeAction(this.whoCanDecide, i);
@@ -43,21 +27,12 @@ public class UnsynchMono extends Solution {
 		}
 
 	}
-	/*
-	 * private void addFatherCost(List<AgentField> fathers) { int ans = 0; for
-	 * (AgentField f : fathers) { Permutation p = f.getBestPermutation(); if (p ==
-	 * null) { this.fatherCost.add(Integer.MAX_VALUE); return; } else { if (ans +
-	 * p.getCost() >Integer.MAX_VALUE-200) { this.fatherCost.add(Integer.MAX_VALUE);
-	 * return; } ans = (ans + p.getCost())/2; } } if (ans == 0) {
-	 * this.fatherCost.add(Integer.MAX_VALUE); return; }
-	 * 
-	 * this.fatherCost.add(ans); }
-	 */
+	
 
 	private void updateWhoCanDecide(int i) {
 		List<AgentField> temp = new ArrayList<AgentField>();
 		if (i == 0) {
-			temp = findDfsHeadOfTree();
+			temp = findHeadOfTree();
 		} else {
 			temp = iterateAgentsWhoCan();
 		}
@@ -75,15 +50,7 @@ public class UnsynchMono extends Solution {
 		return ans;
 	}
 
-	private List<AgentField> findDfsHeadOfTree() {
-		List<AgentField> ans = new ArrayList<AgentField>();
-		for (AgentField a : agents) {
-			if (a.getDfsFather() == null) {
-				ans.add(a);
-			}
-		}
-		return ans;
-	}
+	
 
 	@Override
 	public void addCostToList() {
@@ -122,5 +89,15 @@ public class UnsynchMono extends Solution {
 				a.dsaDecide(1);
 			}
 		}
+	}
+
+	public void agentsSendMsgs() {
+		agentZero.sendUnsynchMonoMsgs();
+	}
+
+	protected void createAnytime(List<AgentField> fathers, int i) {
+		agentZero.createAnyTimeUpUnsynchMono();
+		agentZero.createAnyTimeDownUnsynchMono(fathers, i);
+		
 	}
 }

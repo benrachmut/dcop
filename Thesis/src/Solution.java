@@ -100,4 +100,6 @@ public abstract class Solution {
 		return this.anytimeCost.get(i);
 	}
 
+
+
 }

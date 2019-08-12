@@ -686,6 +686,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private void doPermutationToSend(Permutation pToSend) {
 		bestPermuation = pToSend;
+		
+		if (bestPermuation.getM().get(id) == null) {
+			System.out.println();
+		}
+		
 		int bestCounter = bestPermuation.getM().get(id);
 
 		this.anytimeValue = counterAndValue.get(bestCounter);
@@ -781,6 +786,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void recieveAnytimeDown(MessageNormal input) {
 		//// maybe bug here
+
 		MessageAnyTimeDown mad = (MessageAnyTimeDown) input;
 
 		if (mad.getDate() > this.currentAnyTimeDate) {
