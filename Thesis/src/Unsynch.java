@@ -18,7 +18,9 @@ public abstract class Unsynch  extends Solution {
 			updateWhoCanDecide(i);
 			agentDecide(i);
 			afterDecideTakeAction(i);
-			agentsSendMsgs();
+			List<MessageNormal> msgToSend = agentZero.handleDelay();
+
+			agentsSendMsgs(msgToSend);
 			createAnytime(fathers, i);
 			addCostToTables();
 
@@ -43,7 +45,7 @@ public abstract class Unsynch  extends Solution {
 	// protected abstract void agentDecide();
 	protected abstract void afterDecideTakeAction(int i);
 
-	public abstract void agentsSendMsgs();
+	public abstract void agentsSendMsgs(List<MessageNormal> msgToSend);
 
 	protected void createAnytime(List<AgentField> fathers, int i) {
 		agentZero.createAnyTimeUpUnsynchMono();

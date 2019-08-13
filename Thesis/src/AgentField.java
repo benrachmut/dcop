@@ -648,12 +648,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	/**
-	 * case 2- called when messaged recieved is anyTimeUp from agent zero
-	 * 
-	 * @return
-	 */
-	public void recieveAnytimeUp(MessageNormal msg) {
+
+	public void recieveAnytimeUpUnsynchMono(MessageNormal msg) {
 		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 
 		Permutation p = mau.getCurrentPermutation();
@@ -667,6 +663,21 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		combineBelowAndPast(belowCoherentWithMessage, pastCoherentWithMessage);
 	}
 
+	
+	public void recieveAnytimeUpUnsynchNonMono(MessageNormal msg) {
+		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
+
+		Permutation p = mau.getCurrentPermutation();
+
+		Set<Permutation> belowCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(p);
+		Set<Permutation> pastCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(p);
+
+		if (belowCoherentWithMessage.isEmpty() || pastCoherentWithMessage.isEmpty()) {
+			return;
+		}
+		combineBelowAndPast(belowCoherentWithMessage, pastCoherentWithMessage);
+	}
+	
 	private void combineBelowAndPast(Set<Permutation> belowCoherentWithMessage,
 			Set<Permutation> pastCoherentWithMessage) {
 		for (Permutation belowP : belowCoherentWithMessage) {
