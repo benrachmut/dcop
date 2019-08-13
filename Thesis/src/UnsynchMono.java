@@ -63,7 +63,6 @@ public class UnsynchMono extends Unsynch {
 	@Override
 	public void agentsSendMsgs(List<MessageNormal> input) {
 		agentZero.sendUnsynchMonoMsgs(input);
-		//changeFlag(input);
 		
 	}
 

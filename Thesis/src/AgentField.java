@@ -474,11 +474,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 	}
 
-	public void reciveUnsynchMonoMsg(int senderId, int senderValue, int date) {
-		this.reciveMsg(senderId, senderValue, date);
-		// this.updateCounterAboveOrBelow( senderId, senderValue, date);
-	}
-
+	
 	public void updateCounterAboveOrBelowMono(int senderId) {
 		boolean isAbove = this.aboveMap.containsKey(senderId);
 		int currentCounter;
@@ -493,15 +489,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	public void updateCounterAboveOrBelowNonMono(int senderId) {
-
-		if (!neigborCounter.keySet().contains(senderId)) {
-			System.out.println();
-		}
-		
+	public void updateCounterNonMono(int senderId) {
 		int currentCounter = neigborCounter.get(senderId);
 		neigborCounter.put(senderId, currentCounter + 1);
-
 	}
 
 	public boolean unsynchAbilityToDecide() {

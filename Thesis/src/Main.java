@@ -12,7 +12,7 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "dsaUnsynch7";//"dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static String algo = "unsynchMono";//"dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
 	//static boolean anytimeDfs = true;
 	static boolean anytimeBfs=false;
@@ -20,9 +20,9 @@ public class Main {
 	static String date = "555";
 
 	// -- variables of dcop problem
-	static int A = 10;// 50; // 50 number of agents
+	static int A = 50;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.7 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 

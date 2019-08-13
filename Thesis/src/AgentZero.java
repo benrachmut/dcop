@@ -218,7 +218,8 @@ public class AgentZero {
 		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
 
 			int senderValue = msg.getSenderValue();
-			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
+			reciever.reciveMsg(senderId, senderValue, msg.getDate());
+			//reciever.reciveUnsynchMonoMsg(senderId);
 			reciever.updateCounterAboveOrBelowMono(senderId);
 			Permutation currPermutation = reciever.createCurrentPermutation();
 			reciever.addToPermutationPast(currPermutation);
@@ -246,11 +247,11 @@ public class AgentZero {
 		AgentField reciever = msg.getReciever();
 		// ----- normal message
 		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
-
+			
 			
 			int senderValue = msg.getSenderValue();
-			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
-			reciever.updateCounterAboveOrBelowNonMono(senderId); 
+			reciever.reciveMsg(senderId, senderValue, msg.getDate());
+			reciever.updateCounterNonMono(senderId); 
 			Permutation currPermutation = reciever.createCurrentPermutation();
 			reciever.addToPermutationPast(currPermutation);
 			if (reciever.isAnytimeLeaf()) {
