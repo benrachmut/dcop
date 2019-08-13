@@ -474,7 +474,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 	}
 
-	
+	public void reciveUnsynchMonoMsg(int senderId, int senderValue, int date) {
+		this.reciveMsg(senderId, senderValue, date);
+		// this.updateCounterAboveOrBelow( senderId, senderValue, date);
+	}
+
 	public void updateCounterAboveOrBelowMono(int senderId) {
 		boolean isAbove = this.aboveMap.containsKey(senderId);
 		int currentCounter;
@@ -489,9 +493,15 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	public void updateCounterNonMono(int senderId) {
+	public void updateCounterAboveOrBelowNonMono(int senderId) {
+
+		if (!neigborCounter.keySet().contains(senderId)) {
+			System.out.println();
+		}
+		
 		int currentCounter = neigborCounter.get(senderId);
 		neigborCounter.put(senderId, currentCounter + 1);
+
 	}
 
 	public boolean unsynchAbilityToDecide() {
@@ -638,8 +648,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-
-	public void recieveAnytimeUpUnsynchMono(MessageNormal msg) {
+	/**
+	 * case 2- called when messaged recieved is anyTimeUp from agent zero
+	 * 
+	 * @return
+	 */
+	public void recieveAnytimeUp(MessageNormal msg) {
 		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 
 		Permutation p = mau.getCurrentPermutation();
@@ -653,21 +667,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		combineBelowAndPast(belowCoherentWithMessage, pastCoherentWithMessage);
 	}
 
-	
-	public void recieveAnytimeUpUnsynchNonMono(MessageNormal msg) {
-		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
-
-		Permutation p = mau.getCurrentPermutation();
-
-		Set<Permutation> belowCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(p);
-		Set<Permutation> pastCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(p);
-
-		if (belowCoherentWithMessage.isEmpty() || pastCoherentWithMessage.isEmpty()) {
-			return;
-		}
-		combineBelowAndPast(belowCoherentWithMessage, pastCoherentWithMessage);
-	}
-	
 	private void combineBelowAndPast(Set<Permutation> belowCoherentWithMessage,
 			Set<Permutation> pastCoherentWithMessage) {
 		for (Permutation belowP : belowCoherentWithMessage) {

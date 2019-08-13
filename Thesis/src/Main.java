@@ -12,24 +12,24 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "unsynchMono";//"dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static String algo = "unsynchMono";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
 	//static boolean anytimeDfs = true;
 	static boolean anytimeBfs=false;
 
-	static String date = "555";
+	static String date = "7777";
 
 	// -- variables of dcop problem
-	static int A = 50;// 50; // 50 number of agents
+	static int A = 20;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 20 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+	static int[] delayUBs = { 10 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 									// 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
@@ -136,7 +136,6 @@ public class Main {
 		rP2.setSeed(meanRun);
 		rFirstValue.setSeed(meanRun);
 		rCost.setSeed(meanRun);
-		rDsa.setSeed(meanRun);
 
 	}
 
@@ -190,6 +189,8 @@ public class Main {
 		rP3.setSeed(input);
 		rP4.setSeed(input);
 		rDelay.setSeed(input);
+		rDsa.setSeed(input);
+
 
 	}
 

@@ -9,7 +9,6 @@ public class DSA extends Solution {
 		super(dcop, agents, aZ,meanRun);
 		this.stochastic = stochastic;				
 		this.algo = "dsa";
-		Main.rDsa.setSeed(0);
 
 		
 

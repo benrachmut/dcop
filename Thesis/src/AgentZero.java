@@ -97,26 +97,6 @@ public class AgentZero {
 		return msgToSend;
 	}
 
-	public List<MessageNormal> handleDelay() {
-		Collections.sort(this.messageBox);
-		List<MessageNormal> msgToSend = new ArrayList<MessageNormal>();
-
-		Iterator it = this.messageBox.iterator();
-
-		while (it.hasNext()) {
-			MessageNormal msg = (MessageNormal) it.next();
-			if (msg.getDelay() == 0) {
-				msgToSend.add(msg);
-				it.remove();
-			} else {
-				msg.setDelay(msg.getDelay() - 1);
-			}
-
-		}
-
-		return msgToSend;
-	}
-
 	public void changeCommunicationProtocol(double p3Input, int delayUbInput, Double p4Input) {
 		this.p3 = p3Input;
 		this.delayUb = delayUbInput;
@@ -150,6 +130,18 @@ public class AgentZero {
 		}
 
 	}
+
+	public List<MessageNormal> sendUnsynchMonoMsgs(boolean isMonotonic) {
+		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
+		for (MessageNormal msg : msgToSend) {
+			manageUnsynchMsgToRecieve(msg, isMonotonic);
+		}
+		return msgToSend;
+	}
+	
+	
+	
+	
 
 	public void emptyMessageBox() {
 		this.messageBox.clear();
@@ -195,34 +187,24 @@ public class AgentZero {
 		return ans;
 	}
 
-	public void sendUnsynchMonoMsgs(List<MessageNormal> input) {
-
-		for (MessageNormal msg : input) {
-			manageUnsynchMsgToRecieveMonotonic(msg);
-		}
-	}
-
-	public void sendUnsynchNonMonoMsgs(List<MessageNormal> input) {
-
-		for (MessageNormal msg : input) {
-			manageUnsynchMsgToRecieveNonMonotonic(msg);
-		}
-	}
-
-	private void manageUnsynchMsgToRecieveMonotonic(MessageNormal msg) {
-		// ---- get info from message
-
+	private void manageUnsynchMsgToRecieve(MessageNormal msg, boolean isMonotonic) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
-		// ----- normal message
+
 		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
 
 			int senderValue = msg.getSenderValue();
-			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-			//reciever.reciveUnsynchMonoMsg(senderId);
-			reciever.updateCounterAboveOrBelowMono(senderId);
+			reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
+			
+			if (isMonotonic) {
+				reciever.updateCounterAboveOrBelowMono( senderId);
+			}
+			else {
+				reciever.updateCounterAboveOrBelowNonMono(senderId);
+			}
 			Permutation currPermutation = reciever.createCurrentPermutation();
 			reciever.addToPermutationPast(currPermutation);
+
 			if (reciever.isAnytimeLeaf()) {
 				reciever.addToPermutationToSend(currPermutation);
 			} else {
@@ -232,74 +214,15 @@ public class AgentZero {
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
-			reciever.recieveAnytimeUpUnsynchMono(msg);
+			reciever.recieveAnytimeUp(msg);
 		}
 		if (msg instanceof MessageAnyTimeDown) {
 			reciever.recieveAnytimeDown(msg);
 		}
 
 	}
-
 	
-	private void manageUnsynchMsgToRecieveNonMonotonic(MessageNormal msg) {
-		// ---- get info from message
-		int senderId = msg.getSender().getId();
-		AgentField reciever = msg.getReciever();
-		// ----- normal message
-		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
-			
-			
-			int senderValue = msg.getSenderValue();
-			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-			reciever.updateCounterNonMono(senderId); 
-			Permutation currPermutation = reciever.createCurrentPermutation();
-			reciever.addToPermutationPast(currPermutation);
-			if (reciever.isAnytimeLeaf()) {
-				reciever.addToPermutationToSend(currPermutation);
-			} else {
-				reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
-			}
-
-		} // normal message
-
-		if (msg instanceof MessageAnyTimeUp) {
-			reciever.recieveAnytimeUpUnsynchMono(msg);
-		}
-		if (msg instanceof MessageAnyTimeDown) {
-			reciever.recieveAnytimeDown(msg);
-		}
-
-	}
-	/*
-private void manageUnsynchMsgToRecieveNonMonotonic(MessageNormal msg) {
-	  //---- get info from message 
-		int senderId = msg.getSender().getId();
-	  AgentField reciever = msg.getReciever();
-	  
-	  if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
-	  
-	  int senderValue = msg.getSenderValue();
-	  reciever.reciveUnsynchMonoMsg(senderId, senderValue, msg.getDate());
-	  reciever.updateCounterAboveOrBelowNonMono(senderId); Permutation
-	  currPermutation = reciever.createCurrentPermutation();
-	  reciever.addToPermutationPast(currPermutation); if (reciever.isAnytimeLeaf())
-	  { reciever.addToPermutationToSend(currPermutation); } else {
-	  reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation); }
-	 
-	  } // normal message
-	  
-	  if (msg instanceof MessageAnyTimeUp) { 
-		  need to change
-	  }
-	  //reciever.recieveAnytimeUpUnsynchMono(msg);
-	  
-	  
-	if (msg instanceof MessageAnyTimeDown) { 
-		  need to change
-	  //reciever.recieveAnytimeDown(msg); }
-	  
-	 }
-	 */
+	
 
 	public void afterDecideTakeActionUnsynch(List<AgentField> whoCanDecide, int currentIteration) {
 		for (AgentField a : whoCanDecide) {
@@ -308,6 +231,8 @@ private void manageUnsynchMsgToRecieveNonMonotonic(MessageNormal msg) {
 			createUnsynchMsgs(a, currentIteration);
 		}
 	}
+	
+	
 
 	private void createUnsynchMsgs(AgentField currentAgent, int currentIteration) {
 
@@ -371,5 +296,7 @@ private void manageUnsynchMsgToRecieveNonMonotonic(MessageNormal msg) {
 		}
 
 	}
+
+	
 
 }// class

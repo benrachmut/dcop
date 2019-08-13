@@ -8,6 +8,7 @@ public class UnsynchDsa extends Unsynch {
 
 	public UnsynchDsa(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stochastic) {
 		super(dcop, agents, aZ, meanRun);
+		
 		this.stochastic = stochastic;
 	}
 
@@ -60,10 +61,11 @@ public class UnsynchDsa extends Unsynch {
 	}
 
 	@Override
-	public void agentsSendMsgs(List<MessageNormal> input) {
-		agentZero.sendUnsynchNonMonoMsgs(input);
-		changeFlag(input);
+	public void agentsSendMsgs() {
+		List<MessageNormal> messageSent = agentZero.sendUnsynchMonoMsgs(false);
+		changeFlag(messageSent);
 		
+
 	}
 
 	private void changeFlag(List<MessageNormal> messageSent) {
