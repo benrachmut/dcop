@@ -56,17 +56,20 @@ public class UnsynchMono extends Unsynch {
 		return ans;
 	}
 
+
+
+	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
+		agentZero.sendUnsynchMonotonicMsgs(msgToSend);
+	}
 	
-	
+	@Override
+	protected void createAnytimeUp() {
+		agentZero.createAnyTimeUpUnsynchMono();
+	}
 
-	
-
-	
-
-
-
-	public void agentsSendMsgs() {
-		agentZero.sendUnsynchMonoMsgs(true);
+	@Override
+	protected void createAnytimeDown(List<AgentField> fathers, int date) {
+		agentZero.createAnyTimeDownUnsynchMono(fathers, date);	
 	}
 	
 	

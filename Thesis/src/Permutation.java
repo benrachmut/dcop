@@ -78,5 +78,29 @@ public class Permutation {
 		// TODO Auto-generated method stub
 		return this.m.containsKey(sonId);
 	}
+	
+	public static Permutation combinePermutations(Permutation p1, Permutation p2) {
+		int cost;
+		if (p1.getCost() == Integer.MAX_VALUE || (p2.getCost() == Integer.MAX_VALUE)) {
+			cost = Integer.MAX_VALUE;
+		} else {
+			cost = p1.getCost() + p2.getCost();
+		}
+		Map<Integer, Integer> m = combineMaps(p1, p2);
+
+		return new Permutation(m, cost);
+	}
+	
+	private static Map<Integer, Integer> combineMaps(Permutation p1, Permutation p2) {
+		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+		for (Entry<Integer, Integer> e : p1.getM().entrySet()) {
+			m.put(e.getKey(), e.getValue());
+		}
+
+		for (Entry<Integer, Integer> e : p2.getM().entrySet()) {
+			m.put(e.getKey(), e.getValue());
+		}
+		return m;
+	}
 
 }

@@ -5,11 +5,12 @@ import java.util.Set;
 
 public class UnsynchDsa extends Unsynch {
 	private double stochastic;
-
+	private Set<AgentField> didDecide;
 	public UnsynchDsa(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stochastic) {
 		super(dcop, agents, aZ, meanRun);
 		
 		this.stochastic = stochastic;
+		this.didDecide = new HashSet<AgentField>(); 
 	}
 
 	@Override
@@ -41,13 +42,17 @@ public class UnsynchDsa extends Unsynch {
 
 	private void dsaDecide(int i) {
 		
-		
+		this.didDecide = new HashSet<AgentField>();
 		for (AgentField a : whoCanDecide) {	
 			if (i != 0) {
-				a.dsaDecide(stochastic);	
+				boolean didChange = a.dsaDecide(stochastic);
+				if (didChange) {
+					this.didDecide.add(a);
+				}
 			}else {
 				int value = a.createRandFirstValue();
 				a.setValue(value);
+				didDecide.add(a);
 			}
 			
 		}
@@ -56,20 +61,19 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	protected void afterDecideTakeAction(int i) {
-		agentZero.afterDecideTakeActionUnsynch(this.whoCanDecide, i);
+		agentZero.afterDecideTakeActionUnsynch(this.didDecide, i);
 		this.whoCanDecide = new ArrayList<AgentField>();
+		this.didDecide = new HashSet<AgentField>();
 	}
 
 	@Override
-	public void agentsSendMsgs() {
-		List<MessageNormal> messageSent = agentZero.sendUnsynchMonoMsgs(false);
-		changeFlag(messageSent);
-		
-
+	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
+		agentZero.sendUnsynchNonMonotonicMsgs(msgToSend);
+		changeFlag(msgToSend);
 	}
 
 	private void changeFlag(List<MessageNormal> messageSent) {
-		Set<AgentField> changeFlag = new <AgentField>HashSet();
+		Set<AgentField> changeFlag = new <AgentField> HashSet();
 		for (MessageNormal m : messageSent) {
 			changeFlag.add(m.getReciever());
 		}

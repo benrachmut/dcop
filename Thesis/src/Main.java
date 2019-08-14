@@ -12,22 +12,23 @@ import java.util.Random;
 public class Main {
 
 	// versions
-	static String algo = "unsynchMono";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static boolean synch = false;
-	//static boolean anytimeDfs = true;
+	static String algo = "mgm";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static boolean synch = true;
+	
+	static boolean anytimeDfs = false;
 	static boolean anytimeBfs=false;
 
-	static String date = "7777";
+	static String date = "1308CompareToUnsynch";
 
 	// -- variables of dcop problem
-	static int A = 20;// 50; // 50 number of agents
+	static int A = 50;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = { 1 }; // prob of communication to have delay
+	static double[] p3s = { 0 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
 	static int[] delayUBs = { 10 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 									// 10, 25, 50, 100 };
@@ -35,8 +36,8 @@ public class Main {
 								// have delay
 
 	// -- Experiment time
-	static int meanReps = 1;// 10; // number of reps for every solve process
-	static int iterations = 1000;// 1000;
+	static int meanReps = 10;// 10; // number of reps for every solve process
+	static int iterations = 2000;// 1000;
 	static Dcop dcop;
 	static boolean dateKnown;
 
@@ -199,12 +200,11 @@ public class Main {
 
 		boolean dsa7 = algo.equals("dsa7");
 		boolean dsaUnsynch7 = algo.equals("dsaUnsynch7");
-
 		boolean mgm = algo.equals("mgm");
 		boolean mgmUb = algo.equals("mgmUb");
-
 		boolean unsynchMono = algo.equals("unsynchMono");
 
+		
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents, agentZero, meanRun);
 		}
@@ -252,10 +252,7 @@ public class Main {
 			a.restartNeighborCounter();
 		}
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
-
-
-		
-			
+	
 		if (algo.equals("unsynchMono")) {
 			Tree psaduoTree = new Tree(agents);
 			psaduoTree.dfs();
@@ -318,6 +315,7 @@ public class Main {
 			agents[i].addFirstCoupleToCounterAndVal();
 			agents[i].setUnsynchFlag(false);
 			agents[i].restartNeighborCounter();
+			agents[i].restartAnytimeUpRecieved();
 		}
 
 	}

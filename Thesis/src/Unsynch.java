@@ -12,14 +12,19 @@ public abstract class Unsynch  extends Solution {
 	@Override
 	public void solve() {		
 		List<AgentField> fathers = findHeadOfTree();
-		for (int i = 0; i < this.iteration; i++) {
-
-			
+		for (int i = 0; i < this.iteration; i++) {	
 			updateWhoCanDecide(i);
+			
 			agentDecide(i);
+			
 			afterDecideTakeAction(i);
-			agentsSendMsgs();
-			createAnytime(fathers, i);
+			
+			List<MessageNormal> msgToSend = agentZero.handleDelay();
+			agentsSendMsgs(msgToSend);
+			createAnytimeUp();
+			createAnytimeDown(fathers, i);
+			
+			//createAnytime(fathers, i);
 			addCostToTables();
 
 		}
@@ -43,12 +48,11 @@ public abstract class Unsynch  extends Solution {
 	// protected abstract void agentDecide();
 	protected abstract void afterDecideTakeAction(int i);
 
-	public abstract void agentsSendMsgs();
+	public abstract void agentsSendMsgs(List<MessageNormal> msgToSend);
+	protected abstract void createAnytimeUp();
+	protected abstract void createAnytimeDown(List<AgentField> fathers, int date);
 
-	protected void createAnytime(List<AgentField> fathers, int i) {
-		agentZero.createAnyTimeUpUnsynchMono();
-		agentZero.createAnyTimeDownUnsynchMono(fathers, i);	
-	}
+
 
 	protected boolean atlistOneAgentMinusOne(boolean real) {
 
