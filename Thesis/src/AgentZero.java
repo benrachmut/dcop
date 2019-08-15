@@ -214,7 +214,7 @@ public class AgentZero {
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
 			reciever.updateCounterAboveOrBelowMono(senderId);
 
-			Permutation currPermutation = reciever.createCurrentPermutation();
+			Permutation currPermutation = reciever.createCurrentPermutationMonotonic();
 			if (Main.anytimeDfs) {
 				reciever.addToPermutationPast(currPermutation);
 
@@ -249,22 +249,17 @@ public class AgentZero {
 		AgentField reciever = msg.getReciever();
 
 		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
-
 			int senderValue = msg.getSenderValue();
-			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-			
+			reciever.reciveMsg(senderId, senderValue, msg.getDate());		
 			reciever.updateCounterNonMono(senderId);
-			Permutation currPermutation = reciever.createCurrentPermutation();
+			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
 			reciever.addToPermutationPast(currPermutation);
-
 			if (reciever.isAnytimeLeaf()) {
-				reciever.addAnytimeUpToSendBox(currentPermutation);
-				//reciever.addToPermutationToSend(currPermutation);
+				reciever.addToPermutationToSend(currPermutation);
 			} else {
-				-// need to do
-				// reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
+				reciever.tryToCombinePermutation(currPermutation);
+				
 			}
-
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
@@ -277,9 +272,17 @@ public class AgentZero {
 
 	}
 
-	public void afterDecideTakeActionUnsynch(Collection<AgentField> agentsThatChanged, int currentIteration) {
+	public void afterDecideTakeActionUnsynchMonotonic(Collection<AgentField> agentsThatChanged, int currentIteration) {
 		for (AgentField a : agentsThatChanged) {
-			a.setDecisionCounter(a.getDecisonCounter() + 1);
+			a.setDecisionCounterMonotonic(a.getDecisonCounter() + 1);
+			a.setCounterAndValueHistory();
+			createUnsynchMsgs(a, currentIteration);
+		}
+	}
+	
+	public void afterDecideTakeActionUnsynchNonMonotonic(Collection<AgentField> agentsThatChanged, int currentIteration) {
+		for (AgentField a : agentsThatChanged) {
+			a.setDecisionCounterNonMonotonic(a.getDecisonCounter() + 1);
 			a.setCounterAndValueHistory();
 			createUnsynchMsgs(a, currentIteration);
 		}

@@ -14,7 +14,7 @@ public class UnsynchMono extends Unsynch {
 
 	public void afterDecideTakeAction(int i) {
 	
-		agentZero.afterDecideTakeActionUnsynch(this.whoCanDecide, i);
+		agentZero.afterDecideTakeActionUnsynchMonotonic(this.whoCanDecide, i);
 	}
 
 	

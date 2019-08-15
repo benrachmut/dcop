@@ -48,16 +48,15 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Permutation bestPermuation;
 	private int currentAnyTimeDate;
 	private boolean unsynchFlag;
-	private List<MessageAnyTimeUp> anytimeUpRecieved;
+	private List<Permutation> anytimeUpRecieved;
 
 	public AgentField(int domainSize, int id) {
 		super(id);
 		this.domain = createDomain(domainSize);
 
 		if (Main.synch) {
-			this.firstValue = createRandFirstValue(); 
-					
-					
+			this.firstValue = createRandFirstValue();
+
 			this.anytimeFirstValue = firstValue;
 		} else {
 			this.firstValue = -1;
@@ -99,15 +98,16 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void restartAnytimeUpRecieved() {
-		anytimeUpRecieved = new ArrayList<MessageAnyTimeUp>();
+		anytimeUpRecieved = new ArrayList<Permutation>();
 
 	}
+
 	public int createRandFirstValue() {
 		return Main.getRandomInt(Main.rFirstValue, 0, this.domain.length - 1);
 	}
 
 	public void restartNeighborCounter() {
-		
+
 		neigborCounter = new HashMap<Integer, Integer>();
 		for (Integer i : neighbor.keySet()) {
 			this.neigborCounter.put(i, 0);
@@ -454,12 +454,29 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return this.decisonCounter;
 	}
 
-	public void setDecisionCounter(int i) {
+	public void setDecisionCounterMonotonic(int i) {
 		this.decisonCounter = i;
-
-		Permutation myPermutation = this.createCurrentPermutation();
+		Permutation myPermutation = this.createCurrentPermutationMonotonic();
 		this.permutationsPast.add(myPermutation);
 
+	}
+
+	public void setDecisionCounterNonMonotonic(int i) {
+		this.decisonCounter = i;
+		Permutation myPermutation = this.createCurrentPermutationNonMonotonic();
+		this.permutationsPast.add(myPermutation);
+
+	}
+
+	public Permutation createCurrentPermutationNonMonotonic() {
+		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+		for (Entry<Integer, Integer> e : this.neigborCounter.entrySet()) {
+			m.put(e.getKey(), e.getValue());
+		}
+		m.put(this.id, this.decisonCounter);
+		int selfCost = this.calSelfCost();
+
+		return new Permutation(m, selfCost, this);
 	}
 
 	public void putInAboveMap(Integer agentId, Integer counter) {
@@ -481,21 +498,18 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			e.setValue(input);
 		}
 	}
-/*
-	public void reciveUnsynchMonoMsg(int senderId, int senderValue, int date) {
-		this.reciveMsg(senderId, senderValue, date);
-		// this.updateCounterAboveOrBelow( senderId, senderValue, date);
-	}
-	*/
-
-	
+	/*
+	 * public void reciveUnsynchMonoMsg(int senderId, int senderValue, int date) {
+	 * this.reciveMsg(senderId, senderValue, date); //
+	 * this.updateCounterAboveOrBelow( senderId, senderValue, date); }
+	 */
 
 	public void updateCounterNonMono(int senderId) {
 
 		if (!neigborCounter.keySet().contains(senderId)) {
 			System.out.println();
 		}
-		
+
 		int currentCounter = neigborCounter.get(senderId);
 		neigborCounter.put(senderId, currentCounter + 1);
 
@@ -593,7 +607,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return false;
 	}
 
-	public Permutation createCurrentPermutation() {
+	public Permutation createCurrentPermutationMonotonic() {
 		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
 		for (Entry<Integer, Integer> b : this.belowMap.entrySet()) {
 			m.put(b.getKey(), b.getValue());
@@ -608,9 +622,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return new Permutation(m, selfCost);
 	}
 
-	
-
-	
 	/*
 	 * public void leafAddAnytimeUp() { Permutation p = createCurrentPermutation();
 	 * // this.permutationsPast.add(p); this.permutationsToSend.add(p); }
@@ -624,10 +635,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.permutationsPast = new HashSet<Permutation>();
 
 	}
-
-	
-
-	
 
 	private void handlePToSend(Permutation pToSend) {
 		if (this.isAnytimeTop()) {
@@ -669,8 +676,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		// it is questionalbe!!!!
 	}
 
-	
-
 	public boolean hasAnytimeUpToSend() {
 		return !this.permutationsToSend.isEmpty();
 	}
@@ -685,9 +690,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	
-	
-
 	public void resetCounterAndValue() {
 		this.counterAndValue = new HashMap<Integer, Integer>();
 		this.counterAndValue.put(decisonCounter, value);
@@ -701,17 +703,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		this.counterAndValue.put(0, value);
 	}
 
-	
-
 	public MessageAnyTimeDown moveDownToSend() {
 		MessageAnyTimeDown ans = this.msgDown;
 		this.msgDown = null;
 		return ans;
 	}
-
-	
-
-	
 
 	/*
 	 * public boolean isFatherOfInput(AgentField input) {
@@ -779,10 +775,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public boolean getUnsynchFlag() {
 		return this.unsynchFlag;
 	}
-	
-	
-	//----- unsynch monotoic-----
-	
+
+	// ----- unsynch monotoic-----
+
 	public void updateCounterAboveOrBelowMono(int senderId) {
 		boolean isAbove = this.aboveMap.containsKey(senderId);
 		int currentCounter;
@@ -796,17 +791,16 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 	}
-	
+
 	public void addToPermutationPast(Permutation input) {
 		this.permutationsPast.add(input);
 	}
 
-	
 	public void addToPermutationToSend(Permutation input) {
 		this.permutationsToSend.add(input);
 
 	}
-	
+
 	public void iterateOverSonsAndCombineWithInputPermutation(Permutation input) {
 		// Permutation myPermutation = this.createCurrentPermutation();
 
@@ -818,7 +812,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 	}
-	
+
 	/**
 	 * case 2- called when messaged recieved is anyTimeUp from agent zero
 	 * 
@@ -837,7 +831,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		combineBelowAndPast(belowCoherentWithMessage, pastCoherentWithMessage);
 	}
-	
+
 	public Set<Permutation> combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(Permutation msgPermutation) {
 		boolean flag = false;
 		Set<Permutation> pToAdd = new HashSet<Permutation>();
@@ -873,7 +867,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return pToAdd;
 	}
 
-	
 	private Set<Permutation> combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(
 			Permutation permutationFromMessage) {
 		Set<Permutation> ans = new HashSet<Permutation>();
@@ -884,7 +877,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		return ans;
 	}
-	
+
 	private void combineBelowAndPast(Set<Permutation> belowCoherentWithMessage,
 			Set<Permutation> pastCoherentWithMessage) {
 		for (Permutation belowP : belowCoherentWithMessage) {
@@ -898,7 +891,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 	}
-	
+
 	public void recieveAnytimeDownMonotonic(MessageNormal input) {
 		//// maybe bug here
 
@@ -913,37 +906,45 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void recieveAnytimeUpBfs(MessageNormal msg) {
 		if (msg instanceof MessageAnyTimeUp) {
-			MessageAnyTimeUp mau = (MessageAnyTimeUp)msg;
-			List<MessageAnyTimeUp> listToAddToPast = new ArrayList<MessageAnyTimeUp>();
-			List<MessageAnyTimeUp> completeMessages = new ArrayList<MessageAnyTimeUp>();
+			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
+			Permutation msgP = mau.getCurrentPermutation();
+			tryToCombinePermutation(msgP);
 
-			
-			for (MessageAnyTimeUp pastM: this.anytimeUpRecieved) {
-				MessageAnyTimeUp toAdd = pastM.canAdd(mau.getCurrentPermutation());// make sure keep הכלה
-				if (toAdd != null) {
-					if (toAdd.getFlagReady()) {
-						completeMessages.add(toAdd);
-						iHaveAnytimeNews = true;
-					}else {
-						listToAddToPast.add(toAdd);
-						
-					}
-						
-				}
-				
-			}
-			
-			for (Permutation pastP : this.permutationsPast) {
-				pastM.canAdd()
-			}
-			
-			this.anytimeUpRecieved.add(mau);
-		}
-		else {
+		} else{
 			System.err.println("logical bug from recieveAnytimeUpBfs");
+		}
+
+	}
+	public void tryToCombinePermutation(Permutation msgP) {
+		List<Permutation> listToAddToPast = new ArrayList<Permutation>();
+		List<Permutation> completePermutation = new ArrayList<Permutation>();
+		iterateOverPastPermuataion(msgP, listToAddToPast, completePermutation);
+		this.permutationsPast.add(msgP);
+		for (Permutation p : listToAddToPast) {
+			this.permutationsPast.add(p);
+		}
+		
+		for (Permutation p : completePermutation) {
+			this.permutationsToSend.add(p);
 		}
 		
 	}
 
-	
+	private void iterateOverPastPermuataion(Permutation msgP, List<Permutation> listToAddToPast,
+			List<Permutation> completeMessages) {
+		for (Permutation pastP : this.permutationsPast) {
+			Permutation toAdd = pastP.canAdd(msgP);
+			if (toAdd != null) {
+				if (toAdd.getFlagReady()) {
+					completeMessages.add(toAdd);
+				} else {
+					listToAddToPast.add(toAdd);
+				}
+			}
+		}
+		
+	}
+
+
 }
+

@@ -13,6 +13,8 @@ public class UnsynchDsa extends Unsynch {
 		this.didDecide = new HashSet<AgentField>(); 
 	}
 
+	
+	// ---- first
 	@Override
 	protected void updateWhoCanDecide(int i) {
 
@@ -26,6 +28,9 @@ public class UnsynchDsa extends Unsynch {
 		}
 
 	}
+
+	
+	// ---- second
 
 	@Override
 	public void agentDecide(int i) {
@@ -59,12 +64,16 @@ public class UnsynchDsa extends Unsynch {
 
 	}
 
+	// ---- third
+
 	@Override
 	protected void afterDecideTakeAction(int i) {
-		agentZero.afterDecideTakeActionUnsynch(this.didDecide, i);
+		agentZero.afterDecideTakeActionUnsynchNonMonotonic(this.didDecide, i);
 		this.whoCanDecide = new ArrayList<AgentField>();
 		this.didDecide = new HashSet<AgentField>();
 	}
+
+	// ---- forth
 
 	@Override
 	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
@@ -81,6 +90,20 @@ public class UnsynchDsa extends Unsynch {
 		for (AgentField a : changeFlag) {
 			a.setUnsynchFlag(true);
 		}
+		
+	}
+
+
+	@Override
+	protected void createAnytimeUp() {
+		// take permutation and add who is the sender
+		
+	}
+
+
+	@Override
+	protected void createAnytimeDown(List<AgentField> fathers, int date) {
+		// TODO Auto-generated method stub
 		
 	}
 	
