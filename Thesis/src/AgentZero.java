@@ -253,20 +253,22 @@ public class AgentZero {
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());		
 			reciever.updateCounterNonMono(senderId);
 			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
-			reciever.addToPermutationPast(currPermutation);
 			if (reciever.isAnytimeLeaf()) {
+				//currPermutation.createdIncluded(reciever);
 				reciever.addToPermutationToSend(currPermutation);
 			} else {
 				reciever.tryToCombinePermutation(currPermutation);
-				
 			}
+			reciever.addToPermutationPast(currPermutation);
+
+
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
-			reciever.recieveAnytimeUpBfs(msg);
-			//reciever.recieveAnytimeUp(msg);
+			reciever.recieveAnytimeUpBfs(msg);		
 		}
 		if (msg instanceof MessageAnyTimeDown) {
+			// still need to do
 			// reciever.recieveAnytimeDown(msg);
 		}
 
@@ -316,7 +318,24 @@ public class AgentZero {
 					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay, p);
 					this.messageBox.add(m);
 				}
-				a.removeAllPermutationToSend();
+			a.removeAllPermutationToSend();
+			} // if not had and have something to send
+		}
+	}
+	
+	public void createAnyTimeUpUnsynchNonMonotonic() {
+		// List<AgentField> agentsSendAnytime = new ArrayList<AgentField>()
+		for (AgentField a : agents) {
+			boolean isHead = a.getAnytimeFather() == null;
+			if (a.hasAnytimeUpToSend() && !isHead) {
+				Set<Permutation> pToSendA = a.getPermutationsToSend();
+				for (Permutation p : pToSendA) {
+					//p.createdIncluded(a);
+					int delay = this.createDelay();
+					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay, p);
+					this.messageBox.add(m);
+				}
+			a.removeAllPermutationToSend();
 			} // if not had and have something to send
 		}
 	}

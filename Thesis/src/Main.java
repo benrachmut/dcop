@@ -2,42 +2,44 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class Main {
 
 	// versions
-	static String algo = "mgm";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static boolean synch = true;
+	static String algo = "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static boolean synch = false;
 	
 	static boolean anytimeDfs = false;
-	static boolean anytimeBfs=false;
+	static boolean anytimeBfs=true;
 
 	static String date = "1308CompareToUnsynch";
 
 	// -- variables of dcop problem
-	static int A = 50;// 50; // 50 number of agents
+	static int A = 10;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
 	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
 	static double[] p3s = { 0 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 10 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+	static int[] delayUBs = { 5 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 									// 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
-	static int meanReps = 10;// 10; // number of reps for every solve process
-	static int iterations = 2000;// 1000;
+	static int meanReps = 1;// 10; // number of reps for every solve process
+	static int iterations =  5000;
 	static Dcop dcop;
 	static boolean dateKnown;
 
@@ -225,8 +227,28 @@ public class Main {
 			ans = new MGMub(dcop, agents, agentZero, meanRun);
 
 		}
+		
+		
+		
 		ans.solve();
+		Set<Permutation> past = dcop.getAgentsF()[9].getPastPermutations();
+		for (Permutation p : past) {
+			if (countTrue(p.getIncluded().values()) == 7) {
+				System.out.println(p);
+			}
+		}
+		
+		
+		return ans;
+	}
 
+	private static int countTrue(Collection<Boolean> values) {
+		int ans = 0;
+		for (Boolean b : values) {
+			if (b) {
+				ans++;
+			}
+		}
 		return ans;
 	}
 
@@ -305,7 +327,8 @@ public class Main {
 			agents[i].setAllBelowMap(0);
 			agents[i].setAllAboveMap(0);
 			agents[i].resetMsgUpAndDown();
-			agents[i].setDecisionCounter(0);
+			agents[i].setDecisionCounterNonMonotonic(0);
+			agents[i].setDecisionCounterMonotonic(0);
 			agents[i].resetPermutationsPast();
 			agents[i].initSonsAnytimeMessages();
 			agents[i].resetPermutationsToSend();

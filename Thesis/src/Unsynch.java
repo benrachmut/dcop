@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public abstract class Unsynch  extends Solution {
 	protected List<AgentField> whoCanDecide;
@@ -24,12 +26,51 @@ public abstract class Unsynch  extends Solution {
 			createAnytimeUp();
 			createAnytimeDown(fathers, i);
 			
-			//createAnytime(fathers, i);
 			addCostToTables();
-
+			
+			//---- for debug
+			//printDecisionCounter(i);
+			
+			//printPersonalPermutations(i);
+			/*
+			if (i==4) {
+				System.out.println();
+			}
+			*/
 		}
 	}
 	
+	
+	private void printPersonalPermutations(int i) {
+		for (AgentField a : agents) {
+			System.out.println("a"+a.getId()+" at iteration "+i+":");
+			Permutation p =  a.createCurrentPermutationNonMonotonic();
+			for (Entry<Integer, Integer> e : p.getM().entrySet()) {
+				System.out.println("   a"+e.getKey()+": "+e.getValue());
+			}
+			
+		}
+		
+	}
+
+	//for debug
+	private void printDecisionCounter(int i) {
+		System.out.println("iteration "+i+":");
+		/*
+		for (AgentField a : agents) {
+			System.out.print("a"+a.getId()+":"+a.getDecisonCounter()+",");
+		}
+		System.out.println();
+		*/
+		for (AgentField a : agents) {
+			System.out.print(+a.getDecisonCounter()+",");
+		}
+		System.out.println();
+
+		
+	}
+
+
 	private void addCostToTables() {
 		addCostToList();
 		addAnytimeCostToList();
@@ -49,8 +90,14 @@ public abstract class Unsynch  extends Solution {
 	protected abstract void afterDecideTakeAction(int i);
 
 	public abstract void agentsSendMsgs(List<MessageNormal> msgToSend);
-	protected abstract void createAnytimeUp();
-	protected abstract void createAnytimeDown(List<AgentField> fathers, int date);
+	public abstract void createAnytimeUp();
+	public abstract void createAnytimeDown(List<AgentField> fathers, int date);
+	
+	
+	
+	
+	//protected abstract void createAnytimeUp();
+	//protected abstract void createAnytimeDown(List<AgentField> fathers, int date);
 
 
 

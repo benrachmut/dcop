@@ -11,6 +11,7 @@ public class UnsynchDsa extends Unsynch {
 		
 		this.stochastic = stochastic;
 		this.didDecide = new HashSet<AgentField>(); 
+		Main.rDsa.setSeed(meanRun);
 	}
 
 	
@@ -50,6 +51,7 @@ public class UnsynchDsa extends Unsynch {
 		this.didDecide = new HashSet<AgentField>();
 		for (AgentField a : whoCanDecide) {	
 			if (i != 0) {
+				
 				boolean didChange = a.dsaDecide(stochastic);
 				if (didChange) {
 					this.didDecide.add(a);
@@ -95,17 +97,18 @@ public class UnsynchDsa extends Unsynch {
 
 
 	@Override
-	protected void createAnytimeUp() {
-		// take permutation and add who is the sender
-		
+	public void createAnytimeUp() {
+		agentZero.createAnyTimeUpUnsynchNonMonotonic();
 	}
 
 
 	@Override
-	protected void createAnytimeDown(List<AgentField> fathers, int date) {
+	public void createAnytimeDown(List<AgentField> fathers, int date) {
 		// TODO Auto-generated method stub
 		
 	}
+
+
 	
 	
 	

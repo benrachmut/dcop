@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,10 +23,20 @@ public class Permutation {
 	Permutation(Map<Integer, Integer> m, int cost, AgentField a) {
 		this(m, cost);
 		included = new HashMap<Integer, Boolean>();
-		for (Integer nId : a.getNeighborIds()) {
+		List<Integer> sonsId = getSonsId(a);
+		for (Integer nId : sonsId) {
 			included.put(nId, false);
 		}
 		included.put(a.getId(), true);
+	}
+
+	private List<Integer> getSonsId(AgentField a) {
+		List<Integer> ans = new ArrayList<Integer>();
+		List<AgentField> sons = a.getAnytimeSons();
+		 for (AgentField agentField : sons) {
+			ans.add(agentField.getId());
+		}
+		return ans;
 	}
 
 	@Override
@@ -32,17 +44,24 @@ public class Permutation {
 
 		if (obj instanceof Permutation) {
 			Permutation input = (Permutation) obj;
-			Map<Integer, Integer> otherMap = input.getM();
-			for (Entry<Integer, Integer> e : this.m.entrySet()) {
-				if (otherMap.get(e.getKey()) != e.getValue()) {
-					return false;
-				}
-
-			} // for map
-			return true;
+			boolean sameValueInMap = checkSameValuesInMap(input);
+			boolean sameCost = input.getCost() == this.getCost();
+			if (sameCost&&sameValueInMap) {
+				return true;
+			}
 		} // instance of
 
 		return false;
+	}
+
+	private boolean checkSameValuesInMap(Permutation input) {
+		Map<Integer, Integer> otherMap = input.getM();
+		for (Entry<Integer, Integer> e : this.m.entrySet()) {
+			if (otherMap.get(e.getKey()) != e.getValue()) {
+				return false;
+			}
+		} // for map
+		return true;
 	}
 
 	Map<Integer, Integer> getM() {
@@ -125,15 +144,25 @@ public class Permutation {
 	public Permutation canAdd(Permutation msgP) {
 		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP)) {
 			Permutation combineP = combinePermutations(this, msgP);
-			Map<Integer, Boolean> toAddIncluded = combineIncluded(this, msgP);
+			Map<Integer, Boolean> toAddIncluded = combineIncluded(this, msgP);	
 			combineP.setIncluded(toAddIncluded);
+			return combineP;
 		}
 		return null;
 	}
 
+	private int toAddIncludeCounter(Map<Integer, Boolean> toAddIncluded) {
+		int counter=0;
+		for (Boolean b : toAddIncluded.values()) {
+			if (b) {
+				counter++;
+			}
+		}
+		return counter;
+	}
+
 	private void setIncluded(Map<Integer, Boolean> toAddIncluded) {
 		this.included = toAddIncluded;
-
 	}
 
 	private static Map<Integer, Boolean> combineIncluded(Permutation p1, Permutation p2) {
@@ -141,17 +170,38 @@ public class Permutation {
 		Map<Integer, Boolean> includeP1 = p1.getIncluded();
 		Map<Integer, Boolean> includeP2 = p2.getIncluded();
 
+		for (Integer i1 : includeP1.keySet()) {
+			if (!includeP2.containsKey(i1)) {
+				ans.put(i1, includeP1.get(i1));
+			}
+			else if (!includeP1.get(i1) && !includeP2.get(i1)) {
+				ans.put(i1, false);
+			}
+			else {
+				ans.put(i1, true);
+			}
+		}
+		
+		for (Integer i2 : includeP2.keySet()) {
+			if (!includeP1.containsKey(i2)) {
+				ans.put(i2, includeP2.get(i2));
+			}
+			
+		}
+			/*	
 		for (Entry<Integer, Boolean> e : includeP1.entrySet()) {
+		
+			
 			ans.put(e.getKey(), e.getValue());
 		}
 		for (Entry<Integer, Boolean> e : includeP2.entrySet()) {
-			logicalBugFromCombineIncluded(e, ans, includeP1, includeP2);
+			//logicalBugFromCombineIncluded(e, ans, includeP1, includeP2);
 			ans.put(e.getKey(), e.getValue());
 		}
-
+*/
 		return ans;
 	}
-
+/*
 	private static void logicalBugFromCombineIncluded(Entry<Integer, Boolean> e, Map<Integer, Boolean> ans,
 			Map<Integer, Boolean> includeP1, Map<Integer, Boolean> includeP2) {
 		if (ans.containsKey(e.getKey())) {
@@ -161,19 +211,39 @@ public class Permutation {
 		}
 
 	}
+	*/
 
 	private boolean differentAgentsInPermutation(Permutation msgP) {
-		Set<Integer> sKeys = similarKeySet(msgP);
+		//Set<Integer> sKeys = similarKeySet(msgP);
+		Set<Integer>sKeys = similarKeySetInclude(msgP.getIncluded());
+		
 		for (Integer i : sKeys) {
-			if (this.included.get(i) == msgP.getIncluded().get(i)) {
-				return false;
+			if (this.included.get(i) != msgP.getIncluded().get(i)) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
+
+	private Set<Integer> similarKeySetInclude(Map<Integer, Boolean> otherInclude) {
+		Set<Integer> ans = new HashSet<Integer>();
+		for (Integer i: this.included.keySet()) {
+		if (otherInclude.containsKey(i)) {
+			ans.add(i);
+		}
+	}
+	return ans;
+}
 
 	public Map<Integer, Boolean> getIncluded() {
 		return this.included;
 	}
+
+	public void createdIncluded(AgentField sender) {
+		this.included= new HashMap<Integer, Boolean>();
+		this.included.put(sender.getId(), true);
+		
+	}
+
 
 }
