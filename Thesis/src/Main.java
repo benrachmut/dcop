@@ -231,13 +231,6 @@ public class Main {
 		
 		
 		ans.solve();
-		Set<Permutation> past = dcop.getAgentsF()[9].getPastPermutations();
-		for (Permutation p : past) {
-			if (countTrue(p.getIncluded().values()) == 7) {
-				System.out.println(p);
-			}
-		}
-		
 		
 		return ans;
 	}

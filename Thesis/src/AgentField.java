@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class AgentField extends Agent implements Comparable<AgentField> {
+	private static boolean debug = true;
 	private int[] domain;
 	private int firstValue;
 
@@ -740,9 +741,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public boolean isAnytimeTop() {
-		if (this.anytimeFather == null) {
-			System.out.println(this+ " is a the top");
-		}
+		
 		return this.anytimeFather == null;
 	}
 
@@ -786,6 +785,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void addToPermutationToSend(Permutation input) {
+		if (this.debug) {
+			System.out.println("from: a"+this.id+ ", to: a"+ this.anytimeFather.getId()+", "+input+" "+", reason: leaf creates a message");
+
+		}
+		
+		
 		this.permutationsToSend.add(input);
 	}
 
@@ -898,8 +903,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 			Permutation msgP = mau.getCurrentPermutation();
 			
-			
+
 			tryToCombinePermutation(msgP);
+			addToPermutationPast(msgP);
+
+			//MessageAnyTimeUp mau = (MessageAnyTimeUp)msg;
 
 		} else{
 			System.err.println("logical bug from recieveAnytimeUpBfs");
@@ -930,6 +938,16 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			Permutation toAdd = msgP.canAdd(pastP);
 			
 			if (toAdd != null) {
+				if (this.debug) {
+				if (!this.isAnytimeTop()) {
+					System.out.println("from: a"+this.id+ ", to: a"+ this.anytimeFather.getId()+", "+toAdd+" "+", reason: combine between "+pastP+ " and permutation from msg "+msgP  );
+				}
+				
+				if (this.isAnytimeTop()) {
+					System.out.println("from: a"+this.id+", to: ax, "+toAdd+" "+", reason: combine between "+pastP+ " and permutation from msg "+msgP  );
+				}
+				}
+
 				if (toAdd.getFlagReady()) {			
 					completePermutation.add(toAdd);
 				} else {

@@ -239,9 +239,42 @@ public class AgentZero {
 
 	// -------------- Unsynch NON Monotonic-------------
 	public void sendUnsynchNonMonotonicMsgs(List<MessageNormal> msgToSend) {
+		Set<Integer> integerRecieved = new HashSet<Integer>();
 		for (MessageNormal msg : msgToSend) {
 			sendUnsynchNonMonotonicMsg(msg);
+			integerRecieved.add(msg.getReciever().getId());
 		}
+		
+		Set<AgentField> agentsRecieved = getAgents(integerRecieved);
+		anytimeMechanismAfterRecieveMsg(agentsRecieved);
+		
+	}
+
+	private void anytimeMechanismAfterRecieveMsg(Set<AgentField> agentsRecieved) {
+		for (AgentField reciever : agentsRecieved) {
+			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
+			if (reciever.isAnytimeLeaf()) {
+		
+				reciever.addToPermutationToSend(currPermutation);
+			} else {
+				reciever.tryToCombinePermutation(currPermutation);
+			}
+			reciever.addToPermutationPast(currPermutation);
+		}
+		
+	}
+
+	private Set<AgentField> getAgents(Set<Integer> input) {
+		Set<AgentField> ans = new HashSet<AgentField>();
+		for (Integer i : input) {
+			for (AgentField a: agents) {
+				if (a.getId() == i ) {
+					ans.add(a);
+					break;
+				}
+			}
+		}
+		return ans;
 	}
 
 	private void sendUnsynchNonMonotonicMsg(MessageNormal msg) {
@@ -252,20 +285,12 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());		
 			reciever.updateCounterNonMono(senderId);
-			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
-			if (reciever.isAnytimeLeaf()) {
-				//currPermutation.createdIncluded(reciever);
-				reciever.addToPermutationToSend(currPermutation);
-			} else {
-				reciever.tryToCombinePermutation(currPermutation);
-			}
-			reciever.addToPermutationPast(currPermutation);
-
-
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
-			reciever.recieveAnytimeUpBfs(msg);		
+		
+			reciever.recieveAnytimeUpBfs(msg);
+			
 		}
 		if (msg instanceof MessageAnyTimeDown) {
 			// still need to do
@@ -287,10 +312,40 @@ public class AgentZero {
 			a.setDecisionCounterNonMonotonic(a.getDecisonCounter() + 1);
 			a.setCounterAndValueHistory();
 			createUnsynchMsgs(a, currentIteration);
+			addPermutatioToAnytimeMechanism(a);
+	
 		}
 	}
 	
 	
+
+	private void addPermutatioToAnytimeMechanism(AgentField a) {
+		Permutation p = a.createCurrentPermutationNonMonotonic();
+		//a.tryToCombinePermutation(p);
+		//a.addToPermutationToSend(p);
+		//a.addToPermutationPast(p);	
+
+		if (a.isAnytimeLeaf())  {
+			//a.addToPermutationPast(p);
+			a.addToPermutationToSend(p);	
+		}
+		if (a.isAnytimeTop()) {
+			//a.addToPermutationPast(p);
+		}
+		/*
+		else if (!a.isAnytimeTop()) {
+			a.addToPermutationPast(p);	
+			
+		}else {
+			a.addToPermutationToSend(p);
+			a.addToPermutationPast(p);	
+		}
+		*/
+		
+		//a.tryToCombinePermutation(p);
+		//aaaaa
+		
+	}
 
 	private void createUnsynchMsgs(AgentField currentAgent, int currentIteration) {
 
@@ -372,4 +427,15 @@ public class AgentZero {
 
 	}
 
+	public List<MessageNormal> getMsgBox() {
+		return this.messageBox;
+	}
+/*
+	public void selfChangeReport(Set<AgentField> didDecide) {
+		for (AgentField a : didDecide) {
+			a.get
+		}
+		
+	}
+*/
 }// class

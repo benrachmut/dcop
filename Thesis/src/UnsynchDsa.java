@@ -63,7 +63,8 @@ public class UnsynchDsa extends Unsynch {
 			}
 			
 		}
-
+		
+		
 	}
 
 	// ---- third
@@ -71,6 +72,8 @@ public class UnsynchDsa extends Unsynch {
 	@Override
 	protected void afterDecideTakeAction(int i) {
 		agentZero.afterDecideTakeActionUnsynchNonMonotonic(this.didDecide, i);
+		//agentZero.selfChangeReport(didDecide);
+		
 		this.whoCanDecide = new ArrayList<AgentField>();
 		this.didDecide = new HashSet<AgentField>();
 	}
@@ -80,10 +83,10 @@ public class UnsynchDsa extends Unsynch {
 	@Override
 	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
 		agentZero.sendUnsynchNonMonotonicMsgs(msgToSend);
-		changeFlag(msgToSend);
+		changeFlagForAgentsRecieveMsg(msgToSend);
 	}
 
-	private void changeFlag(List<MessageNormal> messageSent) {
+	private void changeFlagForAgentsRecieveMsg(List<MessageNormal> messageSent) {
 		Set<AgentField> changeFlag = new <AgentField> HashSet();
 		for (MessageNormal m : messageSent) {
 			changeFlag.add(m.getReciever());

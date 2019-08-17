@@ -13,8 +13,11 @@ public abstract class Unsynch  extends Solution {
 
 	@Override
 	public void solve() {		
+		
 		List<AgentField> fathers = findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {	
+			System.out.println("---start iteration: "+i+"---");
+
 			updateWhoCanDecide(i);
 			
 			agentDecide(i);
@@ -28,19 +31,42 @@ public abstract class Unsynch  extends Solution {
 			
 			addCostToTables();
 			
+			
 			//---- for debug
+			
 			//printDecisionCounter(i);
 			
 			//printPersonalPermutations(i);
-			/*
-			if (i==4) {
+			
+			//printCreatedAnytimeMsgUp(i);
+
+			//System.out.println("---finish iteration: "+i+"---");
+/*
+			if (i==8) {
 				System.out.println();
 			}
-			*/
+*/		
 		}
 	}
 	
 	
+	private void printCreatedAnytimeMsgUp(int i) {
+		List<MessageAnyTimeUp> atu = new ArrayList<MessageAnyTimeUp>();
+
+		for (MessageNormal m : agentZero.getMsgBox()) {
+			if (m instanceof MessageAnyTimeUp) {
+				atu.add((MessageAnyTimeUp)m);
+			}
+		}
+		//System.out.println("iteration, from, to, permutation, cost");
+
+		for (MessageAnyTimeUp m : atu) {
+		
+			System.out.println("iteration: "+i+", from: a"+m.getSender().getId()+", to: a"+m.getReciever().getId()+", "+m.getCurrentPermutation() );
+		}
+		
+	}
+
 	private void printPersonalPermutations(int i) {
 		for (AgentField a : agents) {
 			System.out.println("a"+a.getId()+" at iteration "+i+":");

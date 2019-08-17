@@ -100,7 +100,7 @@ public class Permutation {
 	@Override
 	public String toString() {
 
-		return "p: " + this.m + " cost = " + this.cost;
+		return "p: " + this.m + ", cost: " + this.cost+", included: "+this.included;
 	}
 
 	public boolean containsId(int sonId) {
