@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,7 +14,9 @@ public class Permutation {
 	private Map<Integer, Boolean> included;
 	private int myIndex;
 	public static int index = 0;
-	private Set<Permutation> combinedWith;
+	private List<Permutation> combinedWith;
+	private AgentField creator;
+	private int iterationCreated;
 	
 
 	Permutation(Map<Integer, Integer> m, int cost) {
@@ -24,7 +27,11 @@ public class Permutation {
 		this.cost = cost;
 		index = index + 1;
 		this.myIndex = index;
-		this.combinedWith = new HashSet<Permutation>();
+		this.combinedWith = new ArrayList<Permutation>();
+		this.creator = new AgentField(10, -1);
+		this.included = new HashMap<Integer,Boolean>();
+	
+		
 	}
 
 	Permutation(Map<Integer, Integer> m, int cost, AgentField a) {
@@ -35,6 +42,18 @@ public class Permutation {
 			included.put(nId, false);
 		}
 		included.put(a.getId(), true);
+		this.creator = a;
+		
+
+	}
+
+	public Permutation(Map<Integer, Integer> m, int cost, Map<Integer, Boolean> included, List<Permutation>comWith,AgentField creator) {
+		
+		this(m,cost);
+		this.iterationCreated = Unsynch.iter;
+		this.creator = creator;
+		this.combinedWith = comWith;
+		this.included = included;
 	}
 
 	private List<Integer> getSonsId(AgentField a) {
@@ -85,6 +104,7 @@ public class Permutation {
 				return false;
 			}
 		}
+		
 		return true;
 	}
 
@@ -106,7 +126,10 @@ public class Permutation {
 	@Override
 	public String toString() {
 
-		return "pIndex:"+ this.myIndex+" map:" + this.m + ", cost: " + this.cost+", included:"+this.included;
+		return "pIndex:"+ this.myIndex+ "| creator:"+ this.creator+"| map:" + this.m + 
+				"| cost: " + this.cost+"| included:"+this.included+"| iteration created: "+this.iterationCreated;
+				
+				//+"| combined with:"+this.combinedWith;
 	}
 
 	public boolean containsId(int sonId) {
@@ -114,16 +137,78 @@ public class Permutation {
 		return this.m.containsKey(sonId);
 	}
 
-	public static Permutation combinePermutations(Permutation p1, Permutation p2) {
-		int cost;
-		if (p1.getCost() == Integer.MAX_VALUE || (p2.getCost() == Integer.MAX_VALUE)) {
-			cost = Integer.MAX_VALUE;
-		} else {
-			cost = p1.getCost() + p2.getCost();
-		}
+	public static Permutation combinePermutations(Permutation p1, Permutation p2, AgentField creator) {
+		
 		Map<Integer, Integer> m = combineMaps(p1, p2);
+		int cost = combineCost(p1,p2);
+		Map<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);	
+		//List<Permutation> combineWith = new ArrayList<Permutation>();
+	
+		List<Permutation> combineWith = createCombineWith(p1,p2);
+		
+		return new Permutation(m, cost, toAddIncluded, combineWith, creator);
+	}
 
-		return new Permutation(m, cost);
+	
+	private static List<Permutation> createCombineWith(Permutation p1, Permutation p2) {
+		List<Permutation>ans = new ArrayList<Permutation>();
+		
+		if (!p1.getCombineWith().isEmpty()) {
+			ans.addAll(p1.getCombineWith());
+		}
+		
+		if (!p2.getCombineWith().isEmpty()) {
+			ans.addAll(p2.getCombineWith());
+		}
+		ans.add(p1);
+		ans.add(p2);
+		
+		return ans;
+	}
+
+	public List<Permutation> getCombineWith(){
+		return this.combinedWith;
+	}
+	private static List<Permutation> combineCombinedWith(Permutation p1, Permutation p2) {
+		List<Permutation> ans = new ArrayList<Permutation>();
+		List<Permutation> unexplored = new ArrayList<Permutation>();
+		unexplored.add(p1);
+		unexplored.add(p2);
+		
+		
+		Iterator<Permutation> it = unexplored.iterator();
+		Permutation current = null;
+		while (it.hasNext()) {
+			current = it.next();
+			List<Permutation> toAdd =current.getCombineWith();
+			boolean flag = false;
+			for (Permutation pInAns : ans) {
+				if (current.equals(pInAns)) {
+					flag = true;
+				}
+			}
+			if (!flag) {
+				ans.add(current);
+			}
+			it.remove();
+			unexplored.addAll(toAdd);
+			it = unexplored.iterator();
+		}
+		
+
+		return ans;
+	}
+
+	
+
+	private static int combineCost(Permutation p1, Permutation p2) {
+		int ans = 0;
+		if (p1.getCost() == Integer.MAX_VALUE || (p2.getCost() == Integer.MAX_VALUE)) {
+			ans = Integer.MAX_VALUE;
+		} else {
+			ans = p1.getCost() + p2.getCost();
+		}
+		return ans;
 	}
 
 	private static Map<Integer, Integer> combineMaps(Permutation p1, Permutation p2) {
@@ -147,14 +232,11 @@ public class Permutation {
 		return true;
 	}
 
-	public Permutation canAdd(Permutation msgP) {
-		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP)) {
-			Permutation combineP = combinePermutations(this, msgP);
-			Map<Integer, Boolean> toAddIncluded = combineIncluded(this, msgP);	
-			combineP.setIncluded(toAddIncluded);
+	public Permutation canAdd(AgentField creator, Permutation msgP) {
+		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP) && this.differentComposedPermutations(msgP)) {
+			Permutation combineP = combinePermutations(this, msgP, creator);
 			return combineP;
 		}
-		return null;
 	}
 
 	private int toAddIncludeCounter(Map<Integer, Boolean> toAddIncluded) {
@@ -194,33 +276,12 @@ public class Permutation {
 			}
 			
 		}
-			/*	
-		for (Entry<Integer, Boolean> e : includeP1.entrySet()) {
 		
-			
-			ans.put(e.getKey(), e.getValue());
-		}
-		for (Entry<Integer, Boolean> e : includeP2.entrySet()) {
-			//logicalBugFromCombineIncluded(e, ans, includeP1, includeP2);
-			ans.put(e.getKey(), e.getValue());
-		}
-*/
 		return ans;
 	}
-/*
-	private static void logicalBugFromCombineIncluded(Entry<Integer, Boolean> e, Map<Integer, Boolean> ans,
-			Map<Integer, Boolean> includeP1, Map<Integer, Boolean> includeP2) {
-		if (ans.containsKey(e.getKey())) {
-			if (includeP2.get(e.getKey()) != includeP1.get(e.getKey())) {
-				System.err.println("logical bug at combineIncluded ");
-			}
-		}
 
-	}
-	*/
 
 	private boolean differentAgentsInPermutation(Permutation msgP) {
-		//Set<Integer> sKeys = similarKeySet(msgP);
 		Set<Integer>sKeys = similarKeySetInclude(msgP.getIncluded());
 		
 		for (Integer i : sKeys) {
@@ -251,5 +312,21 @@ public class Permutation {
 		
 	}
 
+
+	public static Permutation combinePermutations(Permutation p1, Permutation p2) {
+		int cost;
+		if (p1.getCost() == Integer.MAX_VALUE || (p2.getCost() == Integer.MAX_VALUE)) {
+			cost = Integer.MAX_VALUE;
+		} else {
+			cost = p1.getCost() + p2.getCost();
+		}
+		Map<Integer, Integer> m = combineMaps(p1, p2);
+
+		return new Permutation(m, cost);
+	}
+
+	public AgentField getCreator() {
+		return this.creator;
+	}
 
 }

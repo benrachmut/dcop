@@ -43,8 +43,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	// private Set<Permutation> permutationsBelow;
 	private HashSet<Permutation> permutationsPast;
 	private HashSet<Permutation> permutationsToSend;
-	
-	
+
 	private Set<Permutation> sonsAnytimePermutations;
 	private Map<Integer, Integer> counterAndValue;
 	private Permutation bestPermuation;
@@ -208,7 +207,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 	}
 
-
 	public boolean dsaDecide(double stochastic) {
 
 		List<PotentialCost> pCosts = findPotentialCost();
@@ -253,7 +251,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		// maybeChange(shouldChange, minPotentialCost, stochastic);
 
 	}
-	
 
 	private boolean maybeChange(boolean shouldChange, PotentialCost minPotentialCost, double stochastic) {
 		if (shouldChange) {
@@ -501,7 +498,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void updateCounterNonMono(int senderId) {
 
-		
 		int currentCounter = neigborCounter.get(senderId);
 		neigborCounter.put(senderId, currentCounter + 1);
 
@@ -657,7 +653,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private void doPermutationToSend(Permutation pToSend) {
 		bestPermuation = pToSend;
 
-		
 		int bestCounter = bestPermuation.getM().get(id);
 
 		this.anytimeValue = counterAndValue.get(bestCounter);
@@ -742,7 +737,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public boolean isAnytimeTop() {
-		
+
 		return this.anytimeFather == null;
 	}
 
@@ -783,14 +778,32 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void addToPermutationPast(Permutation input) {
 		addToSet(input, permutationsPast);
-
+		// this.permutationsPast.add(input);
 		
-		//this.permutationsPast.add(input);
+		if (Main.debugCombineWith) {
+			if (this.getId() == 9 && input.getCost() == 756 ) {
+				
+				for (Permutation p : input.getCombineWith()) {
+					System.out.println(p);
+				}
+				System.out.println();
+
+			}
+		}
 	}
 
 	public void addToPermutationToSend(Permutation input) {
 		addToSet(input, permutationsToSend);
-		//this.permutationsToSend.add(input);
+		// this.permutationsToSend.add(input);
+		if (Main.debugCombineWith) {
+			if (this.getId() == 9 && input.getCost() == 821) {
+				for (Permutation p : input.getCombineWith()) {
+					System.out.println(p);
+				}
+				System.out.println();
+
+			}
+		}
 
 	}
 
@@ -801,11 +814,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 				flag = true;
 			}
 		}
-		
+
 		if (!flag) {
-			setToAddTo.add(input);	
+			setToAddTo.add(input);
 		}
-		
+
 	}
 
 	public void iterateOverSonsAndCombineWithInputPermutation(Permutation input) {
@@ -813,7 +826,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 		for (Permutation sonPermutation : this.sonsAnytimePermutations) {
 			if (sonPermutation.isCoherent(input)) {
-				Permutation pToSend = Permutation.combinePermutations(sonPermutation, input);
+				Permutation pToSend = Permutation.combinePermutations(sonPermutation, input, this);
 				handlePToSend(pToSend);
 			}
 		}
@@ -829,14 +842,15 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 
 		Permutation p = mau.getCurrentPermutation();
-
 		Set<Permutation> belowCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(p);
+
 		Set<Permutation> pastCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(p);
 
 		if (belowCoherentWithMessage.isEmpty() || pastCoherentWithMessage.isEmpty()) {
 			return;
 		}
 		combineBelowAndPast(belowCoherentWithMessage, pastCoherentWithMessage);
+
 	}
 
 	public Set<Permutation> combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(Permutation msgPermutation) {
@@ -847,7 +861,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		for (Permutation sonsPermutation : sonsAnytimePermutations) {
 			if (msgPermutation.isCoherent(sonsPermutation)) {
 				flag = true;
-				pToAdd.add(Permutation.combinePermutations(sonsPermutation, msgPermutation));
+				pToAdd.add(Permutation.combinePermutations(sonsPermutation, msgPermutation, this));
 				pToRemove.add(sonsPermutation); // the un
 			}
 		}
@@ -887,6 +901,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private void combineBelowAndPast(Set<Permutation> belowCoherentWithMessage,
 			Set<Permutation> pastCoherentWithMessage) {
+
 		for (Permutation belowP : belowCoherentWithMessage) {
 			for (Permutation aboveP : pastCoherentWithMessage) {
 				if (belowP.isCoherent(aboveP)) {
@@ -913,73 +928,67 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void recieveAnytimeUpBfs(MessageNormal msg) {
 		if (msg instanceof MessageAnyTimeUp) {
-			
+
 			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 			Permutation msgP = mau.getCurrentPermutation();
 			permuatationFromAnytimeMsg(msgP);
 
-			
+			// MessageAnyTimeUp mau = (MessageAnyTimeUp)msg;
 
-			//MessageAnyTimeUp mau = (MessageAnyTimeUp)msg;
-
-		} else{
+		} else {
 			System.err.println("logical bug from recieveAnytimeUpBfs");
 		}
 
 	}
+
 	public List<Permutation> permuatationFromAnytimeMsg(Permutation msgP) {
 		addToPermutationPast(msgP);
 		return tryToCombinePermutation(msgP);
 
-		
 	}
 
 	public List<Permutation> tryToCombinePermutation(Permutation currentP) {
 		List<Permutation> listToAddToPast = new ArrayList<Permutation>();
 		List<Permutation> completePermutation = new ArrayList<Permutation>();
 		List<Permutation> ans = new ArrayList<Permutation>();
-		
-		
+
 		iterateOverPastPermuataion(currentP, listToAddToPast, completePermutation);
 		for (Permutation p : listToAddToPast) {
 			addToPermutationPast(p);
 			ans.add(p);
 		}
-		
+
 		for (Permutation p : completePermutation) {
 			addToPermutationToSend(p);
 			ans.add(p);
 
-			//this.permutationsToSend.add(p);
+			// this.permutationsToSend.add(p);
 		}
 		return ans;
-		
+
 	}
 
 	private void iterateOverPastPermuataion(Permutation msgP, List<Permutation> listToAddToPast,
 			List<Permutation> completePermutation) {
-		
-		
-		for (Permutation pastP : this.permutationsPast) {
-		
-			
-			Permutation toAdd = msgP.canAdd(pastP);
-			
-			if (toAdd != null) {
-				
 
-				if (toAdd.getFlagReady()) {			
+		for (Permutation pastP : this.permutationsPast) {
+
+			Permutation toAdd = msgP.canAdd(this, pastP);
+
+			if (toAdd != null) {
+
+				if (toAdd.getFlagReady()) {
 					completePermutation.add(toAdd);
 				} else {
 					listToAddToPast.add(toAdd);
 				}
 			}
 		}
-		
+
 	}
 
 	private int countTrue(Map<Integer, Boolean> included) {
-		int ans=0;
+		int ans = 0;
 		for (Boolean b : included.values()) {
 			if (b) {
 				ans++;
@@ -995,9 +1004,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public Map<Integer, Integer> getNeighborCounter() {
 		return this.neigborCounter;
-		
+
 	}
 
-
 }
-

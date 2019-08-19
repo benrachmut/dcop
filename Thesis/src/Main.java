@@ -14,14 +14,15 @@ import java.util.Set;
 public class Main {
 
 	// versions
-	static String algo = "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static String algo ="dsaUnsynch7"; //"dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
-	 static boolean debug = true;
+	 static boolean debug = false;
+	 static boolean debugCombineWith = true;
 
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs=true;
 
-	static String date = "1308CompareToUnsynch";
+	static String date = "999999";
 
 	// -- variables of dcop problem
 	static int A = 10;// 50; // 50 number of agents
@@ -40,7 +41,7 @@ public class Main {
 
 	// -- Experiment time
 	static int meanReps = 1;// 10; // number of reps for every solve process
-	static int iterations =  5000;
+	static int iterations =  1000;
 	static Dcop dcop;
 	static boolean dateKnown;
 

@@ -9,15 +9,6 @@ public class UnsynchMono extends Unsynch {
 		this.algo = "unsynchMono";
 
 	}
-
-
-
-	public void afterDecideTakeAction(int i) {
-	
-		agentZero.afterDecideTakeActionUnsynchMonotonic(this.whoCanDecide, i);
-	}
-
-	
 	public void updateWhoCanDecide(int i) {
 		List<AgentField> temp = new ArrayList<AgentField>();
 		if (i == 0) {
@@ -26,9 +17,7 @@ public class UnsynchMono extends Unsynch {
 			temp = iterateAgentsWhoCan();
 		}
 		this.whoCanDecide = temp;
-
 	}
-	
 	@Override
 	public void agentDecide(int i) {
 		for (AgentField a : this.whoCanDecide) {
@@ -39,7 +28,21 @@ public class UnsynchMono extends Unsynch {
 				a.dsaDecide(1);
 			}
 		}
+
 	}
+
+
+	public void afterDecideTakeAction(int i) {
+	
+		agentZero.afterDecideTakeActionUnsynchMonotonic(this.whoCanDecide, i);
+		
+
+	}
+
+	
+	
+	
+
 	
 	
 	
@@ -60,6 +63,8 @@ public class UnsynchMono extends Unsynch {
 
 	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
 		agentZero.sendUnsynchMonotonicMsgs(msgToSend);
+		//-------------------
+
 	}
 
 	public void createAnytimeUp() {
@@ -68,6 +73,7 @@ public class UnsynchMono extends Unsynch {
 
 	public void createAnytimeDown(List<AgentField> fathers, int date) {
 		agentZero.createAnyTimeDownUnsynchMono(fathers, date);	
+
 	}
 
 	

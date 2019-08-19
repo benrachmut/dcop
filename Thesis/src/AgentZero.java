@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.omg.CORBA.Current;
+
 public class AgentZero {
 	private List<MessageNormal> messageBox;
 	private List<MessageNormal> rMessageBox;
@@ -217,11 +219,14 @@ public class AgentZero {
 			Permutation currPermutation = reciever.createCurrentPermutationMonotonic();
 			if (Main.anytimeDfs) {
 				reciever.addToPermutationPast(currPermutation);
-
+				
 				if (reciever.isAnytimeLeaf()) {
 					reciever.addToPermutationToSend(currPermutation);
+					//System.out.println("reciever.addToPermutationToSend(currPermutation);");
 				} else {
 					reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
+					//System.out.println("reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);");
+
 				}
 			}
 
@@ -229,6 +234,7 @@ public class AgentZero {
 		if (Main.anytimeDfs) {
 			if (msg instanceof MessageAnyTimeUp) {
 				reciever.recieveAnytimeUpMonotonic(msg);
+				//System.out.println("reciever.recieveAnytimeUpMonotonic(msg);");
 			}
 			if (msg instanceof MessageAnyTimeDown) {
 				reciever.recieveAnytimeDownMonotonic(msg);
@@ -260,8 +266,13 @@ public class AgentZero {
 				reciever.addToPermutationToSend(currPermutation);
 				reason = "leaf a"+reciever.getId()+ "creates a message because counters change";
 				leafFlag = true;
-			} else {
+			} else  {
+				//reciever.addToPermutationPast(currPermutation);
+
 				toSend = reciever.tryToCombinePermutation(currPermutation);
+				
+				
+				
 				reason = "combine between permutations "+currPermutation;
 
 			}

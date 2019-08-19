@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 public abstract class Unsynch  extends Solution {
 	protected List<AgentField> whoCanDecide;
-
+	public static int iter;
 	public Unsynch(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
 		this.whoCanDecide = new ArrayList<AgentField>();
@@ -16,8 +16,8 @@ public abstract class Unsynch  extends Solution {
 		
 		List<AgentField> fathers = findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {	
+			iter = i;
 			System.out.println("---start iteration: "+i+"---");
-
 			updateWhoCanDecide(i);			
 			agentDecide(i);		
 			afterDecideTakeAction(i);			
