@@ -16,7 +16,8 @@ public class Main {
 	// versions
 	static String algo = "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
-	
+	 static boolean debug = true;
+
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs=true;
 

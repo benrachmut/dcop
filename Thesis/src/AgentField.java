@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class AgentField extends Agent implements Comparable<AgentField> {
-	private static boolean debug = true;
 	private int[] domain;
 	private int firstValue;
 
@@ -42,8 +41,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private MessageAnyTimeDown msgDown;
 	private MessageAnyTimeUp msgUp;
 	// private Set<Permutation> permutationsBelow;
-	private Set<Permutation> permutationsPast;
-	private Set<Permutation> permutationsToSend;
+	private HashSet<Permutation> permutationsPast;
+	private HashSet<Permutation> permutationsToSend;
+	
+	
 	private Set<Permutation> sonsAnytimePermutations;
 	private Map<Integer, Integer> counterAndValue;
 	private Permutation bestPermuation;
@@ -781,17 +782,30 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void addToPermutationPast(Permutation input) {
-		this.permutationsPast.add(input);
+		addToSet(input, permutationsPast);
+
+		
+		//this.permutationsPast.add(input);
 	}
 
 	public void addToPermutationToSend(Permutation input) {
-		if (this.debug) {
-			System.out.println("from: a"+this.id+ ", to: a"+ this.anytimeFather.getId()+", "+input+" "+", reason: leaf creates a message");
+		addToSet(input, permutationsToSend);
+		//this.permutationsToSend.add(input);
 
+	}
+
+	private void addToSet(Permutation input, HashSet<Permutation> setToAddTo) {
+		boolean flag = false;
+		for (Permutation pFromList : setToAddTo) {
+			if (pFromList.equals(input)) {
+				flag = true;
+			}
 		}
 		
+		if (!flag) {
+			setToAddTo.add(input);	
+		}
 		
-		this.permutationsToSend.add(input);
 	}
 
 	public void iterateOverSonsAndCombineWithInputPermutation(Permutation input) {
@@ -902,10 +916,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			
 			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 			Permutation msgP = mau.getCurrentPermutation();
-			
+			permuatationFromAnytimeMsg(msgP);
 
-			tryToCombinePermutation(msgP);
-			addToPermutationPast(msgP);
+			
 
 			//MessageAnyTimeUp mau = (MessageAnyTimeUp)msg;
 
@@ -914,17 +927,32 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 	}
-	public void tryToCombinePermutation(Permutation currentP) {
+	public List<Permutation> permuatationFromAnytimeMsg(Permutation msgP) {
+		addToPermutationPast(msgP);
+		return tryToCombinePermutation(msgP);
+
+		
+	}
+
+	public List<Permutation> tryToCombinePermutation(Permutation currentP) {
 		List<Permutation> listToAddToPast = new ArrayList<Permutation>();
 		List<Permutation> completePermutation = new ArrayList<Permutation>();
+		List<Permutation> ans = new ArrayList<Permutation>();
+		
+		
 		iterateOverPastPermuataion(currentP, listToAddToPast, completePermutation);
 		for (Permutation p : listToAddToPast) {
-			this.permutationsPast.add(p);
+			addToPermutationPast(p);
+			ans.add(p);
 		}
 		
 		for (Permutation p : completePermutation) {
-			this.permutationsToSend.add(p);
+			addToPermutationToSend(p);
+			ans.add(p);
+
+			//this.permutationsToSend.add(p);
 		}
+		return ans;
 		
 	}
 
@@ -938,15 +966,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			Permutation toAdd = msgP.canAdd(pastP);
 			
 			if (toAdd != null) {
-				if (this.debug) {
-				if (!this.isAnytimeTop()) {
-					System.out.println("from: a"+this.id+ ", to: a"+ this.anytimeFather.getId()+", "+toAdd+" "+", reason: combine between "+pastP+ " and permutation from msg "+msgP  );
-				}
 				
-				if (this.isAnytimeTop()) {
-					System.out.println("from: a"+this.id+", to: ax, "+toAdd+" "+", reason: combine between "+pastP+ " and permutation from msg "+msgP  );
-				}
-				}
 
 				if (toAdd.getFlagReady()) {			
 					completePermutation.add(toAdd);

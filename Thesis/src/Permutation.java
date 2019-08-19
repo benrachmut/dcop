@@ -11,6 +11,10 @@ public class Permutation {
 	private Map<Integer, Integer> m;
 	private int cost;
 	private Map<Integer, Boolean> included;
+	private int myIndex;
+	public static int index = 0;
+	private Set<Permutation> combinedWith;
+	
 
 	Permutation(Map<Integer, Integer> m, int cost) {
 		this.m = new HashMap<Integer, Integer>();
@@ -18,6 +22,9 @@ public class Permutation {
 			this.m.put(e.getKey(), e.getValue());
 		}
 		this.cost = cost;
+		index = index + 1;
+		this.myIndex = index;
+		this.combinedWith = new HashSet<Permutation>();
 	}
 
 	Permutation(Map<Integer, Integer> m, int cost, AgentField a) {
@@ -44,13 +51,12 @@ public class Permutation {
 
 		if (obj instanceof Permutation) {
 			Permutation input = (Permutation) obj;
-			boolean sameValueInMap = checkSameValuesInMap(input);
+			boolean sameValueInMap = checkSameValuesInMap(input);		
 			boolean sameCost = input.getCost() == this.getCost();
 			if (sameCost&&sameValueInMap) {
 				return true;
 			}
 		} // instance of
-
 		return false;
 	}
 
@@ -100,7 +106,7 @@ public class Permutation {
 	@Override
 	public String toString() {
 
-		return "p: " + this.m + ", cost: " + this.cost+", included: "+this.included;
+		return "pIndex:"+ this.myIndex+" map:" + this.m + ", cost: " + this.cost+", included:"+this.included;
 	}
 
 	public boolean containsId(int sonId) {

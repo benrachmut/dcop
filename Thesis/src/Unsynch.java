@@ -18,17 +18,13 @@ public abstract class Unsynch  extends Solution {
 		for (int i = 0; i < this.iteration; i++) {	
 			System.out.println("---start iteration: "+i+"---");
 
-			updateWhoCanDecide(i);
-			
-			agentDecide(i);
-			
-			afterDecideTakeAction(i);
-			
+			updateWhoCanDecide(i);			
+			agentDecide(i);		
+			afterDecideTakeAction(i);			
 			List<MessageNormal> msgToSend = agentZero.handleDelay();
 			agentsSendMsgs(msgToSend);
 			createAnytimeUp();
-			createAnytimeDown(fathers, i);
-			
+			createAnytimeDown(fathers, i);			
 			addCostToTables();
 			
 			
