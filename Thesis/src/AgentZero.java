@@ -13,6 +13,8 @@ import java.util.TreeSet;
 import org.omg.CORBA.Current;
 
 public class AgentZero {
+	public static boolean tryingSomething = false;
+
 	private List<MessageNormal> messageBox;
 	private List<MessageNormal> rMessageBox;
 	private List<MessageNormal> timeStempMessageBox;
@@ -219,13 +221,13 @@ public class AgentZero {
 			Permutation currPermutation = reciever.createCurrentPermutationMonotonic();
 			if (Main.anytimeDfs) {
 				reciever.addToPermutationPast(currPermutation);
-				
+
 				if (reciever.isAnytimeLeaf()) {
 					reciever.addToPermutationToSend(currPermutation);
-					//System.out.println("reciever.addToPermutationToSend(currPermutation);");
+					// System.out.println("reciever.addToPermutationToSend(currPermutation);");
 				} else {
 					reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);
-					//System.out.println("reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);");
+					// System.out.println("reciever.iterateOverSonsAndCombineWithInputPermutation(currPermutation);");
 
 				}
 			}
@@ -234,7 +236,7 @@ public class AgentZero {
 		if (Main.anytimeDfs) {
 			if (msg instanceof MessageAnyTimeUp) {
 				reciever.recieveAnytimeUpMonotonic(msg);
-				//System.out.println("reciever.recieveAnytimeUpMonotonic(msg);");
+				// System.out.println("reciever.recieveAnytimeUpMonotonic(msg);");
 			}
 			if (msg instanceof MessageAnyTimeDown) {
 				reciever.recieveAnytimeDownMonotonic(msg);
@@ -250,9 +252,10 @@ public class AgentZero {
 			sendUnsynchNonMonotonicMsg(msg);
 			integerRecieved.add(msg.getReciever().getId());
 		}
-
-		Set<AgentField> agentsRecieved = getAgents(integerRecieved);
-		anytimeMechanismAfterRecieveMsg(agentsRecieved);
+		if (!tryingSomething) {
+			Set<AgentField> agentsRecieved = getAgents(integerRecieved);
+			anytimeMechanismAfterRecieveMsg(agentsRecieved);
+		}
 
 	}
 
@@ -264,16 +267,14 @@ public class AgentZero {
 			boolean leafFlag = false;
 			if (reciever.isAnytimeLeaf()) {
 				reciever.addToPermutationToSend(currPermutation);
-				reason = "leaf a"+reciever.getId()+ "creates a message because counters change";
+				reason = "leaf a" + reciever.getId() + "creates a message because counters change";
 				leafFlag = true;
-			} else  {
-				//reciever.addToPermutationPast(currPermutation);
+			} else {
+				// reciever.addToPermutationPast(currPermutation);
 
 				toSend = reciever.tryToCombinePermutation(currPermutation);
-				
-				
-				
-				reason = "combine between permutations "+currPermutation;
+
+				reason = "combine between permutations " + currPermutation;
 
 			}
 
@@ -284,9 +285,7 @@ public class AgentZero {
 		} // for msgs
 
 	}
-	
 
-	
 	private Set<AgentField> getAgents(Set<Integer> input) {
 		Set<AgentField> ans = new HashSet<AgentField>();
 		for (Integer i : input) {
@@ -308,6 +307,18 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
 			reciever.updateCounterNonMono(senderId);
+
+			if (tryingSomething) {
+				Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
+				if (reciever.isAnytimeLeaf()) {
+					reciever.addToPermutationToSend(currPermutation);
+				} else {
+					reciever.tryToCombinePermutation(currPermutation);
+				}
+				reciever.addToPermutationPast(currPermutation);
+
+			}
+
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
@@ -346,66 +357,62 @@ public class AgentZero {
 		// a.tryToCombinePermutation(p);
 		// a.addToPermutationToSend(p);
 		// a.addToPermutationPast(p);
-		List <Permutation> toSend = new ArrayList<Permutation>();
+		List<Permutation> toSend = new ArrayList<Permutation>();
 		String reason = "";
 		boolean leafFlag = false;
 		if (a.isAnytimeLeaf()) {
 			leafFlag = true;
 			a.addToPermutationToSend(p);
-			//toSend = a.permuatationFromAnytimeMsg(p);
+			// toSend = a.permuatationFromAnytimeMsg(p);
 
-			
-			reason = "self counter of leaf a"+a.getId()+" changed from "+(a.getDecisonCounter()-1) + " to "+ a.getDecisonCounter();
+			reason = "self counter of leaf a" + a.getId() + " changed from " + (a.getDecisonCounter() - 1) + " to "
+					+ a.getDecisonCounter();
 		}
 
 		else {
 			toSend = a.permuatationFromAnytimeMsg(p);
-			reason = "self counter of agent a"+a.getId()+" which is not a leaf changed from "+(a.getDecisonCounter()-1) + " to "+ a.getDecisonCounter()+ " and can be combined with";
-			
-		
+			reason = "self counter of agent a" + a.getId() + " which is not a leaf changed from "
+					+ (a.getDecisonCounter() - 1) + " to " + a.getDecisonCounter() + " and can be combined with";
+
 		}
-		
+
 		if (Main.debug) {
 			printDebugAnytimePermutation(leafFlag, a, p, toSend, reason);
 		}
-		
 
 	}
-	
+
 	/*
-	 * if (a.isAnytimeLeaf()) {
-			leafFlag = true;
-			a.addToPermutationToSend(p);
-			reason = "self counter of leaf a"+a.getId()+" changed from "+(a.getDecisonCounter()-1) + " to "+ a.getDecisonCounter();
-		}
-
-		else {
-			toSend = a.permuatationFromAnytimeMsg(p);
-			reason = "self counter of agent a"+a.getId()+" which is not a leafchanged from "+(a.getDecisonCounter()-1) + " to "+ a.getDecisonCounter();
-			
+	 * if (a.isAnytimeLeaf()) { leafFlag = true; a.addToPermutationToSend(p); reason
+	 * =
+	 * "self counter of leaf a"+a.getId()+" changed from "+(a.getDecisonCounter()-1)
+	 * + " to "+ a.getDecisonCounter(); }
+	 * 
+	 * else { toSend = a.permuatationFromAnytimeMsg(p); reason =
+	 * "self counter of agent a"+a.getId()+" which is not a leafchanged from "+(a.
+	 * getDecisonCounter()-1) + " to "+ a.getDecisonCounter();
+	 * 
 	 */
-	
 
-	private void printDebugAnytimePermutation(boolean leaf, AgentField reciever, Permutation currPermutation, List<Permutation>toSend, String reason) {
+	private void printDebugAnytimePermutation(boolean leaf, AgentField reciever, Permutation currPermutation,
+			List<Permutation> toSend, String reason) {
 		if (leaf) {
-			
+
 			System.out.println("from: a" + reciever.getId() + ", to: a" + reciever.getAnytimeFather().getId() + ", "
-					+ currPermutation + " " + ", reason: "+reason);
+					+ currPermutation + " " + ", reason: " + reason);
 		} else {
 			for (Permutation toAdd : toSend) {
-				reason = reason + "and combined with "+toAdd;
+				reason = reason + "and combined with " + toAdd;
 				if (!reciever.isAnytimeTop()) {
-					System.out.println("from: a" + reciever.getId() + ", to: a"
-							+ reciever.getAnytimeFather().getId() + ", " + toAdd + " "
+					System.out.println("from: a" + reciever.getId() + ", to: a" + reciever.getAnytimeFather().getId()
+							+ ", " + toAdd + " " + ", reason: combine between Permutations");
+				} else {
+					System.out.println("from: a" + reciever.getId() + ", to: ax, " + toAdd
 							+ ", reason: combine between Permutations");
-				}
-				else {
-					System.out.println("from: a" + reciever.getId() + ", to: ax, " + toAdd +", reason: combine between Permutations");
 				}
 			}
 		}
 	}
-
 
 	private void createUnsynchMsgs(AgentField currentAgent, int currentIteration) {
 
