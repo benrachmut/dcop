@@ -32,9 +32,9 @@ public class Main {
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
-	static double[] p3s = { 0 }; // prob of communication to have delay
+	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 5 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+	static int[] delayUBs = { 1 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 									// 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay

@@ -352,6 +352,9 @@ public class AgentZero {
 		if (a.isAnytimeLeaf()) {
 			leafFlag = true;
 			a.addToPermutationToSend(p);
+			//toSend = a.permuatationFromAnytimeMsg(p);
+
+			
 			reason = "self counter of leaf a"+a.getId()+" changed from "+(a.getDecisonCounter()-1) + " to "+ a.getDecisonCounter();
 		}
 

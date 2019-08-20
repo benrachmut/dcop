@@ -26,10 +26,11 @@ public abstract class Unsynch  extends Solution {
 			createAnytimeUp();
 			createAnytimeDown(fathers, i);			
 			addCostToTables();
-			
+
+
 			
 			//---- for debug
-			
+			//printAgents();
 			//printDecisionCounter(i);
 			
 			//printPersonalPermutations(i);
@@ -46,6 +47,14 @@ public abstract class Unsynch  extends Solution {
 	}
 	
 	
+	private void printAgents() {
+		for (AgentField a : this.agents) {
+			System.out.print(a+", ");
+		}
+		System.out.println();
+		
+	}
+
 	private void printCreatedAnytimeMsgUp(int i) {
 		List<MessageAnyTimeUp> atu = new ArrayList<MessageAnyTimeUp>();
 

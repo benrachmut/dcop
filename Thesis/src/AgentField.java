@@ -778,36 +778,26 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void addToPermutationPast(Permutation input) {
 		addToSet(input, permutationsPast);
-		// this.permutationsPast.add(input);
-		
-		if (Main.debugCombineWith) {
-			if (this.getId() == 9 && input.getCost() == 756 ) {
-				
-				for (Permutation p : input.getCombineWith()) {
-					System.out.println(p);
-				}
-				System.out.println();
-
-			}
-		}
+		 //this.permutationsPast.add(input);
+	
 	}
 
 	public void addToPermutationToSend(Permutation input) {
-		addToSet(input, permutationsToSend);
-		// this.permutationsToSend.add(input);
-		if (Main.debugCombineWith) {
-			if (this.getId() == 9 && input.getCost() == 821) {
-				for (Permutation p : input.getCombineWith()) {
-					System.out.println(p);
-				}
-				System.out.println();
-
-			}
-		}
+		boolean flag = addToSet(input, permutationsToSend);
+		
+		
+		
+		//if (!flag && this.id==9) {
+		//	System.out.println(input);
+		//}
+		
+		
+		//this.permutationsToSend.add(input);
+	
 
 	}
 
-	private void addToSet(Permutation input, HashSet<Permutation> setToAddTo) {
+	private boolean addToSet(Permutation input, HashSet<Permutation> setToAddTo) {
 		boolean flag = false;
 		for (Permutation pFromList : setToAddTo) {
 			if (pFromList.equals(input)) {
@@ -818,6 +808,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		if (!flag) {
 			setToAddTo.add(input);
 		}
+		
+		return flag;
 
 	}
 

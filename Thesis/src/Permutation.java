@@ -17,7 +17,6 @@ public class Permutation {
 	private List<Permutation> combinedWith;
 	private AgentField creator;
 	private int iterationCreated;
-	
 
 	Permutation(Map<Integer, Integer> m, int cost) {
 		this.m = new HashMap<Integer, Integer>();
@@ -29,9 +28,8 @@ public class Permutation {
 		this.myIndex = index;
 		this.combinedWith = new ArrayList<Permutation>();
 		this.creator = new AgentField(10, -1);
-		this.included = new HashMap<Integer,Boolean>();
-	
-		
+		this.included = new HashMap<Integer, Boolean>();
+
 	}
 
 	Permutation(Map<Integer, Integer> m, int cost, AgentField a) {
@@ -43,13 +41,13 @@ public class Permutation {
 		}
 		included.put(a.getId(), true);
 		this.creator = a;
-		
 
 	}
 
-	public Permutation(Map<Integer, Integer> m, int cost, Map<Integer, Boolean> included, List<Permutation>comWith,AgentField creator) {
-		
-		this(m,cost);
+	public Permutation(Map<Integer, Integer> m, int cost, Map<Integer, Boolean> included, List<Permutation> comWith,
+			AgentField creator) {
+
+		this(m, cost);
 		this.iterationCreated = Unsynch.iter;
 		this.creator = creator;
 		this.combinedWith = comWith;
@@ -59,7 +57,7 @@ public class Permutation {
 	private List<Integer> getSonsId(AgentField a) {
 		List<Integer> ans = new ArrayList<Integer>();
 		List<AgentField> sons = a.getAnytimeSons();
-		 for (AgentField agentField : sons) {
+		for (AgentField agentField : sons) {
 			ans.add(agentField.getId());
 		}
 		return ans;
@@ -70,13 +68,42 @@ public class Permutation {
 
 		if (obj instanceof Permutation) {
 			Permutation input = (Permutation) obj;
-			boolean sameValueInMap = checkSameValuesInMap(input);		
+			boolean sameValueInMap = checkSameValuesInMap(input);
 			boolean sameCost = input.getCost() == this.getCost();
-			if (sameCost&&sameValueInMap) {
+			boolean sameInclude = checkIfSameInclude(input);
+		
+			 if (sameCost&&sameValueInMap&&sameInclude) { return true; }
+			/*
+			if (sameCost && sameValueInMap) {
 				return true;
 			}
+			*/
+			
 		} // instance of
 		return false;
+	}
+
+	private boolean checkIfSameInclude(Permutation input) {
+		Map<Integer, Boolean> inputInclude = input.getIncluded();
+		if (inputInclude.isEmpty() && this.included.isEmpty()) {
+			return true;
+		}
+
+		if (inputInclude.size() != this.included.size()) {
+			return false;
+		}
+		Set<Integer> similarKey = similarKeySetInclude(inputInclude);
+		if (similarKey.size() != this.included.size()) {
+			return false;
+		}
+
+		for (Integer i : similarKey) {
+			if (this.included.get(i) != inputInclude.get(i)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private boolean checkSameValuesInMap(Permutation input) {
@@ -104,7 +131,7 @@ public class Permutation {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -126,10 +153,10 @@ public class Permutation {
 	@Override
 	public String toString() {
 
-		return "pIndex:"+ this.myIndex+ "| creator:"+ this.creator+"| map:" + this.m + 
-				"| cost: " + this.cost+"| included:"+this.included+"| iteration created: "+this.iterationCreated;
-				
-				//+"| combined with:"+this.combinedWith;
+		return "pIndex:" + this.myIndex +  "| map:" + this.m +"| creator:" + this.creator + "| cost:" + this.cost
+				+ "| included:" + this.included + "| iteration created:" + this.iterationCreated;
+
+		// +"| combined with:"+this.combinedWith;
 	}
 
 	public boolean containsId(int sonId) {
@@ -138,68 +165,56 @@ public class Permutation {
 	}
 
 	public static Permutation combinePermutations(Permutation p1, Permutation p2, AgentField creator) {
-		
+
 		Map<Integer, Integer> m = combineMaps(p1, p2);
-		int cost = combineCost(p1,p2);
-		Map<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);	
-		//List<Permutation> combineWith = new ArrayList<Permutation>();
-	
-		List<Permutation> combineWith = createCombineWith(p1,p2);
-		
+		int cost = combineCost(p1, p2);
+		if (cost == 237 && creator.getId() ==9 ) {
+			System.out.println();
+		}
+		Map<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);
+
+		List<Permutation> combineWith = createCombineWith(p1, p2);
+
 		return new Permutation(m, cost, toAddIncluded, combineWith, creator);
 	}
 
-	
 	private static List<Permutation> createCombineWith(Permutation p1, Permutation p2) {
-		List<Permutation>ans = new ArrayList<Permutation>();
-		
+		List<Permutation> ans = new ArrayList<Permutation>();
+
 		if (!p1.getCombineWith().isEmpty()) {
 			ans.addAll(p1.getCombineWith());
 		}
-		
+
 		if (!p2.getCombineWith().isEmpty()) {
 			ans.addAll(p2.getCombineWith());
 		}
 		ans.add(p1);
 		ans.add(p2);
-		
+
 		return ans;
 	}
 
-	public List<Permutation> getCombineWith(){
+	public List<Permutation> getCombineWith() {
 		return this.combinedWith;
 	}
-	private static List<Permutation> combineCombinedWith(Permutation p1, Permutation p2) {
-		List<Permutation> ans = new ArrayList<Permutation>();
-		List<Permutation> unexplored = new ArrayList<Permutation>();
-		unexplored.add(p1);
-		unexplored.add(p2);
-		
-		
-		Iterator<Permutation> it = unexplored.iterator();
-		Permutation current = null;
-		while (it.hasNext()) {
-			current = it.next();
-			List<Permutation> toAdd =current.getCombineWith();
-			boolean flag = false;
-			for (Permutation pInAns : ans) {
-				if (current.equals(pInAns)) {
-					flag = true;
-				}
-			}
-			if (!flag) {
-				ans.add(current);
-			}
-			it.remove();
-			unexplored.addAll(toAdd);
-			it = unexplored.iterator();
-		}
-		
-
-		return ans;
-	}
-
-	
+	/*
+	 * private static List<Permutation> combineCombinedWith(Permutation p1,
+	 * Permutation p2) { List<Permutation> ans = new ArrayList<Permutation>();
+	 * List<Permutation> unexplored = new ArrayList<Permutation>();
+	 * unexplored.add(p1); unexplored.add(p2);
+	 * 
+	 * 
+	 * Iterator<Permutation> it = unexplored.iterator(); Permutation current = null;
+	 * while (it.hasNext()) { current = it.next(); List<Permutation> toAdd
+	 * =current.getCombineWith(); boolean flag = false; for (Permutation pInAns :
+	 * ans) { if (current.equals(pInAns)) { flag = true; } } if (!flag) {
+	 * ans.add(current); } it.remove(); unexplored.addAll(toAdd); it =
+	 * unexplored.iterator(); }
+	 * 
+	 * 
+	 * return ans; }
+	 * 
+	 */
 
 	private static int combineCost(Permutation p1, Permutation p2) {
 		int ans = 0;
@@ -233,25 +248,52 @@ public class Permutation {
 	}
 
 	public Permutation canAdd(AgentField creator, Permutation msgP) {
-		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP) && this.differentComposedPermutations(msgP)) {
+		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP)
+				&& this.differentComposedPermutations(msgP)) {
 			Permutation combineP = combinePermutations(this, msgP, creator);
 			return combineP;
 		}
+		return null;
 	}
 
-	private int toAddIncludeCounter(Map<Integer, Boolean> toAddIncluded) {
-		int counter=0;
-		for (Boolean b : toAddIncluded.values()) {
-			if (b) {
-				counter++;
+	private boolean differentComposedPermutations(Permutation msgP) {
+		// check if in the list of msgP combined with permutation we have similar
+		// permutation with this permutation.
+		List<Permutation> c1 = this.combinedWith;
+		List<Permutation> c2 = msgP.getCombineWith();
+
+		boolean flag = false;
+		for (Permutation p1 : c1) {
+			for (Permutation p2 : c2) {
+				if (p1.equals(p2)) {
+					flag = true;
+				}
 			}
 		}
-		return counter;
-	}
+		for (Permutation p1 : c1) {
+			if (p1.equals(msgP)) {
+				flag = true;
+			}
+		}
+		for (Permutation p2 : c2) {
+			if (p2.equals(this)) {
+				flag = true;
+			}
+		}
 
-	private void setIncluded(Map<Integer, Boolean> toAddIncluded) {
-		this.included = toAddIncluded;
+		boolean ans = !flag;
+
+		return ans;
 	}
+	/*
+	 * private int toAddIncludeCounter(Map<Integer, Boolean> toAddIncluded) { int
+	 * counter=0; for (Boolean b : toAddIncluded.values()) { if (b) { counter++; } }
+	 * return counter; }
+	 */
+	/*
+	 * private void setIncluded(Map<Integer, Boolean> toAddIncluded) { this.included
+	 * = toAddIncluded; }
+	 */
 
 	private static Map<Integer, Boolean> combineIncluded(Permutation p1, Permutation p2) {
 		Map<Integer, Boolean> ans = new HashMap<Integer, Boolean>();
@@ -261,29 +303,26 @@ public class Permutation {
 		for (Integer i1 : includeP1.keySet()) {
 			if (!includeP2.containsKey(i1)) {
 				ans.put(i1, includeP1.get(i1));
-			}
-			else if (!includeP1.get(i1) && !includeP2.get(i1)) {
+			} else if (!includeP1.get(i1) && !includeP2.get(i1)) {
 				ans.put(i1, false);
-			}
-			else {
+			} else {
 				ans.put(i1, true);
 			}
 		}
-		
+
 		for (Integer i2 : includeP2.keySet()) {
 			if (!includeP1.containsKey(i2)) {
 				ans.put(i2, includeP2.get(i2));
 			}
-			
+
 		}
-		
+
 		return ans;
 	}
 
-
 	private boolean differentAgentsInPermutation(Permutation msgP) {
-		Set<Integer>sKeys = similarKeySetInclude(msgP.getIncluded());
-		
+		Set<Integer> sKeys = similarKeySetInclude(msgP.getIncluded());
+
 		for (Integer i : sKeys) {
 			if (this.included.get(i) != msgP.getIncluded().get(i)) {
 				return true;
@@ -294,24 +333,23 @@ public class Permutation {
 
 	private Set<Integer> similarKeySetInclude(Map<Integer, Boolean> otherInclude) {
 		Set<Integer> ans = new HashSet<Integer>();
-		for (Integer i: this.included.keySet()) {
-		if (otherInclude.containsKey(i)) {
-			ans.add(i);
+		for (Integer i : this.included.keySet()) {
+			if (otherInclude.containsKey(i)) {
+				ans.add(i);
+			}
 		}
+		return ans;
 	}
-	return ans;
-}
 
 	public Map<Integer, Boolean> getIncluded() {
 		return this.included;
 	}
 
 	public void createdIncluded(AgentField sender) {
-		this.included= new HashMap<Integer, Boolean>();
+		this.included = new HashMap<Integer, Boolean>();
 		this.included.put(sender.getId(), true);
-		
-	}
 
+	}
 
 	public static Permutation combinePermutations(Permutation p1, Permutation p2) {
 		int cost;
