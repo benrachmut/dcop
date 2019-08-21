@@ -615,15 +615,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	 * // this.permutationsPast.add(p); this.permutationsToSend.add(p); }
 	 */
 
-	public void resetPermutationsToSend() {
-		this.permutationsToSend = null;
-	}
-
-	public void resetPermutationsPast() {
-		this.permutationsPast = new HashSet<Permutation>();
-
-	}
-
 	private void handlePToSend(Permutation pToSend) {
 		if (this.isAnytimeTop()) {
 			this.iHaveAnytimeNews = fatherCheckForPermutationDown(pToSend);
@@ -778,22 +769,17 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void addToPermutationPast(Permutation input) {
 		addToSet(input, permutationsPast);
-		 //this.permutationsPast.add(input);
-	
+		// this.permutationsPast.add(input);
+
 	}
 
 	public void addToPermutationToSend(Permutation input) {
 		boolean flag = addToSet(input, permutationsToSend);
-		
-		
-		
-		//if (!flag && this.id==9) {
-		//	System.out.println(input);
-		//}
-		
-		
-		//this.permutationsToSend.add(input);
-	
+
+		if (this.id == 9) {
+			System.out.println(input);
+		}
+
 
 	}
 
@@ -808,7 +794,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		if (!flag) {
 			setToAddTo.add(input);
 		}
-		
+
 		return flag;
 
 	}
@@ -996,6 +982,20 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public Map<Integer, Integer> getNeighborCounter() {
 		return this.neigborCounter;
+
+	}
+
+	public void updateCounterNonMonoWithSelfCounterSent(int senderId, int date) {
+		neigborCounter.put(senderId, date);
+	}
+
+	public void restartPermutationsPast() {
+		this.permutationsPast = new HashSet<Permutation>();
+
+	}
+
+	public void restartAnytimeToSend() {
+		this.permutationsToSend = new HashSet<Permutation>();
 
 	}
 

@@ -5,6 +5,7 @@ public class MessageNormal implements Comparable<MessageNormal> {
 	private int senderValue;
 	private int delay;
 	private int date;
+	private int senderSelfCounter;
 
 	public MessageNormal(AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration) {
 		super();
@@ -14,15 +15,11 @@ public class MessageNormal implements Comparable<MessageNormal> {
 		this.delay = delay;
 		this.date = currentIteration;
 	}
-/*
-	public Message(AgentField sender, AgentField reciever, int senderValue) {
-		super();
-		this.sender = sender;
-		this.reciever = reciever;
-		this.senderValue = senderValue;
-		this.delay = 0;
+
+	public MessageNormal(AgentField sender, AgentField reciever, int senderValue, int delay, int currentIteration, int senderSelfCounter) {
+		this( sender,  reciever,  senderValue,  delay,  currentIteration);
+		this.senderSelfCounter = senderSelfCounter;
 	}
-	*/
 
 	public MessageNormal(MessageNormal m) {
 		super();
@@ -33,6 +30,7 @@ public class MessageNormal implements Comparable<MessageNormal> {
 		this.date = m.getDate();
 	}
 
+	
 	public int getDate() {
 		return this.date;
 	}
@@ -60,6 +58,11 @@ public class MessageNormal implements Comparable<MessageNormal> {
 
 	public int getSenderValue() {
 		return senderValue;
+	}
+
+	public int getSenderSelfCounter() {
+		// TODO Auto-generated method stub
+		return this.senderSelfCounter;
 	}
 	
 	

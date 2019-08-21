@@ -17,7 +17,7 @@ public abstract class Unsynch  extends Solution {
 		List<AgentField> fathers = findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {	
 			iter = i;
-			System.out.println("---start iteration: "+i+"---");
+		//	System.out.println("---start iteration: "+i+"---");
 			updateWhoCanDecide(i);			
 			agentDecide(i);		
 			afterDecideTakeAction(i);			

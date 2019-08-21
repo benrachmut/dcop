@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.omg.CORBA.Current;
 
 public class AgentZero {
-	public static boolean tryingSomething = false;
 
 	private List<MessageNormal> messageBox;
 	private List<MessageNormal> rMessageBox;
@@ -248,18 +248,42 @@ public class AgentZero {
 	// -------------- Unsynch NON Monotonic-------------
 	public void sendUnsynchNonMonotonicMsgs(List<MessageNormal> msgToSend) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
-		for (MessageNormal msg : msgToSend) {
-			sendUnsynchNonMonotonicMsg(msg);
-			integerRecieved.add(msg.getReciever().getId());
-		}
-		if (!tryingSomething) {
-			Set<AgentField> agentsRecieved = getAgents(integerRecieved);
-			anytimeMechanismAfterRecieveMsg(agentsRecieved);
+		if (Main.tryAllMailBoxImproved) {
+			Map<Integer, SortedSet<MessageNormal>> msgMapByReciever = getMsgMapByReciever(msgToSend) ;
+				
+			
+
+		} else {
+			for (MessageNormal msg : msgToSend) {
+				sendUnsynchNonMonotonicMsg(msg);
+				integerRecieved.add(msg.getReciever().getId());
+			}
+			if (Main.tryAllMailBox) {
+				Set<AgentField> agentsRecieved = getAgents(integerRecieved);
+				anytimeMechanismAfterRecieveMsg(agentsRecieved);
+			}
 		}
 
 	}
 
+	private Map<Integer, SortedSet<MessageNormal>> getMsgMapByReciever(List<MessageNormal> msgToSend) {
+
+		Map<Integer, SortedSet<MessageNormal>> ans = new HashMap<Integer, SortedSet<MessageNormal>>();
+		for (MessageNormal msg : msgToSend) {
+			int recieverId = msg.getReciever().getId();
+			if (!ans.containsKey(recieverId)) {
+				ans.put(recieverId, new TreeSet<MessageNormal>(new ComparatorMsgDate()));
+			}
+			ans.get(recieverId).add(msg);
+		}
+		return ans;
+	}
+
 	private void anytimeMechanismAfterRecieveMsg(Set<AgentField> agentsRecieved) {
+		/*
+		 * Probably need to check all possible sequence of mail pick ups
+		 */
+
 		for (AgentField reciever : agentsRecieved) {
 			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
 			List<Permutation> toSend = new ArrayList<Permutation>();
@@ -271,11 +295,8 @@ public class AgentZero {
 				leafFlag = true;
 			} else {
 				// reciever.addToPermutationPast(currPermutation);
-
 				toSend = reciever.tryToCombinePermutation(currPermutation);
-
 				reason = "combine between permutations " + currPermutation;
-
 			}
 
 			if (Main.debug) {
@@ -306,9 +327,12 @@ public class AgentZero {
 		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
 			int senderValue = msg.getSenderValue();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-			reciever.updateCounterNonMono(senderId);
-
-			if (tryingSomething) {
+			if (Main.trySendSelfCounter) {
+				reciever.updateCounterNonMonoWithSelfCounterSent(senderId, msg.getSenderSelfCounter());
+			} else {
+				reciever.updateCounterNonMono(senderId);
+			}
+			if (!Main.tryAllMailBox) {
 				Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
 				if (reciever.isAnytimeLeaf()) {
 					reciever.addToPermutationToSend(currPermutation);
@@ -373,7 +397,6 @@ public class AgentZero {
 			toSend = a.permuatationFromAnytimeMsg(p);
 			reason = "self counter of agent a" + a.getId() + " which is not a leaf changed from "
 					+ (a.getDecisonCounter() - 1) + " to " + a.getDecisonCounter() + " and can be combined with";
-
 		}
 
 		if (Main.debug) {
@@ -418,7 +441,15 @@ public class AgentZero {
 
 		List<AgentField> neighborsAgents = getNeighborsAgents(currentAgent);
 		for (AgentField n : neighborsAgents) {
-			MessageNormal m = createUnsynchOneMsg(currentAgent, n, currentIteration);
+			MessageNormal m;
+
+			if (Main.trySendSelfCounter) {
+				int selfCounter = currentAgent.getDecisonCounter();
+				m = createUnsynchOneMsgTrySendSelfCounter(currentAgent, n, currentIteration, selfCounter);
+			} else {
+				m = createUnsynchOneMsg(currentAgent, n, currentIteration);
+			}
+
 			this.messageBox.add(m);
 		}
 	}
@@ -427,6 +458,14 @@ public class AgentZero {
 		int senderValue = sender.getValue();
 		int delay = this.createDelay();
 		return new MessageNormal(sender, reciever, senderValue, delay, currentIteration);
+	}
+
+	private MessageNormal createUnsynchOneMsgTrySendSelfCounter(AgentField sender, AgentField reciever,
+			int currentIteration, int selfCounter) {
+		int senderValue = sender.getValue();
+		int delay = this.createDelay();
+		return new MessageNormal(sender, reciever, senderValue, delay, currentIteration, selfCounter);
+
 	}
 
 	public void createAnyTimeUpUnsynchMono() {

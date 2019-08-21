@@ -13,11 +13,20 @@ import java.util.Set;
 
 public class Main {
 
+	
+	
+	// different versions
+	
+	public static boolean tryAllMailBox = false;
+	public static boolean tryAllMailBoxImproved = true;
+
+	public static boolean trySendSelfCounter = true;
+
 	// versions
 	static String algo ="dsaUnsynch7"; //"dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
-	 static boolean debug = false;
-	 static boolean debugCombineWith = true;
+	static boolean debug = false;
+	static boolean debugCombineWith = true;
 
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs=true;
@@ -34,14 +43,14 @@ public class Main {
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 1 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+	static int[] delayUBs = { 2 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 									// 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
 	static int meanReps = 1;// 10; // number of reps for every solve process
-	static int iterations =  1000;
+	static int iterations =  100;
 	static Dcop dcop;
 	static boolean dateKnown;
 
@@ -324,9 +333,7 @@ public class Main {
 			agents[i].resetMsgUpAndDown();
 			agents[i].setDecisionCounterNonMonotonic(0);
 			agents[i].setDecisionCounterMonotonic(0);
-			agents[i].resetPermutationsPast();
 			agents[i].initSonsAnytimeMessages();
-			agents[i].resetPermutationsToSend();
 			agents[i].resetCounterAndValue();
 			agents[i].resetBestPermutation();
 			agents[i].resettopHasAnytimeNews();
@@ -334,6 +341,9 @@ public class Main {
 			agents[i].setUnsynchFlag(false);
 			agents[i].restartNeighborCounter();
 			agents[i].restartAnytimeUpRecieved();
+			agents[i].restartPermutationsPast();
+			agents[i].restartAnytimeToSend();
+
 		}
 
 	}

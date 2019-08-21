@@ -168,9 +168,7 @@ public class Permutation {
 
 		Map<Integer, Integer> m = combineMaps(p1, p2);
 		int cost = combineCost(p1, p2);
-		if (cost == 237 && creator.getId() ==9 ) {
-			System.out.println();
-		}
+		
 		Map<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);
 
 		List<Permutation> combineWith = createCombineWith(p1, p2);
