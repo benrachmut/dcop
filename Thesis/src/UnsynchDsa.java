@@ -73,7 +73,6 @@ public class UnsynchDsa extends Unsynch {
 	protected void afterDecideTakeAction(int i) {
 		agentZero.afterDecideTakeActionUnsynchNonMonotonic(this.didDecide, i);
 		//agentZero.selfChangeReport(didDecide);
-		
 		this.whoCanDecide = new ArrayList<AgentField>();
 		this.didDecide = new HashSet<AgentField>();
 	}

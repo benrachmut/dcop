@@ -18,8 +18,8 @@ public class Main {
 	// different versions
 	
 	public static boolean tryAllMailBox = false;
-	public static boolean tryAllMailBoxImproved = true;
-
+	public static boolean tryAllMailBoxImproved = false;
+	public static boolean tryAgentRememberSequence = true;
 	public static boolean trySendSelfCounter = true;
 
 	// versions

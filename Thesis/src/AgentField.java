@@ -455,8 +455,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void setDecisionCounterNonMonotonic(int i) {
 		this.decisonCounter = i;
-		Permutation myPermutation = this.createCurrentPermutationNonMonotonic();
-		this.permutationsPast.add(myPermutation);
+		
 
 	}
 
