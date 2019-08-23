@@ -147,15 +147,7 @@ public abstract class Unsynch extends Solution {
 
 	}
 
-	public List<AgentField> findHeadOfTree() {
-		List<AgentField> ans = new ArrayList<AgentField>();
-		for (AgentField a : agents) {
-			if (a.getDfsFather() == null) {
-				ans.add(a);
-			}
-		}
-		return ans;
-	}
+	public abstract List<AgentField> findHeadOfTree() ;
 
 	protected abstract void updateWhoCanDecide(int i);
 

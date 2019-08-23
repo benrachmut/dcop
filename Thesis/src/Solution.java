@@ -50,7 +50,7 @@ public abstract class Solution {
 	public void addAnytimeCost() {
 		this.anytimeCost.add(dcop.calCost(false));
 	}
-
+/*
 	private void trySelfCost() {
 		
 		int ans = 0;
@@ -61,6 +61,7 @@ public abstract class Solution {
 		this.realCost.add(ans);
 		
 	}
+	*/
 
 	public abstract void solve();
 

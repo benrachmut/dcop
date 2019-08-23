@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class AgentField extends Agent implements Comparable<AgentField> {
-	
+
 	private int[] domain;
 	private int firstValue;
 
@@ -465,7 +465,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			m.put(e.getKey(), e.getValue());
 		}
 		m.put(this.id, this.decisonCounter);
-		int selfCost = this.calSelfCost();
+		int selfCost = this.calSelfCost(m);
 
 		return new Permutation(m, selfCost, this);
 	}
@@ -558,22 +558,68 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public boolean hasDownMessage() {
 		return this.msgDown != null;
 	}
+	/*
+	 * public int calSelfCost() { if (this.value == -1 || neighborIsMinusOne()) {
+	 * return Integer.MAX_VALUE; } List<Neighbors> myNeighbors =
+	 * Main.dcop.getHisNeighbors(this); // here is the bug!!!! need to take my
+	 * neighbors from somewhere else!!!! since dcop has a pointer to the real
+	 * agent!!!! int ans = 0; for (Neighbors n : myNeighbors) { int costOfN =
+	 * Main.dcop.calCostPerNeighbor(n, true); ans = ans + costOfN; if
+	 * (Main.printSelfN) { System.out.println(n+"| "+costOfN); } }
+	 * 
+	 * return ans; }
+	 */
 
-	public int calSelfCost() {
-		if (this.value == -1 || neighborIsMinusOne()) {
+	public int calSelfCost(Map<Integer, Integer> m) {
+
+		if (this.value == -1 || neighborIsMinusOne(m)) {
 			return Integer.MAX_VALUE;
 		}
-		List<Neighbors> myNeighbors = Main.dcop.getHisNeighbors(this);
+		List<Neighbors> myNeighbors = createNeighborsFromM(m);
+		// here is the bug!!!! need to take my neighbors from somewhere else!!!! since
+		// dcop has a pointer to the real agent!!!!
 		int ans = 0;
 		for (Neighbors n : myNeighbors) {
 			int costOfN = Main.dcop.calCostPerNeighbor(n, true);
 			ans = ans + costOfN;
 			if (Main.printSelfN) {
-				System.out.println(n+"| "+costOfN);
+				System.out.println(n + "| " + costOfN);
 			}
 		}
 
 		return ans;
+	}
+
+	private List<Neighbors> createNeighborsFromM(Map<Integer, Integer> m) {
+		List<Neighbors> ans = new ArrayList<Neighbors>();
+
+		for (Entry<Integer, Integer> e : m.entrySet()) {
+			int nId = e.getKey();
+			int nValue = e.getValue();
+			Agent a1;
+			Agent a2;
+			if (this.id < nId) {
+				a1 = new Agent(this.id, this.value);
+				a2 = new Agent(nId, nValue);
+			} else {
+				a1 = new Agent(nId, nValue);
+				a2 = new Agent(this.id, this.value);
+			}
+			Neighbors n = new Neighbors(a1, a2);
+			ans.add(n);
+
+		}
+
+		return ans;
+	}
+
+	private boolean neighborIsMinusOne(Map<Integer, Integer> m) {
+		for (Integer i : m.values()) {
+			if (i == -1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void reciveMsg(int senderId, int senderValue, int dateOfOther) {
@@ -608,12 +654,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 		for (Entry<Integer, Integer> a : this.aboveMap.entrySet()) {
 			m.put(a.getKey(), a.getValue());
-		
-		}
-		
 
-		int selfCost = this.calSelfCost();
-		
+		}
+
+		int selfCost = this.calSelfCost(m);
+
 		return new Permutation(m, selfCost);
 	}
 
@@ -781,26 +826,29 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void addToPermutationToSend(Permutation input) {
-		boolean flag = addToSet(input, permutationsToSend);
-		/*
-		if (!flag) {
-			if (Main.printCompletePermutationOf9) {
-				printTopCompletePermutation(input);
+		if (this.isAnytimeTop()) {
+			if (permutationsToSend.isEmpty() || this.bestPermuation.getCost() > input.getCost()) {
+				topRecieveBetterPermutation(input);
 			}
+		} else {
+			addToSet(input, permutationsToSend);
 		}
-		*/
+	}
+
+	private void topRecieveBetterPermutation(Permutation input) {
+		bestPermuation = input;
+		this.anytimeValue = input.getM().get(this.id);
+		iHaveAnytimeNews = true;
 
 	}
 
-	
-	
 	private void printTopCompletePermutation(Permutation input) {
 		int realCost = Solution.dcopS.calRealSolForDebug(input.getM());
-		if (this.id == 9) {
+		if (this.isAnytimeTop()) {
 			if (input.getCost() == realCost) {
 				System.out.println(input);
 			} else {
-				System.err.println("cost should be: "+realCost+" |"+input);
+				System.err.println("cost should be: " + realCost + " |" + input);
 
 			}
 		}
@@ -832,8 +880,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		for (Permutation sonPermutation : this.sonsAnytimePermutations) {
 			if (sonPermutation.isCoherent(input)) {
 				Permutation pToSend = Permutation.combinePermutations(sonPermutation, input, this);
-				
-				
+
 				handlePToSend(pToSend);
 			}
 		}
@@ -913,8 +960,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			for (Permutation aboveP : pastCoherentWithMessage) {
 				if (belowP.isCoherent(aboveP)) {
 					Permutation pToSend = Permutation.combinePermutations(belowP, aboveP);
-					
-					
+
 					handlePToSend(pToSend);
 
 				}
@@ -1031,26 +1077,25 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		m.put(this.id, this.value);
 
-		boolean x1,x2,x3,x4,x5,x6,x7;
-	
+		boolean x1, x2, x3, x4, x5, x6, x7;
+
 		if (Main.printSelfN) {
-			if (this.id == 9) {
-				x1= this.neighbor.get(1).getValue() ==7;
-				x2=neighbor.get(3).getValue() ==9;
-				x3=neighbor.get(4).getValue() ==9;
-				x4=neighbor.get(5).getValue() ==8;
-				x5=neighbor.get(7).getValue() ==7;
-				x6=neighbor.get(8).getValue() ==5;
-				x7=this.value ==4;
-				if (x1 && x2 && x3 && x4 && x5 && x6 && x7 ){
+			if (this.id == 6) {
+				x1 = neighbor.get(0).getValue() == 0;
+				x2 = neighbor.get(1).getValue() == 7;
+				x3 = neighbor.get(5).getValue() == 8;
+				// x4=neighbor.get(6).getValue() ==4;
+				// x5=neighbor.get(7).getValue() ==7;
+				// x6=neighbor.get(8).getValue() ==5;
+				x4 = this.value == 4;
+				if (x1 && x2 && x3 && x4) {
 					System.out.println();
 				}
 			}
-		}	
-		
-	
-		int cost = calSelfCost();
-		
+		}
+
+		int cost = calSelfCost(m);
+
 		return new Permutation(m, cost, this);
 	}
 

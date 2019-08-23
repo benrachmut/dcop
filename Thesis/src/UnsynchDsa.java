@@ -113,6 +113,15 @@ public class UnsynchDsa extends Unsynch {
 		// TODO Auto-generated method stub
 
 	}
-
+	@Override
+	public List<AgentField> findHeadOfTree() {
+		List<AgentField> ans = new ArrayList<AgentField>();
+		for (AgentField a : agents) {
+			if (a.getAnytimeFather() == null) {
+				ans.add(a);
+			}
+		}
+		return ans;
+	}
 	
 }

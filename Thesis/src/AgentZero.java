@@ -480,6 +480,15 @@ public class AgentZero {
 	}
 
 	public void createAnyTimeDownUnsynchMono(List<AgentField> fathers, int date) {
+		
+		for (AgentField agentField : this.agents) {
+			
+		}
+		
+		
+		
+		
+		
 		for (AgentField top : fathers) {
 			if (top.isTopHasAnytimeNews()) {
 				top.resettopHasAnytimeNews();

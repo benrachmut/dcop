@@ -151,17 +151,38 @@ public class Dcop {
 		int ans = 0;
 		if (Main.foundPermutationDebug) {
 			for (AgentField a : agentsF) {
+				ans = 0;
 				int id = a.getId();
+				if (id == 0) {
+					System.out.println();
+				}
 				Iterator<Neighbors>it = neighbors.iterator();
 				while (it.hasNext()) {
 					Neighbors next =  it.next();
 					int id1 = next.getA1().getId();
 					int id2 = next.getA2().getId();
-
-					
+					if (!(id1 ==id || id2 ==id)) {
+						it.remove();
+					}
 				}
+				for (Neighbors n : neighbors) {
+					int costPerN = calCostPerNeighborForDebug(n);
+					System.out.println(n+"| "+costPerN);
+					ans+=costPerN;
+				}
+				agents = getAgentsForCalReal(m);
+				neighbors = getNeighborsForCalReal(agents);
+				System.out.println();
+
 			}
+	
 		}
+		
+	/*
+		List<Agent> agents = getAgentsForCalReal(m);
+		List<Neighbors> neighbors = getNeighborsForCalReal(agents);
+		int ans = 0;
+		*/
 		for (Neighbors n : neighbors) {
 			int costPerN = calCostPerNeighborForDebug(n);
 			ans+=costPerN;
@@ -218,8 +239,8 @@ public class Dcop {
 	}
 
 	public int calCostPerNeighbor(Neighbors n, boolean real) {
-		Agent an1 = (AgentField) n.getA1();
-		Agent an2 = (AgentField) n.getA2();
+		Agent an1 =  n.getA1();
+		Agent an2 =  n.getA2();
 
 		for (Constraint c : constraints) {
 
