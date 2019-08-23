@@ -6,9 +6,9 @@ public class MessageAnyTimeUp extends MessageNormal {
 	private Permutation currentPermutation;
 	
 	public MessageAnyTimeUp(AgentField sender, AgentField reciever, int delay,
-			Permutation p) {
+			int date,Permutation p) {
 		
-		super(sender, reciever, -100, delay, -100);
+		super(sender, reciever, -100, delay, date);
 		this.currentPermutation = p;
 		//this.currentPermutations.add(p);
 				

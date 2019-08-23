@@ -67,8 +67,8 @@ public class UnsynchMono extends Unsynch {
 
 	}
 
-	public void createAnytimeUp() {
-		agentZero.createAnyTimeUpUnsynchMono();
+	public void createAnytimeUp(int i) {
+		agentZero.createAnyTimeUpUnsynchMono(i);
 	}
 
 	public void createAnytimeDown(List<AgentField> fathers, int date) {

@@ -13,23 +13,29 @@ import java.util.Set;
 
 public class Main {
 
-	
-	
+	// debug
+
+	// static boolean debug = false;
+	// static boolean debugCombineWith = true;
+	static boolean printCompletePermutationOf9 = true;
+	static boolean printCentralPOVPermutations = false;
+	static boolean printSelfN=true;
+	static boolean foundPermutationDebug=false;
+
 	// different versions
-	
+
 	public static boolean tryAllMailBox = false;
-	public static boolean tryAllMailBoxImproved = false;
-	public static boolean tryAgentRememberSequence = true;
-	public static boolean trySendSelfCounter = true;
+	public static boolean trySendValueAsPermutation = true;
+	// public static boolean tryAllMailBoxImproved = false;
+	// public static boolean tryAgentRememberSequence = true;
+	public static boolean trySendSelfCounter = false;
 
 	// versions
-	static String algo ="dsaUnsynch7"; //"dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static boolean synch = false;
-	static boolean debug = false;
-	static boolean debugCombineWith = true;
 
 	static boolean anytimeDfs = false;
-	static boolean anytimeBfs=true;
+	static boolean anytimeBfs = true;
 
 	static String date = "999999";
 
@@ -43,14 +49,14 @@ public class Main {
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 2 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
+	static int[] delayUBs = { 1 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
 									// 10, 25, 50, 100 };
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
 	static int meanReps = 1;// 10; // number of reps for every solve process
-	static int iterations =  100;
+	static int iterations = 100;
 	static Dcop dcop;
 	static boolean dateKnown;
 
@@ -87,17 +93,13 @@ public class Main {
 	}
 
 	/*
-	private static void setSynchBoolean() {
-		boolean unsynchMono = algo.equals("unsynchMono");
-
-		if (unsynchMono) {
-			synch = false;
-		} else {
-			synch = true;
-		}
-
-	}
-	*/
+	 * private static void setSynchBoolean() { boolean unsynchMono =
+	 * algo.equals("unsynchMono");
+	 * 
+	 * if (unsynchMono) { synch = false; } else { synch = true; }
+	 * 
+	 * }
+	 */
 
 	private static void printDcops() {
 		BufferedWriter out = null;
@@ -205,7 +207,6 @@ public class Main {
 		rDelay.setSeed(input);
 		rDsa.setSeed(input);
 
-
 	}
 
 	private static Solution selectedAlgo(Dcop dcop, int meanRun) {
@@ -217,7 +218,6 @@ public class Main {
 		boolean mgmUb = algo.equals("mgmUb");
 		boolean unsynchMono = algo.equals("unsynchMono");
 
-		
 		if (unsynchMono) {
 			ans = new UnsynchMono(dcop, agents, agentZero, meanRun);
 		}
@@ -229,7 +229,7 @@ public class Main {
 		if (dsaUnsynch7) {
 			ans = new UnsynchDsa(dcop, agents, agentZero, meanRun, 0.7);
 		}
-		
+
 		if (mgm) {
 			ans = new MGM(dcop, agents, agentZero, meanRun);
 
@@ -238,12 +238,23 @@ public class Main {
 			ans = new MGMub(dcop, agents, agentZero, meanRun);
 
 		}
-		
-		
-		
+
 		ans.solve();
-		
+		if (Main.printCompletePermutationOf9) {
+
+			Set<Permutation> perms = ans.agents[9].getPermutationsToSend();
+			for (Permutation p : perms) {
+				int realCost = Solution.dcopS.calRealSolForDebug(p.getM());
+				if (p.getCost() == realCost) {
+					System.out.println(p);
+				} else {
+					System.err.println("cost should be: " + realCost + " |" + p);
+
+				}
+			}
+		}
 		return ans;
+
 	}
 
 	private static int countTrue(Collection<Boolean> values) {
@@ -278,19 +289,19 @@ public class Main {
 			a.restartNeighborCounter();
 		}
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
-	
+
 		if (algo.equals("unsynchMono")) {
 			Tree psaduoTree = new Tree(agents);
 			psaduoTree.dfs();
 			psaduoTree.setIsAboveBelow();
-			
+
 			for (AgentField a : agents) {
 				a.setAnytimeFather(a.getDfsFather());
 				a.setAnytimeSons(a.getDfsSons());
 			}
 
 		}
-		
+
 		if (anytimeBfs) {
 			Tree bfs = new Tree(agents);
 			bfs.bfs();

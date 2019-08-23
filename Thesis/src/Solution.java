@@ -15,10 +15,12 @@ public abstract class Solution {
 	protected List<Integer> agentThinkCost;
 	protected int currentItiration;
 	protected String algo;
+	public static Dcop dcopS;
 
 	public Solution(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		this.meanRun = meanRun + 1;
 		this.dcop = dcop;
+		dcopS = dcop;
 		this.iteration = Main.iterations;
 		this.agents = agents;
 		this.cost = 0;

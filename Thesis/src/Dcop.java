@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,15 +14,14 @@ public class Dcop {
 	private Set<Constraint> constraints;
 	private Set<Neighbors> neighbors;
 	private int iterations;
-	
+
 	public Dcop(AgentField[] agents, int d, int iterations) {
 		this.agentsF = agents;
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
 		this.constraints = createConstraints();
-	
-	}
 
+	}
 
 	private Set<Constraint> createConstraints() {
 		Set<Constraint> ans = new HashSet<Constraint>();
@@ -86,40 +86,11 @@ public class Dcop {
 		agentInput.addNeighborR(idOther);
 
 	}
-	
-
-	public int calCostPerNeighbor(Neighbors n, boolean real) {
-		Agent an1 = (AgentField)n.getA1();
-		Agent an2 = (AgentField)n.getA2();
-
-		for (Constraint c : constraints) {
-
-			Agent ac1 =  c.getNeighbors().getA1();
-			Agent ac2 =  c.getNeighbors().getA2();
-			boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
-			boolean sameValue;
-			if (real) {
-				sameValue = an1.getValue() == ac1.getValue() && an2.getValue() == ac2.getValue();
-			}else {// any time
-				sameValue = an1.getAnytimeValue() == ac1.getValue()&& an2.getAnytimeValue()== ac2.getValue();
-
-			}
-			
-
-			if (sameValue && sameId) {
-				return c.getCost();
-			}
-		}
-
-		return 0;
-
-	}
 
 	public Set<Neighbors> getNeighbors() {
 		return this.neighbors;
 	}
 
-	
 	public AgentField[] getAgentsF() {
 		return agentsF;
 	}
@@ -146,12 +117,129 @@ public class Dcop {
 		int ans = 0;
 
 		for (Neighbors n : neighbors) {
-			ans = ans + calCostPerNeighbor(n,real);
+			ans = ans + calCostPerNeighbor(n, real);
 		}
 
+		return ans * 2;
+	}
+
+	public int calRealSolForDebug(Map<Integer, Integer> m) {
+		
+
+		boolean x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
+
+		if (Main.printSelfN) {
+			x0 = m.get(0) == 0;
+			x1 = m.get(1) == 7;
+			x2 = m.get(2) == 8;
+			x3 = m.get(3) == 9;
+			x4 = m.get(4) == 9;
+			x5 = m.get(5) == 8;
+			x6 = m.get(6) == 4;
+			x7 = m.get(7) == 7;
+			x8 = m.get(8) == 5;
+			x9 = m.get(9) == 4;
+			
+			if (x0 && x1 && x2 && x3 && x4 && x5 && x6 && x7 && x8 && x9) {
+				Main.foundPermutationDebug = true;
+			}
+		}
+		
+		
+		List<Agent> agents = getAgentsForCalReal(m);
+		List<Neighbors> neighbors = getNeighborsForCalReal(agents);
+		int ans = 0;
+		if (Main.foundPermutationDebug) {
+			for (AgentField a : agentsF) {
+				int id = a.getId();
+				Iterator<Neighbors>it = neighbors.iterator();
+				while (it.hasNext()) {
+					Neighbors next =  it.next();
+					int id1 = next.getA1().getId();
+					int id2 = next.getA2().getId();
+
+					
+				}
+			}
+		}
+		for (Neighbors n : neighbors) {
+			int costPerN = calCostPerNeighborForDebug(n);
+			ans+=costPerN;
+		}
+		
+		
+		
+		
+		return ans*2;
+
+	}
+
+	private List<Neighbors> getNeighborsForCalReal(List<Agent> agents) {
+		List<Neighbors> ans = new ArrayList<Neighbors>();
+
+		for (int i = 0; i < agents.size(); i++) {
+			for (int j = i + 1; j < agents.size(); j++) {
+				Neighbors n = new Neighbors(agents.get(i), agents.get(j));
+				ans.add(n);
+			}
+		}
 		return ans;
 	}
 
+	private List<Agent> getAgentsForCalReal(Map<Integer, Integer> m) {
 
+		List<Agent> ans = new ArrayList<Agent>();
+		for (Entry<Integer, Integer> e : m.entrySet()) {
+			Agent a = new Agent(e.getKey(), e.getValue());
+			ans.add(a);
+		}
+		return ans;
+	}
+
+	public int calCostPerNeighborForDebug(Neighbors n) {
+		Agent an1 =  n.getA1();
+		Agent an2 =  n.getA2();
+		for (Constraint c : constraints) {
+
+			Agent ac1 = c.getNeighbors().getA1();
+			Agent ac2 = c.getNeighbors().getA2();
+			boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
+			boolean sameValue;
+
+			sameValue = an1.getValue() == ac1.getValue() && an2.getValue() == ac2.getValue();
+
+			if (sameValue && sameId) {
+				return c.getCost();
+			}
+		}
+
+		return 0;
+
+	}
+
+	public int calCostPerNeighbor(Neighbors n, boolean real) {
+		Agent an1 = (AgentField) n.getA1();
+		Agent an2 = (AgentField) n.getA2();
+
+		for (Constraint c : constraints) {
+
+			Agent ac1 = c.getNeighbors().getA1();
+			Agent ac2 = c.getNeighbors().getA2();
+			boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
+			boolean sameValue;
+			if (real) {
+				sameValue = an1.getValue() == ac1.getValue() && an2.getValue() == ac2.getValue();
+			} else {// any time
+				sameValue = an1.getAnytimeValue() == ac1.getValue() && an2.getAnytimeValue() == ac2.getValue();
+			}
+
+			if (sameValue && sameId) {
+				return c.getCost();
+			}
+		}
+
+		return 0;
+
+	}
 
 }

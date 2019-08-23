@@ -26,6 +26,7 @@ public class Permutation {
 		this.cost = cost;
 		index = index + 1;
 		this.myIndex = index;
+
 		this.combinedWith = new ArrayList<Permutation>();
 		this.creator = new AgentField(10, -1);
 		this.included = new HashMap<Integer, Boolean>();
@@ -51,6 +52,14 @@ public class Permutation {
 		this.iterationCreated = Unsynch.iter;
 		this.creator = creator;
 		this.combinedWith = comWith;
+		/*
+		if (this.myIndex ==1365) {
+			for (Permutation p : comWith) {
+				System.out.println(p);
+			}
+			System.out.println();
+		}
+		*/
 		this.included = included;
 	}
 
@@ -71,14 +80,14 @@ public class Permutation {
 			boolean sameValueInMap = checkSameValuesInMap(input);
 			boolean sameCost = input.getCost() == this.getCost();
 			boolean sameInclude = checkIfSameInclude(input);
-		
-			 if (sameCost&&sameValueInMap&&sameInclude) { return true; }
-			/*
-			if (sameCost && sameValueInMap) {
+
+			if (sameCost && sameValueInMap && sameInclude) {
 				return true;
 			}
-			*/
-			
+			/*
+			 * if (sameCost && sameValueInMap) { return true; }
+			 */
+
 		} // instance of
 		return false;
 	}
@@ -153,8 +162,8 @@ public class Permutation {
 	@Override
 	public String toString() {
 
-		return "pIndex:" + this.myIndex +  "| map:" + this.m +"| creator:" + this.creator + "| cost:" + this.cost
-				+ "| included:" + this.included + "| iteration created:" + this.iterationCreated;
+		return "pIndex:" + this.myIndex + "| map:" + this.m + "| creator:" + this.creator + "| cost:" + this.cost
+				+ "| include:" + this.included;
 
 		// +"| combined with:"+this.combinedWith;
 	}
@@ -168,10 +177,13 @@ public class Permutation {
 
 		Map<Integer, Integer> m = combineMaps(p1, p2);
 		int cost = combineCost(p1, p2);
-		
+
 		Map<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);
 
 		List<Permutation> combineWith = createCombineWith(p1, p2);
+		/*
+		 * if (creator.getId() == 9 && cost == 528) { System.out.println(); }
+		 */
 
 		return new Permutation(m, cost, toAddIncluded, combineWith, creator);
 	}
@@ -248,7 +260,9 @@ public class Permutation {
 	public Permutation canAdd(AgentField creator, Permutation msgP) {
 		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP)
 				&& this.differentComposedPermutations(msgP)) {
+
 			Permutation combineP = combinePermutations(this, msgP, creator);
+
 			return combineP;
 		}
 		return null;
@@ -363,6 +377,11 @@ public class Permutation {
 
 	public AgentField getCreator() {
 		return this.creator;
+	}
+
+	public int getIndex() {
+		// TODO Auto-generated method stub
+		return this.myIndex;
 	}
 
 }
