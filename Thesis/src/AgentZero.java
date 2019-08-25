@@ -202,13 +202,13 @@ public class AgentZero {
 
 	// -------------- Unsynch Monotonic-------------
 
-	public void sendUnsynchMonotonicMsgs(List<MessageNormal> msgToSend) {
+	public void sendUnsynchMonotonicMsgs(List<MessageNormal> msgToSend, int date) {
 		for (MessageNormal msg : msgToSend) {
-			sendUnsynchMonotonicMsg(msg);
+			sendUnsynchMonotonicMsg(msg, date);
 		}
 	}
 
-	private void sendUnsynchMonotonicMsg(MessageNormal msg) {
+	private void sendUnsynchMonotonicMsg(MessageNormal msg, int date) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
 
@@ -543,7 +543,7 @@ public class AgentZero {
 	 * }
 	 */
 
-	public void afterDecideTakeActionUnsynchNonMonotonicByCounter(Collection<AgentField> agentsThatChanged, int date) {
+	public void afterDecideTakeActionUnsynchNonMonotonicByCounter(Collection<AgentField> agentsThatChanged) {
 		for (AgentField a : agentsThatChanged) {
 			a.setDecisionCounterNonMonotonic(a.getDecisonCounter() + 1);
 			a.setCounterAndValueHistory(); // //record in map of agent its current value and self counter
@@ -558,23 +558,23 @@ public class AgentZero {
 			 * }
 			 * 
 			 */
-			createUnsynchMsgs(a, date);
+			createUnsynchMsgs(a);
 			addPermutatioToAnytimeMechanism(a, myPermutation);
 		}
 	}
 
-	public void afterDecideTakeActionUnsynchNonMonotonicByValue(Set<AgentField> agentsThatChanged, int date) {
+	public void afterDecideTakeActionUnsynchNonMonotonicByValue(Set<AgentField> agentsThatChanged) {
 		for (AgentField a : agentsThatChanged) {
 
 			Permutation myPermutation = a.createCurrentPermutationByValue();
 
-			createUnsynchMsgs(a, date);
+			createUnsynchMsgs(a);
 			addPermutatioToAnytimeMechanism(a, myPermutation);
 		}
 
 	}
 
-	public void sendUnsynchNonMonotonicByValueMsgs(List<MessageNormal> msgToSend) {
+	public void sendUnsynchNonMonotonicByValueMsgs(List<MessageNormal> msgToSend, int date) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
 
 
@@ -586,13 +586,13 @@ public class AgentZero {
 		
 
 		for (MessageNormal msg : msgToSend) {
-			sendUnsynchNonMonotonicByValueMsg(msg);
+			sendUnsynchNonMonotonicByValueMsg(msg, date);
 			integerRecieved.add(msg.getReciever().getId());
 		}
 
 		if (Main.tryAllMailBox) {
 			Set<AgentField> agentsRecieved = getAgents(integerRecieved);
-			anytimeMechanismAfterRecieveMsgByValue(agentsRecieved);
+			anytimeMechanismAfterRecieveMsgByValue(agentsRecieved, date);
 		}
 
 	}
@@ -614,24 +614,24 @@ public class AgentZero {
 		
 	}
 
-	private void anytimeMechanismAfterRecieveMsgByValue(Set<AgentField> agentsRecieved) {
+	private void anytimeMechanismAfterRecieveMsgByValue(Set<AgentField> agentsRecieved, int date) {
 		for (AgentField reciever : agentsRecieved) {
-			Permutation currPermutation = reciever.createCurrentPermutationByValue();
-			updateRecieverUponPermutationOneByOne(currPermutation, reciever);
+			Permutation currPermutation = reciever.createCurrentPermutationByValue(date);
+			updateRecieverUponPermutationOneByOne(currPermutation, reciever,date);
 		} // for msgs
 	}
 
-	public void sendUnsynchNonMonotonicMsgs(List<MessageNormal> msgToSend) {
+	public void sendUnsynchNonMonotonicMsgs(List<MessageNormal> msgToSend, int date) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
 
 		for (MessageNormal msg : msgToSend) {
-			sendUnsynchNonMonotonicMsg(msg);
+			sendUnsynchNonMonotonicMsg(msg, date);
 			integerRecieved.add(msg.getReciever().getId());
 		}
 
 		if (Main.tryAllMailBox) {
 			Set<AgentField> agentsRecieved = getAgents(integerRecieved);
-			anytimeMechanismAfterRecieveMsg(agentsRecieved);
+			anytimeMechanismAfterRecieveMsg(agentsRecieved, date);
 		}
 	}
 }// class

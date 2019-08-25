@@ -17,6 +17,7 @@ public class Permutation {
 	private List<Permutation> combinedWith;
 	private AgentField creator;
 	private int iterationCreated;
+	private int date ;
 
 	Permutation(Map<Integer, Integer> m, int cost) {
 		this.m = new HashMap<Integer, Integer>();
@@ -30,6 +31,7 @@ public class Permutation {
 		this.combinedWith = new ArrayList<Permutation>();
 		this.creator = new AgentField(10, -1);
 		this.included = new HashMap<Integer, Boolean>();
+		this.date = date;
 
 	}
 
@@ -62,6 +64,7 @@ public class Permutation {
 		*/
 		this.included = included;
 	}
+	 
 
 	private List<Integer> getSonsId(AgentField a) {
 		List<Integer> ans = new ArrayList<Integer>();

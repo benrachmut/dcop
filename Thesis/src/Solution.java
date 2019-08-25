@@ -68,8 +68,18 @@ public abstract class Solution {
 	@Override
 	public String toString() {
 		
-
-		return algo + "," + Main.currentP1 + "," + Main.currentP2 + "," + meanRun;
+		if (Main.dcopVersion == 1) {
+			return algo + "," + Main.currentP1Uniform + "," + Main.currentP2Uniform + "," + meanRun;
+		}
+		if (Main.dcopVersion == 2) {
+			return algo + "," + Main.currentP1Color + ", - ," + meanRun;
+		}
+		if (Main.dcopVersion == 3) {
+			---
+			// need to work on it
+			return algo + "," + Main.currentP1Color + ", - ," + meanRun;
+		}
+		return "";
 	}
 
 	

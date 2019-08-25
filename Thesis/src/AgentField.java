@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class AgentField extends Agent implements Comparable<AgentField> {
 
@@ -42,7 +44,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private MessageAnyTimeDown msgDown;
 	private MessageAnyTimeUp msgUp;
 	// private Set<Permutation> permutationsBelow;
-	private HashSet<Permutation> permutationsPast;
+	private SortedSet<Permutation> permutationsPast;
 	private HashSet<Permutation> permutationsToSend;
 
 	private Set<Permutation> sonsAnytimePermutations;
@@ -88,7 +90,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		setR();
 
 		initSonsAnytimeMessages();
-		this.permutationsPast = new HashSet<Permutation>();
+		this.permutationsPast = new TreeSet<Permutation> () ;
 		this.permutationsToSend = new HashSet<Permutation>();
 		this.counterAndValue = new HashMap<Integer, Integer>();
 		this.counterAndValue.put(decisonCounter, value);
@@ -822,25 +824,29 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void addToPermutationPast(Permutation input) {
-		addToSet(input, permutationsPast);
-		// this.permutationsPast.add(input);
+		if (Main.memoryStyle ==1) {
+			addToSet(input, permutationsPast);
+		}
+		if (Main.memoryStyle ==2) {
+			if (permutationsPast.size()>Main.memoryConstant) {
+				Permutation tMax = Collections.max(permutationsPast,new ComparatorMsgDate());
+				q.remove(tMax);
+			}
+			q.add(t);
+		}
+		
+		
+		
 
 	}
 
 	public void addToPermutationToSendUnsynchNonMonoByValue(Permutation input) {
-		if (this.isAnytimeTop()) {
-			
-			
-			
+		if (this.isAnytimeTop()) {	
 			if (this.bestPermuation==null || this.bestPermuation.getCost() > input.getCost()) {
 				recieveBetterPermutation(input);
 				System.out.println(input.getCost());
 				iHaveAnytimeNews = true;		
 			}
-			
-			
-			
-			
 
 		} else {
 			addToSet(input, permutationsToSend);

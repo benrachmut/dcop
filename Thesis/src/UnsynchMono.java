@@ -61,8 +61,8 @@ public class UnsynchMono extends Unsynch {
 
 
 
-	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
-		agentZero.sendUnsynchMonotonicMsgs(msgToSend);
+	public void agentsSendMsgs(List<MessageNormal> msgToSend, int date) {
+		agentZero.sendUnsynchMonotonicMsgs(msgToSend, date);
 		//-------------------
 
 	}

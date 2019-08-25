@@ -29,10 +29,10 @@ public abstract class Unsynch extends Solution {
 			agentDecide(i); //abstract
 			afterDecideTakeAction(i); //abstract
 			List<MessageNormal> msgToSend = agentZero.handleDelay();
-			agentsSendMsgs(msgToSend); //abstract
+			agentsSendMsgs(msgToSend, i); //abstract
 			createAnytimeUp(i); //abstract
 			createAnytimeDown(i);
-			addCostToTables();
+			addCostToTables(i);
 
 			// ---- for debug
 			// printAgents();
@@ -78,7 +78,7 @@ public abstract class Unsynch extends Solution {
 	private void printPersonalPermutations(int i) {
 		for (AgentField a : agents) {
 			System.out.println("a" + a.getId() + " at iteration " + i + ":");
-			Permutation p = a.createCurrentPermutationNonMonotonic();
+			Permutation p = a.createCurrentPermutationNonMonotonic(i);
 			for (Entry<Integer, Integer> e : p.getM().entrySet()) {
 				System.out.println("   a" + e.getKey() + ": " + e.getValue());
 			}
@@ -102,13 +102,13 @@ public abstract class Unsynch extends Solution {
 
 	}
 
-	private void addCostToTables() {
+	private void addCostToTables(int date) {
 		addCostToList();
 		addAnytimeCostToList();
-		addToPermutationsList();
+		addToPermutationsList(date);
 	}
 
-	private void addToPermutationsList() {
+	private void addToPermutationsList(int date) {
 /*
 		boolean x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
 
@@ -142,7 +142,7 @@ public abstract class Unsynch extends Solution {
 			int aValue = a.getValue();
 			m.put(aId, aValue);
 		}
-		Permutation p = new Permutation(m, cost);
+		Permutation p = new Permutation(m, cost, date);
 		this.permutations.add(p);
 		if (Main.printCentralPOVPermutations) {
 			System.out.println(p);
@@ -157,7 +157,7 @@ public abstract class Unsynch extends Solution {
 	// protected abstract void agentDecide();
 	protected abstract void afterDecideTakeAction(int i);
 
-	public abstract void agentsSendMsgs(List<MessageNormal> msgToSend);
+	public abstract void agentsSendMsgs(List<MessageNormal> msgToSend, int date);
 
 	public abstract void createAnytimeUp(int i);
 
