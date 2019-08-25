@@ -269,7 +269,7 @@ public class AgentZero {
 			String reason = "";
 			boolean leafFlag = false;
 			if (reciever.isAnytimeLeaf()) {
-				reciever.addToPermutationToSend(currPermutation);
+				reciever.addToPermutationToSendUnsynchNonMonoByValue(currPermutation);
 				reason = "leaf a" + reciever.getId() + "creates a message because counters change";
 				leafFlag = true;
 			} else {
@@ -317,7 +317,7 @@ public class AgentZero {
 			reciever.recieveAnytimeUpBfs(msg);
 		}
 		if (msg instanceof MessageAnyTimeDown) {
-			// still need to do
+			reciever.recieveAnytimeDownNonMonotonicByValue(msg);
 		}
 
 	}
@@ -359,7 +359,7 @@ public class AgentZero {
 		// Permutation currPermutation =
 		// reciever.createCurrentPermutationNonMonotonic();
 		if (reciever.isAnytimeLeaf()) {
-			reciever.addToPermutationToSend(currPermutation);
+			reciever.addToPermutationToSendUnsynchNonMonoByValue(currPermutation);
 		} else {
 			reciever.tryToCombinePermutation(currPermutation);
 		}
@@ -387,7 +387,7 @@ public class AgentZero {
 	private void addPermutatioToAnytimeMechanism(AgentField a, Permutation p) {
 
 		if (a.isAnytimeLeaf()) {
-			a.addToPermutationToSend(p);
+			a.addToPermutationToSendUnsynchNonMonoByValue(p);
 		}
 
 		else {
@@ -479,16 +479,28 @@ public class AgentZero {
 		}
 	}
 
-	public void createAnyTimeDownUnsynchMono(List<AgentField> fathers, int date) {
+	public void createAnyTimeDownUnsynchMono(int date) {
 		
-		for (AgentField agentField : this.agents) {
-			
+		for (AgentField a : this.agents) {
+			if (a.isAnytimeTop()) {
+				if (a.isTopHasAnytimeNews()) {
+					a.resettopHasAnytimeNews();
+					placeAnytimeDownMessageInBox(a, date);
+				}
+			}else {
+				MessageAnyTimeDown m = a.moveDownToSend(); // take msg from msg to send down and deliever it 
+				if (!a.isAnytimeLeaf()) {
+					if (m != null) {
+						placeAnytimeDownMessageInBox(a, date);
+					}
+				}
+			}
 		}
 		
 		
 		
 		
-		
+		/*
 		for (AgentField top : fathers) {
 			if (top.isTopHasAnytimeNews()) {
 				top.resettopHasAnytimeNews();
@@ -504,6 +516,7 @@ public class AgentZero {
 				}
 			}
 		}
+		*/
 	}
 
 	private void placeAnytimeDownMessageInBox(AgentField from, int date) {

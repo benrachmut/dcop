@@ -71,10 +71,8 @@ public class UnsynchMono extends Unsynch {
 		agentZero.createAnyTimeUpUnsynchMono(i);
 	}
 
-	public void createAnytimeDown(List<AgentField> fathers, int date) {
-		agentZero.createAnyTimeDownUnsynchMono(fathers, date);	
-	}
-	@Override
+	
+
 	public List<AgentField> findHeadOfTree() {
 		List<AgentField> ans = new ArrayList<AgentField>();
 		for (AgentField a : agents) {
@@ -84,6 +82,7 @@ public class UnsynchMono extends Unsynch {
 		}
 		return ans;
 	}
+	
 
 	
 	

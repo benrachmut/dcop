@@ -731,6 +731,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public MessageAnyTimeDown moveDownToSend() {
+
+		// need to take care when recieving msgs
 		MessageAnyTimeDown ans = this.msgDown;
 		this.msgDown = null;
 		return ans;
@@ -825,20 +827,35 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	public void addToPermutationToSend(Permutation input) {
+	public void addToPermutationToSendUnsynchNonMonoByValue(Permutation input) {
 		if (this.isAnytimeTop()) {
-			if (permutationsToSend.isEmpty() || this.bestPermuation.getCost() > input.getCost()) {
-				topRecieveBetterPermutation(input);
+			
+			
+			
+			if (this.bestPermuation==null || this.bestPermuation.getCost() > input.getCost()) {
+				recieveBetterPermutation(input);
+				System.out.println(input.getCost());
+				iHaveAnytimeNews = true;		
 			}
+			
+			
+			
+			
+
 		} else {
 			addToSet(input, permutationsToSend);
 		}
+
 	}
 
-	private void topRecieveBetterPermutation(Permutation input) {
+	public void addToPermutationToSend(Permutation input) {
+		addToSet(input, permutationsToSend);
+
+	}
+
+	private void recieveBetterPermutation(Permutation input) {
 		bestPermuation = input;
 		this.anytimeValue = input.getM().get(this.id);
-		iHaveAnytimeNews = true;
 
 	}
 
@@ -1013,7 +1030,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 
 		for (Permutation p : completePermutation) {
-			addToPermutationToSend(p);
+		
+			addToPermutationToSendUnsynchNonMonoByValue(p);
 			ans.add(p);
 
 			// this.permutationsToSend.add(p);
@@ -1097,6 +1115,20 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		int cost = calSelfCost(m);
 
 		return new Permutation(m, cost, this);
+	}
+
+	public void recieveAnytimeDownNonMonotonicByValue(MessageNormal msg) {
+		//// maybe bug here
+
+		MessageAnyTimeDown mad = (MessageAnyTimeDown) msg;
+
+		if (mad.getDate() > this.currentAnyTimeDate) {
+			this.msgDown = mad;
+			Permutation pFromMad = mad.getPermutationSent();
+			recieveBetterPermutation(pFromMad);
+			this.currentAnyTimeDate = mad.getDate();
+		}
+
 	}
 
 }

@@ -107,12 +107,13 @@ public class UnsynchDsa extends Unsynch {
 	public void createAnytimeUp(int i) {
 		agentZero.createAnyTimeUpUnsynchNonMonotonic(i);
 	}
-
+/*
 	@Override
-	public void createAnytimeDown(List<AgentField> fathers, int date) {
+	public void createAnytimeDown(int date) {
 		// TODO Auto-generated method stub
 
 	}
+	/*
 	@Override
 	public List<AgentField> findHeadOfTree() {
 		List<AgentField> ans = new ArrayList<AgentField>();
@@ -123,5 +124,6 @@ public class UnsynchDsa extends Unsynch {
 		}
 		return ans;
 	}
+	*/
 	
 }

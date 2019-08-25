@@ -19,17 +19,19 @@ public abstract class Unsynch extends Solution {
 	@Override
 	public void solve() {
 
-		List<AgentField> fathers = findHeadOfTree();
+		//List<AgentField> fathers = findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {
 			iter = i;
-			// System.out.println("---start iteration: "+i+"---");
-			updateWhoCanDecide(i);
-			agentDecide(i);
-			afterDecideTakeAction(i);
+			if (i%50==0) {
+				System.out.println("---start iteration: "+i+"---");
+			}
+			updateWhoCanDecide(i); //abstract
+			agentDecide(i); //abstract
+			afterDecideTakeAction(i); //abstract
 			List<MessageNormal> msgToSend = agentZero.handleDelay();
-			agentsSendMsgs(msgToSend);
-			createAnytimeUp(i);
-			createAnytimeDown(fathers, i);
+			agentsSendMsgs(msgToSend); //abstract
+			createAnytimeUp(i); //abstract
+			createAnytimeDown(i);
 			addCostToTables();
 
 			// ---- for debug
@@ -107,7 +109,7 @@ public abstract class Unsynch extends Solution {
 	}
 
 	private void addToPermutationsList() {
-
+/*
 		boolean x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
 
 		if (Main.printSelfN) {
@@ -126,12 +128,13 @@ public abstract class Unsynch extends Solution {
 				Main.foundPermutationDebug = true;
 			}
 		}
-
+*/
 		int cost = dcop.calCost(true);
-
+/*
 		if (Main.printSelfN) {
 			Main.foundPermutationDebug = false;
 		}
+		*/
 
 		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
 		for (AgentField a : agents) {
@@ -147,7 +150,7 @@ public abstract class Unsynch extends Solution {
 
 	}
 
-	public abstract List<AgentField> findHeadOfTree() ;
+	//public abstract List<AgentField> findHeadOfTree() ;
 
 	protected abstract void updateWhoCanDecide(int i);
 
@@ -158,8 +161,9 @@ public abstract class Unsynch extends Solution {
 
 	public abstract void createAnytimeUp(int i);
 
-	public abstract void createAnytimeDown(List<AgentField> fathers, int date);
-
+	public void createAnytimeDown(int date) {
+		agentZero.createAnyTimeDownUnsynchMono( date);	
+	}
 	// protected abstract void createAnytimeUp();
 	// protected abstract void createAnytimeDown(List<AgentField> fathers, int
 	// date);

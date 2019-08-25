@@ -25,12 +25,10 @@ public abstract class Solution {
 		this.agents = agents;
 		this.cost = 0;
 		this.agentZero = aZ;
-		this.algo = "";
-		
+		this.algo = "";	
 		this.realCost = new ArrayList<Integer>();
 		this.fatherCost = new ArrayList<Integer>();
 		this.anytimeCost = new ArrayList<Integer>();
-		
 		this.agentThinkCost = new ArrayList<Integer>();
 		addCostToList();
 		

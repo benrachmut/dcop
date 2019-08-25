@@ -27,8 +27,8 @@ public class Dcop {
 		Set<Constraint> ans = new HashSet<Constraint>();
 		for (int i = 0; i < agentsF.length; i++) {
 			for (int j = i + 1; j < agentsF.length; j++) {
-				double p1Max = Main.rP1.nextDouble();
-				if (p1Max < Main.currentP1) {
+				double p1Max = Main.rP1Uniform.nextDouble();
+				if (p1Max < Main.currentP1Uniform) {
 					AgentField af1 = agentsF[i];
 					AgentField af2 = agentsF[j];
 
@@ -36,8 +36,8 @@ public class Dcop {
 						int d1 = af1.getDomain()[k];
 						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
 							int d2 = af2.getDomain()[k2];
-							double p2Max = Main.rP2.nextDouble();
-							if (p2Max < Main.currentP2) {
+							double p2Max = Main.rP2Uniform.nextDouble();
+							if (p2Max < Main.currentP2Uniform) {
 
 								Agent a1 = new Agent(i, d1);
 								Agent a2 = new Agent(j, d2);

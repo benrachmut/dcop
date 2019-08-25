@@ -13,6 +13,14 @@ import java.util.Set;
 
 public class Main {
 
+	
+	// versions
+		static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+		static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
+		static boolean synch = false;
+		static boolean anytimeDfs = false;
+		static boolean anytimeBfs = true;
+		static String date = "try20reps1ub5";
 	// debug
 
 	// static boolean debug = false;
@@ -23,42 +31,34 @@ public class Main {
 	static boolean foundPermutationDebug=false;
 
 	// different versions
-
 	public static boolean tryAllMailBox = false;
 	public static boolean trySendValueAsPermutation = true;
 	// public static boolean tryAllMailBoxImproved = false;
 	// public static boolean tryAgentRememberSequence = true;
 	public static boolean trySendSelfCounter = false;
 
-	// versions
-	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static boolean synch = false;
-
-	static boolean anytimeDfs = false;
-	static boolean anytimeBfs = true;
-
-	static String date = "999999";
+	
 
 	// -- variables of dcop problem
 	static int A = 15;// 50; // 50 number of agents
-	static int D = 10; // 10 size of domain for each agent
-	static double[] p1s = { 0.5 }; // 0.2 prob for agents to be neighbors
-	static double[] p2s = { 1 }; // 1 prob of domain selection to have a cost
+	static int DUniform = 10; // 10 size of domain for each agent
+	
+	//-- uniformly random dcop
+	static double[] p1sUniform = { 0.2 }; // 0.2 prob for agents to be neighbors
+	static double[] p2sUniform = { 1 }; // 1 prob of domain selection to have a cost
 	static int costMax = 100; // 100 the max value of cost
 
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 5 };// {0};//{ 5, 10, 25, 50 };// { 5, 10, 20, 40 };//{ 3, 5, 10, 25}; // { 5,
-									// 10, 25, 50, 100 };
+	static int[] delayUBs = { 5 };//
 	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
 								// have delay
 
 	// -- Experiment time
-	static int meanReps = 1;// 10; // number of reps for every solve process
-	static int iterations = 100;
+	static int meanReps = 50;// 10; // number of reps for every solve process
+	static int iterations = 250;
 	static Dcop dcop;
-	static boolean dateKnown;
 
 	// -- characters
 	static AgentField[] agents;
@@ -68,28 +68,33 @@ public class Main {
 	static List<String> solutions = new ArrayList<String>();
 	static List<String> fatherSolutions = new ArrayList<String>();
 
-	static Random rP1 = new Random();
-	static Random rP2 = new Random();
+	
+	//-- random variables
+	static Random rP1Uniform = new Random();
+	static Random rP2Uniform = new Random();
 	static Random rFirstValue = new Random();
 	static Random rCost = new Random();
-
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
 	static Random rDelay = new Random();
-
 	static Random rDsa = new Random();
 
+	
+	//-- for different instance to have excess
+	static boolean dateKnown;
 	static Double currentP3 = 0.0;
 	static Double currentP4 = 0.0;
 	static int currentUb = 0;
-	static Double currentP1 = 0.0;
-	static Double currentP2 = 0.0;
+	static Double currentP1Uniform = 0.0;
+	static Double currentP2Uniform = 0.0;
 
 	public static void main(String[] args) {
-		// initVariables();
-		// setSynchBoolean();
-		runExperiment();
+		if (dcopVersion == 1 ) {
+			runUniformlyRandomDcop();
+		}
+		
 		printDcops();
+		
 	}
 
 	/*
@@ -127,15 +132,33 @@ public class Main {
 
 	}
 
-	private static void runExperiment() {
+	
+	
+	private static void runColorDcop(){
 
-		for (Double p1 : p1s) {
-			currentP1 = p1;
-			for (Double p2 : p2s) {
-				currentP2 = p2;
+		for (Double p1 : p1sColor) {
+			currentP1Color = p1;
+		
 
 				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+					// only here change the tree
+					dcopSeeds(meanRun);
+					dcop = createDcop();
+					differentCommunicationProtocols(dcop, meanRun);
 
+				} // means run
+		} // p1
+
+	}
+	
+	private static void runUniformlyRandomDcop(){
+
+		for (Double p1 : p1sUniform) {
+			currentP1Uniform = p1;
+			for (Double p2 : p2sUniform) {
+				currentP2Uniform = p2;
+
+				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
 					// only here change the tree
 					dcopSeeds(meanRun);
 					dcop = createDcop();
@@ -148,8 +171,8 @@ public class Main {
 	}
 
 	private static void dcopSeeds(int meanRun) {
-		rP1.setSeed(meanRun);
-		rP2.setSeed(meanRun);
+		rP1Uniform.setSeed(meanRun);
+		rP2Uniform.setSeed(meanRun);
 		rFirstValue.setSeed(meanRun);
 		rCost.setSeed(meanRun);
 
