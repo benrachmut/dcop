@@ -17,15 +17,15 @@ public class Main {
 	// versions
 		static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 		static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
-		static int memoryVersion = 2; // 1=exp, 2= constant, 3= reasonable
+		static int memoryVersion = 3; // 1=exp, 2= constant, 3= reasonable
 		
-		static int memoryMaxConstant = 1000; 
-		static double similartyRatio = 0.5; // given memory version = 3
+		static long memoryMaxConstant = 1000; 
+		static double memorySimilartyRatio = 1; // given memory version = 3
 		
 		static boolean synch = false;
 		static boolean anytimeDfs = false;
 		static boolean anytimeBfs = true;
-		static String date = "memoryVersionConstant"+ memoryMaxConstant;
+		static String date = "memoryVersionSimilartyRatioTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -67,7 +67,7 @@ public class Main {
 								// have delay
 
 	// -- Experiment time
-	static int meanReps = 50;// 10; // number of reps for every solve process
+	static int meanReps = 10;// 10; // number of reps for every solve process
 	static int iterations = 250;
 	static Dcop dcop;
 
@@ -101,9 +101,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		int[]ints = {2,3,4,5};
-		for (int i : ints) { // for parameter tuning
-			memoryMaxConstant = (int)Math.pow(2, i);
+		double[]ratios = {0.2,0.5,0.9,1};
+		for (double i : ratios) { // for parameter tuning
+			//memoryMaxConstant = (long)Math.pow(10, i);
+			memorySimilartyRatio=i;
 			if (dcopVersion == 1 ) {
 				D = 10;
 				costMax = 100;
@@ -331,7 +332,7 @@ public class Main {
 					s = s+memoryMaxConstant;
 				}
 				if (memoryVersion == 3) {
-					s = s+similartyRatio;
+					s = s+memorySimilartyRatio;
 				}
 
 			} else {

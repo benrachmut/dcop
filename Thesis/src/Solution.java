@@ -77,7 +77,7 @@ public abstract class Solution {
 
 		}
 		if (Main.dcopVersion ==3) {
-			---
+			return "";
 		}
 		return "";
 	}

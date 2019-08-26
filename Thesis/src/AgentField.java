@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class AgentField extends Agent implements Comparable<AgentField> {
@@ -45,7 +44,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private MessageAnyTimeDown msgDown;
 	private MessageAnyTimeUp msgUp;
 	// private Set<Permutation> permutationsBelow;
-	private SortedSet<Permutation> permutationsPast;
+	private HashSet<Permutation> permutationsPast;
 	private HashSet<Permutation> permutationsToSend;
 
 	private Set<Permutation> sonsAnytimePermutations;
@@ -91,7 +90,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		setR();
 
 		initSonsAnytimeMessages();
-		this.permutationsPast = new TreeSet<Permutation>(new ComparatorPermutationDate());
+		this.permutationsPast = new HashSet<Permutation>();
 		this.permutationsToSend = new HashSet<Permutation>();
 		this.counterAndValue = new HashMap<Integer, Integer>();
 		this.counterAndValue.put(decisonCounter, value);
@@ -839,7 +838,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private void memoryVersionConstant(Permutation input) {
 		if (this.permutationsPast.size() > Main.memoryMaxConstant) {
-			Permutation minP = permutationsPast.first(); // lowest element
+			Permutation minP = Collections.min(this.permutationsPast, new ComparatorPermutationDate());
 			this.permutationsPast.remove(minP);
 		}
 		Collection similarToInput = checkForAllSimilarPastPermutations(input);
@@ -859,37 +858,41 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void addToPermutationToSendUnsynchNonMonoByValue(Permutation input) {
-		checkOptionIfIamTop(input);
 
-		if (Main.memoryVersion == 3) {
-			Map<Integer, Integer> inputM = input.getM();
-			for (Entry<Integer, Integer> e : inputM.entrySet()) {
-				int eKey = e.getKey();
-				int eValue = e.getValue();
-				for (Permutation p : permutationsPast) {
-					Map<Integer, Integer> mapP = p.getM();
-					double smiliarityPercent = input.checkSimilarty(p);
-
-				}
-			}
-		}
-	}
-
-	private void checkOptionIfIamTop(Permutation input) {
 		if (this.isAnytimeTop()) {
+
 			if (this.bestPermuation == null || this.bestPermuation.getCost() > input.getCost()) {
 				recieveBetterPermutation(input);
-				System.out.println(input.getCost());
+				System.out.println(input.getCost() + " permutation past size: " + this.permutationsPast.size());
 				iHaveAnytimeNews = true;
 			}
+
 		} else {
 			addToSet(input, permutationsToSend);
+		}
+
+		if (Main.memoryVersion == 3) {
+			incaseMemoryVersion3Reasonable(input);
 		}
 
 	}
 
 	public void addToPermutationToSend(Permutation input) {
 		addToSet(input, permutationsToSend);
+
+	}
+
+	private void incaseMemoryVersion3Reasonable(Permutation input) {
+
+		Collection<Permutation> toRemove = new ArrayList<Permutation>();
+		for (Permutation pPast : permutationsPast) {
+			double similar = input.checkSimilarty(pPast);
+			if (similar < Main.memorySimilartyRatio) {
+				toRemove.add(pPast);
+			}
+		}
+
+		permutationsPast.removeAll(toRemove);
 
 	}
 
@@ -912,16 +915,20 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	private boolean addToSet(Permutation input, Collection<Permutation> setToAddTo) {
+	private boolean addToSet(Permutation input, HashSet<Permutation> setToAddTo) {
+
 		boolean flag = false;
 		for (Permutation pFromList : setToAddTo) {
+
 			if (pFromList.equals(input)) {
 				flag = true;
 			}
 		}
 
 		if (!flag) {
+
 			setToAddTo.add(input);
+
 		}
 
 		return flag;
@@ -1112,7 +1119,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void restartPermutationsPast() {
-		this.permutationsPast = new TreeSet<Permutation>(new ComparatorPermutationDate());
+		this.permutationsPast = new HashSet<Permutation>();
 
 	}
 

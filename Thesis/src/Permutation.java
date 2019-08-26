@@ -30,7 +30,7 @@ public class Permutation {
 		this.combinedWith = new ArrayList<Permutation>();
 		this.creator = new AgentField(10, -1);
 		this.included = new HashMap<Integer, Boolean>();
-		this.date =Unsynch.date;
+		this.date =Unsynch.iter;
 
 	}
 
@@ -389,19 +389,33 @@ public class Permutation {
 	}
 
 	public double checkSimilarty(Permutation p) {
-		int nonSimilarCounter = 0;
-		for (Entry<Integer, Integer> e : this.m.entrySet()) {
+		int similarCounter = 0;
+			/*
+			Set<Integer>similar =similarKeySet(p);
+			for (Integer i : similar) {
+				if (this.m.get(i)==p.getM().get(i)) {
+					similarCounter=similarCounter+1;
+				}
+			}
+			
+			return similarCounter/similar.size();
+		}
+		*/
+			for (Entry<Integer, Integer> e : this.m.entrySet()) {
+
 			if (!p.getM().containsKey(e.getKey())) {
-				nonSimilarCounter++;
+				similarCounter++;
 			}else {
 				if (p.getM().get(e.getKey()) != e.getValue()) {
-					nonSimilarCounter++;
+					similarCounter++;
 
 				}
 			}
 		}
-		double diffrenceRatio = nonSimilarCounter/m.size();
+		double diffrenceRatio = similarCounter/m.size();
 		return 1-diffrenceRatio;
+		
 	}
+	
 
 }
