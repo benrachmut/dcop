@@ -17,6 +17,11 @@ public class Main {
 	// versions
 		static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 		static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
+		static int memoryVersion = 1; // 1=exp, 2= constant, 3= reasonable
+		
+		static int memoryMaxConstant = 1000; 
+		static int amountOfFalse = 2;
+		
 		static boolean synch = false;
 		static boolean anytimeDfs = false;
 		static boolean anytimeBfs = true;

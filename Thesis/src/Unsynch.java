@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 public abstract class Unsynch extends Solution {
 	protected List<AgentField> whoCanDecide;
 	public static int iter;
+	public static int date = 0;
 	protected List<Permutation> permutations;
 
 	public Unsynch(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
@@ -22,6 +23,7 @@ public abstract class Unsynch extends Solution {
 		//List<AgentField> fathers = findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {
 			iter = i;
+			date = i;
 			if (i%50==0) {
 				System.out.println("---start iteration: "+i+"---");
 			}

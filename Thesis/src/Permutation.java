@@ -17,6 +17,7 @@ public class Permutation {
 	private List<Permutation> combinedWith;
 	private AgentField creator;
 	private int iterationCreated;
+	private int date;
 
 	Permutation(Map<Integer, Integer> m, int cost) {
 		this.m = new HashMap<Integer, Integer>();
@@ -26,10 +27,10 @@ public class Permutation {
 		this.cost = cost;
 		index = index + 1;
 		this.myIndex = index;
-
 		this.combinedWith = new ArrayList<Permutation>();
 		this.creator = new AgentField(10, -1);
 		this.included = new HashMap<Integer, Boolean>();
+		this.date =Unsynch.date;
 
 	}
 
@@ -380,8 +381,11 @@ public class Permutation {
 	}
 
 	public int getIndex() {
-		// TODO Auto-generated method stub
 		return this.myIndex;
+	}
+
+	public int getDate() {
+		return this.date;
 	}
 
 }
