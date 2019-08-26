@@ -17,15 +17,15 @@ public class Main {
 	// versions
 		static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 		static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
-		static int memoryVersion = 1; // 1=exp, 2= constant, 3= reasonable
+		static int memoryVersion = 2; // 1=exp, 2= constant, 3= reasonable
 		
 		static int memoryMaxConstant = 1000; 
-		static int amountOfFalse = 2;
+		static double similartyRatio = 0.5; // given memory version = 3
 		
 		static boolean synch = false;
 		static boolean anytimeDfs = false;
 		static boolean anytimeBfs = true;
-		static String date = "try20reps1ub5";
+		static String date = "memoryVersionConstant"+ memoryMaxConstant;
 	// debug
 
 	// static boolean debug = false;
@@ -100,19 +100,26 @@ public class Main {
 
 
 	public static void main(String[] args) {
-		if (dcopVersion == 1 ) {
-			D = 10;
-			costMax = 100;
-			runUniformlyRandomDcop();
+		
+		int[]ints = {2,3,4,5};
+		for (int i : ints) { // for parameter tuning
+			memoryMaxConstant = (int)Math.pow(2, i);
+			if (dcopVersion == 1 ) {
+				D = 10;
+				costMax = 100;
+				runUniformlyRandomDcop();
+				
+			}
+			if (dcopVersion == 2) {
+				D = 3;
+				costMax = 10;
+				runColorDcop();
+			}
 			
-		}
-		if (dcopVersion == 2) {
-			D = 3;
-			costMax = 10;
-			runColorDcop();
+			printDcops();
 		}
 		
-		printDcops();
+		
 		
 	}
 
@@ -132,7 +139,7 @@ public class Main {
 			out = new BufferedWriter(s);
 			String header = "";
 			if (!synch) {
-				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost";
+				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost,memory_style,hyper_parametr";
 			} else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			}
@@ -312,11 +319,20 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-
 			String s = "";
 			if (!synch) {
+			
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) + ","
-						+ sol.getAnytimeCost(i));
+						+ sol.getAnytimeCost(i)+ ","+memoryVersion)+ ",";
+				if (memoryVersion == 1) {
+					s = s+0;
+				}
+				if (memoryVersion == 2) {
+					s = s+memoryMaxConstant;
+				}
+				if (memoryVersion == 3) {
+					s = s+similartyRatio;
+				}
 
 			} else {
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i));

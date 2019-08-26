@@ -388,4 +388,20 @@ public class Permutation {
 		return this.date;
 	}
 
+	public double checkSimilarty(Permutation p) {
+		int nonSimilarCounter = 0;
+		for (Entry<Integer, Integer> e : this.m.entrySet()) {
+			if (!p.getM().containsKey(e.getKey())) {
+				nonSimilarCounter++;
+			}else {
+				if (p.getM().get(e.getKey()) != e.getValue()) {
+					nonSimilarCounter++;
+
+				}
+			}
+		}
+		double diffrenceRatio = nonSimilarCounter/m.size();
+		return 1-diffrenceRatio;
+	}
+
 }

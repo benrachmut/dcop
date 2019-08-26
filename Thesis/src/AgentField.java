@@ -868,18 +868,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 				int eValue = e.getValue();
 				for (Permutation p : permutationsPast) {
 					Map<Integer, Integer> mapP = p.getM();
-					if (mapP.containsKey(eKey)) {
-
-						if (mapP.get(eKey) == eValue && memoryCount ==---) {
-
-						}
-
-					}
+					double smiliarityPercent = input.checkSimilarty(p);
 
 				}
 			}
 		}
-
 	}
 
 	private void checkOptionIfIamTop(Permutation input) {
