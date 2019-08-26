@@ -41,12 +41,18 @@ public class Main {
 
 	// -- variables of dcop problem
 	static int A = 15;// 50; // 50 number of agents
-	static int DUniform = 10; // 10 size of domain for each agent
-	
+	static int D = 10; // 10 size of domain for each agent
+	static int costMax = 100; // 100 the max value of cost
+
 	//-- uniformly random dcop
 	static double[] p1sUniform = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2sUniform = { 1 }; // 1 prob of domain selection to have a cost
-	static int costMax = 100; // 100 the max value of cost
+	static Double currentP1Uniform = 0.0;
+	static Double currentP2Uniform = 0.0;
+	
+	//-- uniformly random dcop
+	static double[]p1sColor = {0.05};
+	static Double currentP1Color = 0.0;
 
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
@@ -78,6 +84,7 @@ public class Main {
 	static Random rP4 = new Random();
 	static Random rDelay = new Random();
 	static Random rDsa = new Random();
+	static Random rP1Color = new Random();
 
 	
 	//-- for different instance to have excess
@@ -85,12 +92,19 @@ public class Main {
 	static Double currentP3 = 0.0;
 	static Double currentP4 = 0.0;
 	static int currentUb = 0;
-	static Double currentP1Uniform = 0.0;
-	static Double currentP2Uniform = 0.0;
+
 
 	public static void main(String[] args) {
 		if (dcopVersion == 1 ) {
+			D = 10;
+			costMax = 100;
 			runUniformlyRandomDcop();
+			
+		}
+		if (dcopVersion == 2) {
+			D = 3;
+			costMax = 10;
+			runColorDcop();
 		}
 		
 		printDcops();
@@ -159,7 +173,6 @@ public class Main {
 				currentP2Uniform = p2;
 
 				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
-					// only here change the tree
 					dcopSeeds(meanRun);
 					dcop = createDcop();
 					differentCommunicationProtocols(dcop, meanRun);
@@ -175,7 +188,7 @@ public class Main {
 		rP2Uniform.setSeed(meanRun);
 		rFirstValue.setSeed(meanRun);
 		rCost.setSeed(meanRun);
-
+		rP1Color.setSeed(meanRun);
 	}
 
 	private static void differentCommunicationProtocols(Dcop dcop, int meanRun) {
