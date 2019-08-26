@@ -82,11 +82,11 @@ public class UnsynchDsa extends Unsynch {
 	// ---- 4
 
 	@Override
-	public void agentsSendMsgs(List<MessageNormal> msgToSend, int date) {
+	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
 		if (Main.trySendValueAsPermutation) {
-			agentZero.sendUnsynchNonMonotonicByValueMsgs(msgToSend, date);
+			agentZero.sendUnsynchNonMonotonicByValueMsgs(msgToSend);
 		} else {
-			agentZero.sendUnsynchNonMonotonicMsgs(msgToSend,date);
+			agentZero.sendUnsynchNonMonotonicMsgs(msgToSend);
 		}
 		changeFlagForAgentsRecieveMsg(msgToSend);
 	}

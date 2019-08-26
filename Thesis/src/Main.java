@@ -17,8 +17,6 @@ public class Main {
 	// versions
 		static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 		static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
-		static int memoryStyle = 1; // 1= exp, 2 = constant, 3= reasonable
-		static int memoryConstant = 1000; 
 		static boolean synch = false;
 		static boolean anytimeDfs = false;
 		static boolean anytimeBfs = true;
@@ -43,19 +41,13 @@ public class Main {
 
 	// -- variables of dcop problem
 	static int A = 15;// 50; // 50 number of agents
-	static int D; // 10 size of domain for each agent
-	static int costMax; // 100 the max value of cost
-
+	static int DUniform = 10; // 10 size of domain for each agent
+	
 	//-- uniformly random dcop
 	static double[] p1sUniform = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2sUniform = { 1 }; // 1 prob of domain selection to have a cost
+	static int costMax = 100; // 100 the max value of cost
 
-	
-	//-- coloring graph
-	static double[] p1sColor = { 0.05 }; // 0.2 prob for agents to be neighbors
-
-	
-	
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
@@ -80,9 +72,6 @@ public class Main {
 	//-- random variables
 	static Random rP1Uniform = new Random();
 	static Random rP2Uniform = new Random();
-	static Random rP1Color = new Random();
-	
-	
 	static Random rFirstValue = new Random();
 	static Random rCost = new Random();
 	static Random rP3 = new Random();
@@ -98,18 +87,10 @@ public class Main {
 	static int currentUb = 0;
 	static Double currentP1Uniform = 0.0;
 	static Double currentP2Uniform = 0.0;
-	static Double currentP1Color = 0.0;
 
 	public static void main(String[] args) {
 		if (dcopVersion == 1 ) {
-			D=10;
-			costMax=100;
 			runUniformlyRandomDcop();
-		}
-		if (dcopVersion == 2) {
-			D=3;
-			costMax = 10;
-			runColorDcop();
 		}
 		
 		printDcops();
@@ -192,7 +173,6 @@ public class Main {
 	private static void dcopSeeds(int meanRun) {
 		rP1Uniform.setSeed(meanRun);
 		rP2Uniform.setSeed(meanRun);
-		rP1Color.setSeed(meanRun);
 		rFirstValue.setSeed(meanRun);
 		rCost.setSeed(meanRun);
 
