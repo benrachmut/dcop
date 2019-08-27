@@ -12,6 +12,8 @@ public abstract class Solution {
 	protected List<Integer> realCost;
 	protected List<Integer> fatherCost;
 	protected List<Integer> anytimeCost;
+	protected List<Integer> topAnytimeCost;
+
 	protected List<Integer> agentThinkCost;
 	protected int currentItiration;
 	protected String algo;
@@ -29,6 +31,7 @@ public abstract class Solution {
 		this.realCost = new ArrayList<Integer>();
 		this.fatherCost = new ArrayList<Integer>();
 		this.anytimeCost = new ArrayList<Integer>();
+		topAnytimeCost = new ArrayList<Integer>();
 		this.agentThinkCost = new ArrayList<Integer>();
 		addCostToList();
 		
@@ -109,6 +112,11 @@ public abstract class Solution {
 	public int getAnytimeCost(int i) {
 		// TODO Auto-generated method stub
 		return this.anytimeCost.get(i);
+	}
+
+	public int getTopCost(int i) {
+		// TODO Auto-generated method stub
+		return this.topAnytimeCost.get(i);
 	}
 
 

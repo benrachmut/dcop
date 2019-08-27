@@ -13,19 +13,23 @@ import java.util.Set;
 
 public class Main {
 
+	// -- variables of dcop problem
+	static int A = 15;// 50; // 50 number of agents
+	static int D = 10; // 10 size of domain for each agent
+	static int costMax = 100; // 100 the max value of cost
 	
 	// versions
-		static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-		static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
-		static int memoryVersion = 3; // 1=exp, 2= constant, 3= reasonable
-		
-		static long memoryMaxConstant = 1000; 
-		static double memorySimilartyRatio = 1; // given memory version = 3
-		
-		static boolean synch = false;
-		static boolean anytimeDfs = false;
-		static boolean anytimeBfs = true;
-		static String date = "memoryVersionSimilartyRatioTrail";
+	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
+	static int memoryVersion = 3; // 1=exp, 2= constant, 3= reasonable
+	
+	static long memoryMaxConstant = 1000; 
+	static double memorySimilartyRatio = 2; // given memory version = 3
+	
+	static boolean synch = false;
+	static boolean anytimeDfs = false;
+	static boolean anytimeBfs = true;
+	static String date = "memorySimilartyRatio"+A;//"memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -44,10 +48,6 @@ public class Main {
 
 	
 
-	// -- variables of dcop problem
-	static int A = 15;// 50; // 50 number of agents
-	static int D = 10; // 10 size of domain for each agent
-	static int costMax = 100; // 100 the max value of cost
 
 	//-- uniformly random dcop
 	static double[] p1sUniform = { 0.2 }; // 0.2 prob for agents to be neighbors
@@ -101,10 +101,50 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		double[]ratios = {0.2,0.5,0.9,1};
-		for (double i : ratios) { // for parameter tuning
-			//memoryMaxConstant = (long)Math.pow(10, i);
-			memorySimilartyRatio=i;
+		if (memoryVersion == 2) {
+			double[]constantsPower = {3,4,5,6,7,8};
+			for (double i : constantsPower) { // for parameter tuning
+				memoryMaxConstant = (long)Math.pow(10, i);
+				
+				if (dcopVersion == 1 ) {
+					D = 10;
+					costMax = 100;
+					runUniformlyRandomDcop();
+					
+				}
+				if (dcopVersion == 2) {
+					D = 3;
+					costMax = 10;
+					runColorDcop();
+				}
+				
+				printDcops();
+			}
+		}
+		
+		
+		
+		if (memoryVersion == 3) {
+			double[]ratios = {0,0.05,0.2,0.5,0.9,0.95,1};
+			for (double i : ratios) { // for parameter tuning
+				//memoryMaxConstant = (long)Math.pow(10, i);
+				memorySimilartyRatio=i;
+				if (dcopVersion == 1 ) {
+					D = 10;
+					costMax = 100;
+					runUniformlyRandomDcop();
+					
+				}
+				if (dcopVersion == 2) {
+					D = 3;
+					costMax = 10;
+					runColorDcop();
+				}
+				
+				printDcops();
+			}
+		}
+		if(memoryVersion == 1) {
 			if (dcopVersion == 1 ) {
 				D = 10;
 				costMax = 100;
@@ -116,9 +156,11 @@ public class Main {
 				costMax = 10;
 				runColorDcop();
 			}
-			
-			printDcops();
+		
+		
+		
 		}
+		
 		
 		
 		
@@ -140,7 +182,7 @@ public class Main {
 			out = new BufferedWriter(s);
 			String header = "";
 			if (!synch) {
-				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost,memory_style,hyper_parametr";
+				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost,top_cost,memory_style,hyper_parametr";
 			} else {
 				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			}
@@ -324,7 +366,7 @@ public class Main {
 			if (!synch) {
 			
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) + ","
-						+ sol.getAnytimeCost(i)+ ","+memoryVersion)+ ",";
+						+ sol.getAnytimeCost(i)+ ","+sol.getTopCost(i)+","+memoryVersion)+ ",";
 				if (memoryVersion == 1) {
 					s = s+0;
 				}
