@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
@@ -14,16 +15,66 @@ public class Dcop {
 	private Set<Constraint> constraints;
 	private Set<Neighbors> neighbors;
 	private int iterations;
-
+	//1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	public Dcop(AgentField[] agents, int d, int iterations) {
 		this.agentsF = agents;
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
-		this.constraints = createConstraints();
+		initConstraintGivenDcopVersion();
+		
 
 	}
 
-	private Set<Constraint> createConstraints() {
+	private void initConstraintGivenDcopVersion() {
+		if (Main.dcopVersion == 1) {
+			this.constraints = createConstraintsUniformlyRandomDCOP();
+		}
+		if (Main.dcopVersion == 2) {
+			this.constraints = createConstraintsGraphColor();
+		}	
+		
+		if (Main.dcopVersion == 3) {
+			this.constraints = createConstraintsScaleFreeAB();
+		}	
+	}
+
+	private Set<Constraint> createConstraintsScaleFreeAB() {
+		---
+		return null;
+	}
+
+	private Set<Constraint> createConstraintsGraphColor() {
+		Set<Constraint> ans = new HashSet<Constraint>();
+		for (int i = 0; i < agentsF.length; i++) {
+			for (int j = i + 1; j < agentsF.length; j++) {
+				double p1Max = Main.rP1Color.nextDouble();
+				if (p1Max < Main.currentP1Color) {
+					AgentField af1 = agentsF[i];
+					AgentField af2 = agentsF[j];
+					
+					for (int k = 0; k < af1.getDomainSize(); k++) {
+						int d1 = af1.getDomain()[k];
+						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
+							int d2 = af2.getDomain()[k2];
+							if (d1==d2) {
+								Agent a1 = new Agent(i, d1);
+								Agent a2 = new Agent(j, d2);
+								int cost = Main.costMax;
+								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
+								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
+								ans.add(c);
+							}
+							
+						}
+					}
+			}
+		}
+	}
+		return ans;
+
+	}
+
+	private Set<Constraint> createConstraintsUniformlyRandomDCOP() {
 		Set<Constraint> ans = new HashSet<Constraint>();
 		for (int i = 0; i < agentsF.length; i++) {
 			for (int j = i + 1; j < agentsF.length; j++) {
@@ -261,6 +312,39 @@ public class Dcop {
 
 		return 0;
 
+	}
+	
+	// Function select an element base on index and return 
+    // an element 
+    public  List<AgentField> getRandomElement(int totalItems) 
+    { 
+        Random rand = Main.rHub;
+        // create a temporary list for storing 
+        // selected element 
+        
+        List<AgentField> = turnAgentArrayToArrayList();
+        List<T> newList = new ArrayList<T>(); 
+        List<T> copyListInput =  copyVector(list);
+        for (int i = 0; i < totalItems; i++) { 
+  
+            // take a raundom index between 0 to size  
+            // of given List 
+            int randomIndex = rand.nextInt(list.size()); 
+  
+            // add element in temporary list 
+            newList.add(list.get(randomIndex)); 
+  
+            // Remove selected element from orginal list 
+            list.remove(randomIndex); 
+        } 
+        return newList; 
+    }
+
+	private List<AgentField> turnAgentArrayToArrayList() {
+		List<AgentField> ans = new ArrayList<AgentField>();
+		fore
+
+		return null;
 	}
 
 }

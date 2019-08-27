@@ -916,36 +916,26 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	private boolean addToSet(Permutation input, HashSet<Permutation> setToAddTo) {
-
 		boolean flag = false;
 		for (Permutation pFromList : setToAddTo) {
-
 			if (pFromList.equals(input)) {
 				flag = true;
 			}
 		}
-
 		if (!flag) {
-
 			setToAddTo.add(input);
-
 		}
-
 		return flag;
-
 	}
 
 	public void iterateOverSonsAndCombineWithInputPermutation(Permutation input) {
 		// Permutation myPermutation = this.createCurrentPermutation();
-
 		for (Permutation sonPermutation : this.sonsAnytimePermutations) {
 			if (sonPermutation.isCoherent(input)) {
 				Permutation pToSend = Permutation.combinePermutations(sonPermutation, input, this);
-
 				handlePToSend(pToSend);
 			}
 		}
-
 	}
 
 	/**

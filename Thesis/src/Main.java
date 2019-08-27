@@ -17,27 +17,34 @@ public class Main {
 	static int A = 15;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
 	static int costMax = 100; // 100 the max value of cost
-	
+
 	// versions
 	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int dcopVersion = 1; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free network problems.
-	static int memoryVersion = 3; // 1=exp, 2= constant, 3= reasonable
+	static int[] dcopVersions = { 1, 2, 3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+												// network problems.
+	static int dcopVersion;
 	
-	static long memoryMaxConstant = 1000; 
-	static double memorySimilartyRatio = 2; // given memory version = 3
+	//-- memory
+	static int[] memoryVersions = { 2, 3 }; // 1=exp, 2= constant, 3= reasonable
+	static int memoryVersion;
+	static double[] constantsPower = { 3, 4, 5, 6, 7, 8 };
+	static long memoryMaxConstant;
+	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
+	static double memorySimilartyRatio; // given memory version = 3
 	
+	//-- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs = true;
-	static String date = "memorySimilartyRatio"+A;//"memoryMaxConstantTrail";
+	static String date = "memorySimilartyRatio" + A;// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
 	// static boolean debugCombineWith = true;
 	static boolean printCompletePermutationOfTop = true;
 	static boolean printCentralPOVPermutations = false;
-	static boolean printSelfN=false;
-	static boolean foundPermutationDebug=false;
+	static boolean printSelfN = false;
+	static boolean foundPermutationDebug = false;
 
 	// different versions
 	public static boolean tryAllMailBox = false;
@@ -46,19 +53,24 @@ public class Main {
 	// public static boolean tryAgentRememberSequence = true;
 	public static boolean trySendSelfCounter = false;
 
-	
-
-
-	//-- uniformly random dcop
+	// -- uniformly random dcop
 	static double[] p1sUniform = { 0.2 }; // 0.2 prob for agents to be neighbors
 	static double[] p2sUniform = { 1 }; // 1 prob of domain selection to have a cost
 	static Double currentP1Uniform = 0.0;
 	static Double currentP2Uniform = 0.0;
-	
-	//-- uniformly random dcop
-	static double[]p1sColor = {0.05};
+
+	// -- uniformly random dcop
+	static double[] p1sColor = { 0.05 };
 	static Double currentP1Color = 0.0;
 
+	//-- scale free AB
+	static int[] M0Denominetors = {5};
+	static int[] Ms = {3};
+	static int hubs;
+	static int numOfNToNotHubs;
+	
+	
+	
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
@@ -79,8 +91,7 @@ public class Main {
 	static List<String> solutions = new ArrayList<String>();
 	static List<String> fatherSolutions = new ArrayList<String>();
 
-	
-	//-- random variables
+	// -- random variables
 	static Random rP1Uniform = new Random();
 	static Random rP2Uniform = new Random();
 	static Random rFirstValue = new Random();
@@ -90,82 +101,87 @@ public class Main {
 	static Random rDelay = new Random();
 	static Random rDsa = new Random();
 	static Random rP1Color = new Random();
+	static Random rHub = new Random();
+	static Random rNotHub = new Random();
 
-	
-	//-- for different instance to have excess
+	// -- for different instance to have excess
 	static boolean dateKnown;
 	static Double currentP3 = 0.0;
 	static Double currentP4 = 0.0;
 	static int currentUb = 0;
 
-
 	public static void main(String[] args) {
-		
+
+		for (int i : dcopVersions) {
+			dcopVersion = i;
+
+			if (algo == "dsaUnsynch7") {
+
+				for (int j : memoryVersions) {
+					memoryVersion = j;
+					runDifferentMemoryVersions();
+				}
+			} else {
+				runDifferentDcop();
+			}
+			printDcops();
+
+		}
+	}
+	
+
+	private static void runDifferentMemoryVersions() {
 		if (memoryVersion == 2) {
-			double[]constantsPower = {3,4,5,6,7,8};
 			for (double i : constantsPower) { // for parameter tuning
-				memoryMaxConstant = (long)Math.pow(10, i);
-				
-				if (dcopVersion == 1 ) {
-					D = 10;
-					costMax = 100;
-					runUniformlyRandomDcop();
-					
-				}
-				if (dcopVersion == 2) {
-					D = 3;
-					costMax = 10;
-					runColorDcop();
-				}
-				
-				printDcops();
+				memoryMaxConstant = (long) Math.pow(10, i);
+				runDifferentDcop();
 			}
 		}
-		
-		
-		
 		if (memoryVersion == 3) {
-			double[]ratios = {0,0.05,0.2,0.5,0.9,0.95,1};
-			for (double i : ratios) { // for parameter tuning
-				//memoryMaxConstant = (long)Math.pow(10, i);
-				memorySimilartyRatio=i;
-				if (dcopVersion == 1 ) {
-					D = 10;
-					costMax = 100;
-					runUniformlyRandomDcop();
-					
-				}
-				if (dcopVersion == 2) {
-					D = 3;
-					costMax = 10;
-					runColorDcop();
-				}
-				
-				printDcops();
+			for (double i : similarRatios) { // for parameter tuning
+				memorySimilartyRatio = i;
+				runDifferentDcop();
 			}
 		}
-		if(memoryVersion == 1) {
-			if (dcopVersion == 1 ) {
-				D = 10;
-				costMax = 100;
-				runUniformlyRandomDcop();
-				
-			}
-			if (dcopVersion == 2) {
-				D = 3;
-				costMax = 10;
-				runColorDcop();
-			}
-		
-		
-		
-		}
-		
-		
-		
-		
+
 	}
 
+	private static void runDifferentDcop() {
+		if (dcopVersion == 1 || dcopVersion == 3) {
+			D = 10;
+			costMax = 100;
+			runUniformlyRandomDcop();
+
+		}
+		if (dcopVersion == 2) {
+			D = 3;
+			costMax = 10;
+			runColorDcop();
+		}
+		if (dcopVersion == 3) {
+			D = 10;
+			costMax = 100;
+			runScaleFreeDcop();
+		}
+
+	}
+
+	private static void runScaleFreeDcop() {
+		for (int i : M0Denominetors) {
+			hubs = A/i;
+			for (int j : Ms) {
+				numOfNToNotHubs = j;
+				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+					dcopSeeds(meanRun);
+					dcop = createDcop();
+					differentCommunicationProtocols(dcop, meanRun);
+
+				} // means run
+			}
+		}
+		
+
+	}
 	/*
 	 * private static void setSynchBoolean() { boolean unsynchMono =
 	 * algo.equals("unsynchMono");
@@ -201,26 +217,23 @@ public class Main {
 
 	}
 
-	
-	
-	private static void runColorDcop(){
+	private static void runColorDcop() {
 
 		for (Double p1 : p1sColor) {
 			currentP1Color = p1;
-		
 
-				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
-					// only here change the tree
-					dcopSeeds(meanRun);
-					dcop = createDcop();
-					differentCommunicationProtocols(dcop, meanRun);
+			for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+				// only here change the tree
+				dcopSeeds(meanRun);
+				dcop = createDcop();
+				differentCommunicationProtocols(dcop, meanRun);
 
-				} // means run
+			} // means run
 		} // p1
 
 	}
-	
-	private static void runUniformlyRandomDcop(){
+
+	private static void runUniformlyRandomDcop() {
 
 		for (Double p1 : p1sUniform) {
 			currentP1Uniform = p1;
@@ -241,9 +254,11 @@ public class Main {
 	private static void dcopSeeds(int meanRun) {
 		rP1Uniform.setSeed(meanRun);
 		rP2Uniform.setSeed(meanRun);
+		rP1Color.setSeed(meanRun);
+		rHub.setSeed(meanRun);
+		rNotHub.setSeed(meanRun);
 		rFirstValue.setSeed(meanRun);
 		rCost.setSeed(meanRun);
-		rP1Color.setSeed(meanRun);
 	}
 
 	private static void differentCommunicationProtocols(Dcop dcop, int meanRun) {
@@ -332,20 +347,16 @@ public class Main {
 
 		ans.solve();
 		/*
-		if (Main.printCompletePermutationOf9) {
-
-			Set<Permutation> perms = ans.agents[9].getPermutationsToSend();
-			for (Permutation p : perms) {
-				int realCost = Solution.dcopS.calRealSolForDebug(p.getM());
-				if (p.getCost() == realCost) {
-					System.out.println(p);
-				} else {
-					System.err.println("cost should be: " + realCost + " |" + p);
-
-				}
-			}
-		}
-		*/
+		 * if (Main.printCompletePermutationOf9) {
+		 * 
+		 * Set<Permutation> perms = ans.agents[9].getPermutationsToSend(); for
+		 * (Permutation p : perms) { int realCost =
+		 * Solution.dcopS.calRealSolForDebug(p.getM()); if (p.getCost() == realCost) {
+		 * System.out.println(p); } else { System.err.println("cost should be: " +
+		 * realCost + " |" + p);
+		 * 
+		 * } } }
+		 */
 		return ans;
 
 	}
@@ -364,17 +375,17 @@ public class Main {
 		for (int i = 0; i < iterations; i++) {
 			String s = "";
 			if (!synch) {
-			
+
 				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) + ","
-						+ sol.getAnytimeCost(i)+ ","+sol.getTopCost(i)+","+memoryVersion)+ ",";
+						+ sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";
 				if (memoryVersion == 1) {
-					s = s+0;
+					s = s + 0;
 				}
 				if (memoryVersion == 2) {
-					s = s+memoryMaxConstant;
+					s = s + memoryMaxConstant;
 				}
 				if (memoryVersion == 3) {
-					s = s+memorySimilartyRatio;
+					s = s + memorySimilartyRatio;
 				}
 
 			} else {
@@ -472,5 +483,9 @@ public class Main {
 	public static int getRandomInt(Random r, int min, int max) {
 		return r.nextInt(max - min + 1) + min;
 	}
+
+	
+
+
 
 }
