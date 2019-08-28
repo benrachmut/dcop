@@ -19,9 +19,16 @@ public class Main {
 	static int D = 10; // 10 size of domain for each agent
 	static int costMax = 100; // 100 the max value of cost
 
+	
+	// -- Experiment time
+	static int meanReps = 30;// 10; // number of reps for every solve process
+	static int iterations = 5000;
+	static Dcop dcop;
+	
+	
 	// versions
-	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static String algo = "unsynchMono"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static int[] dcopVersions = { 1,2,3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 										// network problems.//
 	static int dcopVersion;
 
@@ -36,8 +43,8 @@ public class Main {
 	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = false;
-	static boolean anytimeBfs = true;
-	static String date = "memorySimilartyRatio" + A + "2708" + "";// "memoryMaxConstantTrail";
+	static boolean anytimeBfs = false;
+	static String date = "MonotonicAAAI2020";// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -55,23 +62,23 @@ public class Main {
 	public static boolean trySendSelfCounter = false;
 
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.2 }; // 0.2 prob for agents to be neighbors
-	static double[] p2sUniform = { 1 }; // 1 prob of domain selection to have a cost
-	static Double currentP1Uniform = 0.0;
-	static Double currentP2Uniform = 0.0;
+	static double[] p1sUniform = { 0.1,0.6 }; 
+	static double[] p2sUniform = { 1 }; 
+	static Double currentP1Uniform;
+	static Double currentP2Uniform;
 	static Random rP1Uniform = new Random();
 	static Random rP2Uniform = new Random();
 
 	// -- color dcop
-	static double[] p1sColor = { 0.05 };
-	static Double currentP1Color = 0.0;
+	static double[] p1sColor = { 0.1 };
+	static Double currentP1Color;
 	static Random rP1Color = new Random();
 
 
 	// -- scale free AB
-	static int[] hubs = { 10 };
+	static int[] hubs = { 7 };
 	static int[] numOfNToNotHubs = { 3 };
-	static double[] p2sScaleFree= { 1 }; // 1 prob of domain selection to have a cost
+	static double[] p2sScaleFree= { 1 }; 
 	static double currentP2ScaleFree;
 	static int hub;
 	static int numOfNToNotHub;
@@ -81,18 +88,19 @@ public class Main {
 	
 
 	// -- communication protocol
-	static double[] p3s = { 1 }; // prob of communication to have delay
-	static boolean[] dateKnowns = { true };// { true, false };
-	static int[] delayUBs = { 5 };//
-	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to have delay
+	static double[] p3s = { 0 }; 
+	static boolean[] dateKnowns = { true };
+	static int[] delayUBs = {5,10,50};//
+	static double[] p4s = { 0 };
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
 	static Random rDelay = new Random();
+	static boolean dateKnown;
+	static Double currentP3;
+	static Double currentP4;
+	static int currentUb;
 
-	// -- Experiment time
-	static int meanReps = 10;// 10; // number of reps for every solve process
-	static int iterations = 250;
-	static Dcop dcop;
+
 
 	// -- characters
 	static AgentField[] agents;
@@ -109,11 +117,7 @@ public class Main {
 	static Random rDsa = new Random();
 
 
-	// -- for different instance to have excess
-	static boolean dateKnown;
-	static Double currentP3 = 0.0;
-	static Double currentP4 = 0.0;
-	static int currentUb = 0;
+
 
 	public static void main(String[] args) {
 
@@ -209,7 +213,7 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
-			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
+			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,";
 			if (!synch) {
 				header = header + "anytime_cost,top_cost,memory_style,hyper_parametr";
 			}
@@ -296,7 +300,13 @@ public class Main {
 		String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
 		// ---- find solution ----
 		Solution algo = selectedAlgo(dcop, meanRun);
-		System.out.println(protocol + "," + algo);
+		/*
+		for (Integer i: algo.getRealCosts()){
+			System.out.println(i);
+		}
+		*/
+		
+		System.out.println(dcop+","+protocol + "," + algo);
 		// ---- restart ----
 		restartBetweenAlgo(algo, protocol);
 
@@ -385,7 +395,8 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i);
+			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i)+ "," ;
+			
 			if (!synch) {
 
 				s = s + new String(sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";

@@ -120,6 +120,11 @@ public abstract class Solution {
 		return this.topAnytimeCost.get(i);
 	}
 
+	public List<Integer> getRealCosts() {
+		// TODO Auto-generated method stub
+		return this.realCost;
+	}
+
 
 
 }
