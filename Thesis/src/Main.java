@@ -59,27 +59,35 @@ public class Main {
 	static double[] p2sUniform = { 1 }; // 1 prob of domain selection to have a cost
 	static Double currentP1Uniform = 0.0;
 	static Double currentP2Uniform = 0.0;
+	static Random rP1Uniform = new Random();
+	static Random rP2Uniform = new Random();
 
-	// -- uniformly random dcop
+	// -- color dcop
 	static double[] p1sColor = { 0.05 };
 	static Double currentP1Color = 0.0;
+	static Random rP1Color = new Random();
+
 
 	// -- scale free AB
 	static int[] hubs = { 10 };
 	static int[] numOfNToNotHubs = { 3 };
 	static double[] p2sScaleFree= { 1 }; // 1 prob of domain selection to have a cost
-
 	static double currentP2ScaleFree;
 	static int hub;
 	static int numOfNToNotHub;
+	static Random rHub = new Random();
+	static Random rNotHub = new Random();
+	static Random rP2ScaleFree = new Random();
 	
 
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
 	static int[] delayUBs = { 5 };//
-	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to
-								// have delay
+	static double[] p4s = { 0 };// {0, 0.2, 0.6, 0.9};//{ 0, 0.2, 0.5, 0.8, 0.9 }; // prob of communication to have delay
+	static Random rP3 = new Random();
+	static Random rP4 = new Random();
+	static Random rDelay = new Random();
 
 	// -- Experiment time
 	static int meanReps = 10;// 10; // number of reps for every solve process
@@ -95,18 +103,11 @@ public class Main {
 	static List<String> fatherSolutions = new ArrayList<String>();
 
 	// -- random variables
-	static Random rP1Uniform = new Random();
-	static Random rP2Uniform = new Random();
+	
 	static Random rFirstValue = new Random();
 	static Random rCost = new Random();
-	static Random rP3 = new Random();
-	static Random rP4 = new Random();
-	static Random rDelay = new Random();
 	static Random rDsa = new Random();
-	static Random rP1Color = new Random();
-	static Random rHub = new Random();
-	static Random rNotHub = new Random();
-	static Random rP2ScaleFree = new Random();
+
 
 	// -- for different instance to have excess
 	static boolean dateKnown;

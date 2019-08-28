@@ -59,11 +59,6 @@ public class Dcop {
 		Map<Integer, Boolean> marked = initColored();
 		createHubs(marked);
 		findNeighborsToOtherAgentsWhoAreNotHubs(marked);
-		
-	
-
-	
-
 
 		return createConstraintsGivenNeigbors();
 	}
@@ -71,31 +66,29 @@ public class Dcop {
 	private Set<Constraint> createConstraintsGivenNeigbors() {
 		// this.constraints.add(new Constraint(new Neighbors(a1, a2), cost));
 		// af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-		
-		Set<Constraint>ans = new HashSet<Constraint>();
+
+		Set<Constraint> ans = new HashSet<Constraint>();
 		for (Neighbors n : this.neighbors) {
-			AgentField af1 = getAgentField(n.getA1().getId()); 
+			AgentField af1 = getAgentField(n.getA1().getId());
 			AgentField af2 = getAgentField(n.getA2().getId());
-			
+
 			for (int d1 : af1.getDomain()) {
 				for (int d2 : af2.getDomain()) {
 					double rnd = Main.rP2ScaleFree.nextDouble();
-					if (rnd<Main.currentP2ScaleFree) {
-						Agent a1 = new Agent(n.getA1().getId(),d1);
-						Agent a2 = new Agent(n.getA1().getId(),d2);
+					if (rnd < Main.currentP2ScaleFree) {
+						Agent a1 = new Agent(n.getA1().getId(), d1);
+						Agent a2 = new Agent(n.getA2().getId(), d2);
 						int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
 						Constraint c = new Constraint(new Neighbors(a1, a2), cost);
 						ans.add(c);
 						af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
 						af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-
 					}
-					
 				}
 			}
 
 		}
-		
+
 		return ans;
 	}
 
@@ -241,8 +234,19 @@ public class Dcop {
 
 	private void informDcopAndAgentsUponNeighborhood(List<AgentField> hubs, int i, int j) {
 		// add to neighbors in dcop
-		Agent a1 = hubs.get(i);
-		Agent a2 = hubs.get(j);
+		Agent ai = hubs.get(i);
+		Agent aj = hubs.get(j);
+		Agent a1;
+		Agent a2;
+		if (ai.getId()<aj.getId()) {
+			a1=ai;
+			a2=aj;		
+		}else {
+			a1=aj;
+			a2=ai;
+		}
+		
+		
 		Neighbors n = new Neighbors(a1, a2);
 		this.neighbors.add(n);
 
