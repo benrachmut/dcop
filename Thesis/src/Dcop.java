@@ -24,6 +24,22 @@ public class Dcop {
 		
 
 	}
+	
+	@Override
+	public String toString() {
+		// 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+					// network problems.
+		if (Main.dcopVersion == 1) {
+			return "Uniformly random DCOPs";
+		}
+		if (Main.dcopVersion == 2) {
+			return "Graph coloring problems";
+		}
+		if (Main.dcopVersion == 3) {
+			return "Scale-free network problems";
+		}
+		return super.toString();
+	}
 
 	private void initConstraintGivenDcopVersion() {
 		if (Main.dcopVersion == 1) {
@@ -322,13 +338,11 @@ public class Dcop {
         // create a temporary list for storing 
         // selected element 
         
-        List<AgentField> = turnAgentArrayToArrayList();
-        List<T> newList = new ArrayList<T>(); 
-        List<T> copyListInput =  copyVector(list);
+        List<AgentField>  list = turnAgentArrayToArrayList();
+        List<AgentField> newList = new ArrayList<AgentField>(); 
         for (int i = 0; i < totalItems; i++) { 
   
-            // take a raundom index between 0 to size  
-            // of given List 
+            // take a random index between 0 to size of given List 
             int randomIndex = rand.nextInt(list.size()); 
   
             // add element in temporary list 
@@ -342,9 +356,11 @@ public class Dcop {
 
 	private List<AgentField> turnAgentArrayToArrayList() {
 		List<AgentField> ans = new ArrayList<AgentField>();
-		fore
+		for (AgentField a : agentsF) {
+			ans.add(a);
+		}
 
-		return null;
+		return ans;
 	}
 
 }

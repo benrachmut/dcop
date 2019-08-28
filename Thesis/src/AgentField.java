@@ -828,6 +828,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			addToSet(input, permutationsPast);
 		}
 		if (Main.memoryVersion == 2) {
+			//addToSet(input, permutationsPast);
+
 			memoryVersionConstant(input);
 
 		}
@@ -842,7 +844,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.permutationsPast.remove(minP);
 		}
 		Collection similarToInput = checkForAllSimilarPastPermutations(input);
+		
 		permutationsPast.removeAll(similarToInput);
+		
 		permutationsPast.add(input);
 	}
 

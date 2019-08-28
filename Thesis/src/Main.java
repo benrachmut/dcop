@@ -20,14 +20,14 @@ public class Main {
 
 	// versions
 	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 1, 2, 3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 												// network problems.
 	static int dcopVersion;
 	
 	//-- memory
-	static int[] memoryVersions = { 2, 3 }; // 1=exp, 2= constant, 3= reasonable
+	static int[] memoryVersions = { 2}; // 1=exp, 2= constant, 3= reasonable
 	static int memoryVersion;
-	static double[] constantsPower = { 3, 4, 5, 6, 7, 8 };
+	static double[] constantsPower = { 3, 4, 5, 6, 7, 8, 9 };
 	static long memoryMaxConstant;
 	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
 	static double memorySimilartyRatio; // given memory version = 3
@@ -36,7 +36,8 @@ public class Main {
 	static boolean synch = false;
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs = true;
-	static String date = "memorySimilartyRatio" + A;// "memoryMaxConstantTrail";
+	static String date = "memorySimilartyRatio" + A+"2708"
+			+ "";// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -196,12 +197,10 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter(algo + date + ".csv");
 			out = new BufferedWriter(s);
-			String header = "";
+			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			if (!synch) {
-				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,anytime_cost,top_cost,memory_style,hyper_parametr";
-			} else {
-				header = "p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
-			}
+				header = header+"anytime_cost,top_cost,memory_style,hyper_parametr";
+			} 
 			out.write(header);
 			out.newLine();
 
@@ -373,11 +372,10 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			String s = "";
+			String s = dcop.toString()+ "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) ;
 			if (!synch) {
 
-				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) + ","
-						+ sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";
+				s = s+new String(sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";
 				if (memoryVersion == 1) {
 					s = s + 0;
 				}
@@ -388,9 +386,7 @@ public class Main {
 					s = s + memorySimilartyRatio;
 				}
 
-			} else {
-				s = new String(protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i));
-			}
+			} 
 			solutions.add(s);
 		}
 	}
