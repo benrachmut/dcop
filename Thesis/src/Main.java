@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -20,7 +21,7 @@ public class Main {
 
 	// versions
 	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 2 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static int[] dcopVersions = { 3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 										// network problems.//
 	static int dcopVersion;
 
@@ -64,10 +65,14 @@ public class Main {
 	static Double currentP1Color = 0.0;
 
 	// -- scale free AB
-	static int[] M0Denominetors = { 5 };
-	static int[] Ms = { 3 };
-	static int hubs;
-	static int numOfNToNotHubs;
+	static int[] hubs = { 10 };
+	static int[] numOfNToNotHubs = { 3 };
+	static double[] p2sScaleFree= { 1 }; // 1 prob of domain selection to have a cost
+
+	static double currentP2ScaleFree;
+	static int hub;
+	static int numOfNToNotHub;
+	
 
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
@@ -101,6 +106,7 @@ public class Main {
 	static Random rP1Color = new Random();
 	static Random rHub = new Random();
 	static Random rNotHub = new Random();
+	static Random rP2ScaleFree = new Random();
 
 	// -- for different instance to have excess
 	static boolean dateKnown;
@@ -167,16 +173,23 @@ public class Main {
 	}
 
 	private static void runScaleFreeDcop() {
-		for (int i : M0Denominetors) {
-			hubs = A / i;
-			for (int j : Ms) {
-				numOfNToNotHubs = j;
-				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
-					dcopSeeds(meanRun);
-					dcop = createDcop();
-					differentCommunicationProtocols(dcop, meanRun);
+		
+	
+		for (int i : hubs) {
+			hub = i;
+			for (int j : numOfNToNotHubs) {
+				numOfNToNotHub = j;
+				for (double k : p2sScaleFree) {
+					currentP2ScaleFree = k;
+					
+					for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+						dcopSeeds(meanRun);
+						dcop = createDcop();
+						differentCommunicationProtocols(dcop, meanRun);
 
-				} // means run
+					} // means run
+				}
+				
 			}
 		}
 
@@ -252,6 +265,7 @@ public class Main {
 		rP1Uniform.setSeed(meanRun);
 		rP2Uniform.setSeed(meanRun);
 		rP1Color.setSeed(meanRun);
+		rP2ScaleFree.setSeed(meanRun);
 		rHub.setSeed(meanRun);
 		rNotHub.setSeed(meanRun);
 		rFirstValue.setSeed(meanRun);

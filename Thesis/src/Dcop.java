@@ -58,35 +58,131 @@ public class Dcop {
 	private Set<Constraint> createConstraintsScaleFreeAB() {
 		Map<Integer, Boolean> marked = initColored();
 		createHubs(marked);
+		findNeighborsToOtherAgentsWhoAreNotHubs(marked);
+		
+	
+
+	
+
+
+		return createConstraintsGivenNeigbors();
+	}
+
+	private Set<Constraint> createConstraintsGivenNeigbors() {
+		// this.constraints.add(new Constraint(new Neighbors(a1, a2), cost));
+		// af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
+		
+		Set<Constraint>ans = new HashSet<Constraint>();
+		for (Neighbors n : this.neighbors) {
+			AgentField af1 = getAgentField(n.getA1().getId()); 
+			AgentField af2 = getAgentField(n.getA2().getId());
+			
+			for (int d1 : af1.getDomain()) {
+				for (int d2 : af2.getDomain()) {
+					double rnd = Main.rP2ScaleFree.nextDouble();
+					if (rnd<Main.currentP2ScaleFree) {
+						Agent a1 = new Agent(n.getA1().getId(),d1);
+						Agent a2 = new Agent(n.getA1().getId(),d2);
+						int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
+						Constraint c = new Constraint(new Neighbors(a1, a2), cost);
+						ans.add(c);
+						af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
+						af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
+
+					}
+					
+				}
+			}
+
+		}
+		
+		return ans;
+	}
+
+	private void findNeighborsToOtherAgentsWhoAreNotHubs(Map<Integer, Boolean> marked) {
 		for (Entry<Integer, Boolean> e : marked.entrySet()) {
 			Integer id = e.getKey();
 			Boolean isMarked = e.getValue();
 			if (!isMarked) {
 				AgentField af = getAgentField(id);
-				if (af == null) {
-					System.err.println("something in createConstraintsScaleFreeAB in dcop is wrong");
-				}
-
-				selectNToNotHubs(af);
-
+				findNeighborsToSingleAgentNotHub(af);
+				marked.put(af.getId(), true);
 			}
-
 		}
 
-		// inform agent on its neighbor and constraint, inform dcop on neighbors and new
-		// constraint
-		// agentInput.addNeighbor(idOther);
-		// af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-		// this.neighbors.add(new Neighbors(af1, af2, this.iterations));
-		// this.constraints.add(new Constraint(new Neighbors(a1, a2), cost));
+		checkIfMarkedMakeSense(marked);
 
-		return null;
 	}
 
-	private void selectNToNotHubs(AgentField af) {
-		Map<Integer, Boolean> marked = initColored();
+	private void checkIfMarkedMakeSense(Map<Integer, Boolean> marked) {
+		for (Boolean b : marked.values()) {
+			if (!b) {
+				System.err.println("something is wrong with iterating over all the unmarked ");
+			}
+		}
+
+	}
+
+	private void findNeighborsToSingleAgentNotHub(AgentField af) {
+		List<Integer> idsOfANeighbor = selectNToNotHubs(af);
+		if (idsOfANeighbor.size() != Main.numOfNToNotHub) {
+			System.err.println("something in selectNToNotHubs in dcop is wrong");
+		}
+		declareNeighborsOfIteratedAgentField(idsOfANeighbor, af);
+	}
+
+	private void declareNeighborsOfIteratedAgentField(List<Integer> idsOfANeighbor, AgentField af) {
+		for (Integer id : idsOfANeighbor) {
+			AgentField afNeighbor = getAgentField(id);
+			Agent a1;
+			Agent a2;
+			if (id < af.getId()) {
+				a1 = afNeighbor;
+				a2 = af;
+			} else {
+				a1 = af;
+				a2 = afNeighbor;
+			}
+			Neighbors n = new Neighbors(a1, a2);
+			this.neighbors.add(n);
+
+			afNeighbor.addNeighbor(af.getId());
+			af.addNeighbor(afNeighbor.getId());
+		}
+
+	}
+
+	private List<Integer> selectNToNotHubs(AgentField af) {
+		List<Integer> ans = new ArrayList<Integer>();
+		Map<Integer, Boolean> markedHere = initColored();
+		markedHere.put(af.getId(), true);
 		Map<Integer, Double> probs = initProbs(af);
 
+		int counter = 0;
+		while (counter < Main.numOfNToNotHub) {
+			int idOfNeighborShuffled = getFromProbsShuffledNeighbor(af, probs);
+			if (idOfNeighborShuffled == -1) {
+				System.err.println("logical bug in creating prob map");
+			}
+			if (!markedHere.get(idOfNeighborShuffled)) {
+				counter++;
+				markedHere.put(idOfNeighborShuffled, true);
+				ans.add(idOfNeighborShuffled);
+			}
+		}
+		return ans;
+
+	}
+
+	private int getFromProbsShuffledNeighbor(AgentField af, Map<Integer, Double> probs) {
+		double rnd = Main.rNotHub.nextDouble();
+		for (int i = 0; i < agentsF.length; i++) {
+			if (rnd < probs.get(i)) {
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	private Map<Integer, Double> initProbs(AgentField af) {
@@ -124,7 +220,7 @@ public class Dcop {
 	}
 
 	private void createHubs(Map<Integer, Boolean> marked) {
-		List<AgentField> hubs = getRandomElement(Main.hubs, Main.rHub);
+		List<AgentField> hubs = getRandomElement(Main.hub, Main.rHub);
 		hubNeighborsToOneAnother(hubs);
 		for (AgentField a : hubs) {
 			marked.put(a.getId(), true);
