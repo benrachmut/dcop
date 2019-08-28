@@ -14,30 +14,29 @@ import java.util.Set;
 public class Main {
 
 	// -- variables of dcop problem
-	static int A = 15;// 50; // 50 number of agents
+	static int A = 50;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
 	static int costMax = 100; // 100 the max value of cost
 
 	// versions
 	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
-												// network problems.// 
+	static int[] dcopVersions = { 2 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+										// network problems.//
 	static int dcopVersion;
-	
-	//-- memory
-	static int[] memoryVersions = { 2}; // 1=exp, 2= constant, 3= reasonable
+
+	// -- memory
+	static int[] memoryVersions = { 1 }; // 1=exp, 2= constant, 3= reasonable
 	static int memoryVersion;
 	static double[] constantsPower = { 3, 4, 5, 6, 7, 8, 9 };
 	static long memoryMaxConstant;
 	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
 	static double memorySimilartyRatio; // given memory version = 3
-	
-	//-- synch
+
+	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs = true;
-	static String date = "memorySimilartyRatio" + A+"2708"
-			+ "";// "memoryMaxConstantTrail";
+	static String date = "memorySimilartyRatio" + A + "2708" + "";// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -64,14 +63,12 @@ public class Main {
 	static double[] p1sColor = { 0.05 };
 	static Double currentP1Color = 0.0;
 
-	//-- scale free AB
-	static int[] M0Denominetors = {5};
-	static int[] Ms = {3};
+	// -- scale free AB
+	static int[] M0Denominetors = { 5 };
+	static int[] Ms = { 3 };
 	static int hubs;
 	static int numOfNToNotHubs;
-	
-	
-	
+
 	// -- communication protocol
 	static double[] p3s = { 1 }; // prob of communication to have delay
 	static boolean[] dateKnowns = { true };// { true, false };
@@ -129,9 +126,12 @@ public class Main {
 
 		}
 	}
-	
 
 	private static void runDifferentMemoryVersions() {
+		if (memoryVersion == 1) {
+			runDifferentDcop();
+		}
+
 		if (memoryVersion == 2) {
 			for (double i : constantsPower) { // for parameter tuning
 				memoryMaxConstant = (long) Math.pow(10, i);
@@ -148,11 +148,10 @@ public class Main {
 	}
 
 	private static void runDifferentDcop() {
-		if (dcopVersion == 1 || dcopVersion == 3) {
+		if (dcopVersion == 1) {
 			D = 10;
 			costMax = 100;
 			runUniformlyRandomDcop();
-
 		}
 		if (dcopVersion == 2) {
 			D = 3;
@@ -169,7 +168,7 @@ public class Main {
 
 	private static void runScaleFreeDcop() {
 		for (int i : M0Denominetors) {
-			hubs = A/i;
+			hubs = A / i;
 			for (int j : Ms) {
 				numOfNToNotHubs = j;
 				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
@@ -180,7 +179,6 @@ public class Main {
 				} // means run
 			}
 		}
-		
 
 	}
 	/*
@@ -199,8 +197,8 @@ public class Main {
 			out = new BufferedWriter(s);
 			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost";
 			if (!synch) {
-				header = header+"anytime_cost,top_cost,memory_style,hyper_parametr";
-			} 
+				header = header + "anytime_cost,top_cost,memory_style,hyper_parametr";
+			}
 			out.write(header);
 			out.newLine();
 
@@ -372,10 +370,10 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			String s = dcop.toString()+ "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i) ;
+			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i);
 			if (!synch) {
 
-				s = s+new String(sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";
+				s = s + new String(sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";
 				if (memoryVersion == 1) {
 					s = s + 0;
 				}
@@ -386,7 +384,7 @@ public class Main {
 					s = s + memorySimilartyRatio;
 				}
 
-			} 
+			}
 			solutions.add(s);
 		}
 	}
@@ -479,9 +477,5 @@ public class Main {
 	public static int getRandomInt(Random r, int min, int max) {
 		return r.nextInt(max - min + 1) + min;
 	}
-
-	
-
-
 
 }

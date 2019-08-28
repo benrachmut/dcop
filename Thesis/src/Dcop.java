@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 
 public class Dcop {
@@ -15,20 +16,20 @@ public class Dcop {
 	private Set<Constraint> constraints;
 	private Set<Neighbors> neighbors;
 	private int iterations;
-	//1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free 
-	public Dcop(AgentField[] agents, int d, int iterations) { //fdbdf
+
+	// 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	public Dcop(AgentField[] agents, int d, int iterations) {
 		this.agentsF = agents;
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
 		initConstraintGivenDcopVersion();
-		
 
 	}
-	
+
 	@Override
 	public String toString() {
 		// 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
-					// network problems.
+		// network problems.
 		if (Main.dcopVersion == 1) {
 			return "Uniformly random DCOPs";
 		}
@@ -47,16 +48,122 @@ public class Dcop {
 		}
 		if (Main.dcopVersion == 2) {
 			this.constraints = createConstraintsGraphColor();
-		}	
-		
+		}
+
 		if (Main.dcopVersion == 3) {
 			this.constraints = createConstraintsScaleFreeAB();
-		}	
+		}
 	}
 
 	private Set<Constraint> createConstraintsScaleFreeAB() {
-		---
+		Map<Integer, Boolean> marked = initColored();
+		createHubs(marked);
+		for (Entry<Integer, Boolean> e : marked.entrySet()) {
+			Integer id = e.getKey();
+			Boolean isMarked = e.getValue();
+			if (!isMarked) {
+				AgentField af = getAgentField(id);
+				if (af == null) {
+					System.err.println("something in createConstraintsScaleFreeAB in dcop is wrong");
+				}
+
+				selectNToNotHubs(af);
+
+			}
+
+		}
+
+		// inform agent on its neighbor and constraint, inform dcop on neighbors and new
+		// constraint
+		// agentInput.addNeighbor(idOther);
+		// af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
+		// this.neighbors.add(new Neighbors(af1, af2, this.iterations));
+		// this.constraints.add(new Constraint(new Neighbors(a1, a2), cost));
+
 		return null;
+	}
+
+	private void selectNToNotHubs(AgentField af) {
+		Map<Integer, Boolean> marked = initColored();
+		Map<Integer, Double> probs = initProbs(af);
+
+	}
+
+	private Map<Integer, Double> initProbs(AgentField af) {
+		Map<Integer, Double> ans = new TreeMap<Integer, Double>();
+
+		double sigma = 0;
+
+		for (AgentField a : agentsF) {
+			sigma += a.getNieghborSize();
+		}
+
+		for (int i = 0; i < agentsF.length; i++) {
+			AgentField a = agentsF[i];
+			int id = a.getId();
+			double aProb = a.getNieghborSize() / sigma;
+			if (i == 0) {
+				ans.put(id, aProb);
+			} else {
+				double probAbove = aProb + ans.get(i - 1);
+				ans.put(id, probAbove);
+			}
+
+		}
+
+		return ans;
+	}
+
+	private AgentField getAgentField(Integer id) {
+		for (AgentField a : agentsF) {
+			if (a.getId() == id) {
+				return a;
+			}
+		}
+		return null;
+	}
+
+	private void createHubs(Map<Integer, Boolean> marked) {
+		List<AgentField> hubs = getRandomElement(Main.hubs, Main.rHub);
+		hubNeighborsToOneAnother(hubs);
+		for (AgentField a : hubs) {
+			marked.put(a.getId(), true);
+		}
+
+	}
+
+	private void hubNeighborsToOneAnother(List<AgentField> hubs) {
+		List<Neighbors> ans = new ArrayList<Neighbors>();
+		for (int i = 0; i < hubs.size(); i++) {
+			for (int j = i + 1; j < hubs.size(); j++) {
+				informDcopAndAgentsUponNeighborhood(hubs, i, j);
+
+			}
+		}
+
+	}
+
+	private void informDcopAndAgentsUponNeighborhood(List<AgentField> hubs, int i, int j) {
+		// add to neighbors in dcop
+		Agent a1 = hubs.get(i);
+		Agent a2 = hubs.get(j);
+		Neighbors n = new Neighbors(a1, a2);
+		this.neighbors.add(n);
+
+		// inform agents about friendship
+		AgentField af1 = hubs.get(i);
+		AgentField af2 = hubs.get(j);
+
+		af1.addNeighbor(af2.getId());
+		af2.addNeighbor(af1.getId());
+	}
+
+	private Map<Integer, Boolean> initColored() {
+		Map<Integer, Boolean> ans = new HashMap<Integer, Boolean>();
+		for (AgentField a : agentsF) {
+			ans.put(a.getId(), false);
+		}
+		return ans;
 	}
 
 	private Set<Constraint> createConstraintsGraphColor() {
@@ -67,12 +174,12 @@ public class Dcop {
 				if (p1Max < Main.currentP1Color) {
 					AgentField af1 = agentsF[i];
 					AgentField af2 = agentsF[j];
-					
+
 					for (int k = 0; k < af1.getDomainSize(); k++) {
 						int d1 = af1.getDomain()[k];
 						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
 							int d2 = af2.getDomain()[k2];
-							if (d1==d2) {
+							if (d1 == d2) {
 								Agent a1 = new Agent(i, d1);
 								Agent a2 = new Agent(j, d2);
 								int cost = Main.costMax;
@@ -80,12 +187,12 @@ public class Dcop {
 								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
 								ans.add(c);
 							}
-							
+
 						}
 					}
+				}
 			}
 		}
-	}
 		return ans;
 
 	}
@@ -191,7 +298,6 @@ public class Dcop {
 	}
 
 	public int calRealSolForDebug(Map<Integer, Integer> m) {
-		
 
 		boolean x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
 
@@ -206,13 +312,12 @@ public class Dcop {
 			x7 = m.get(7) == 7;
 			x8 = m.get(8) == 5;
 			x9 = m.get(9) == 4;
-			
+
 			if (x0 && x1 && x2 && x3 && x4 && x5 && x6 && x7 && x8 && x9) {
 				Main.foundPermutationDebug = true;
 			}
 		}
-		
-		
+
 		List<Agent> agents = getAgentsForCalReal(m);
 		List<Neighbors> neighbors = getNeighborsForCalReal(agents);
 		int ans = 0;
@@ -223,42 +328,38 @@ public class Dcop {
 				if (id == 0) {
 					System.out.println();
 				}
-				Iterator<Neighbors>it = neighbors.iterator();
+				Iterator<Neighbors> it = neighbors.iterator();
 				while (it.hasNext()) {
-					Neighbors next =  it.next();
+					Neighbors next = it.next();
 					int id1 = next.getA1().getId();
 					int id2 = next.getA2().getId();
-					if (!(id1 ==id || id2 ==id)) {
+					if (!(id1 == id || id2 == id)) {
 						it.remove();
 					}
 				}
 				for (Neighbors n : neighbors) {
 					int costPerN = calCostPerNeighborForDebug(n);
-					System.out.println(n+"| "+costPerN);
-					ans+=costPerN;
+					System.out.println(n + "| " + costPerN);
+					ans += costPerN;
 				}
 				agents = getAgentsForCalReal(m);
 				neighbors = getNeighborsForCalReal(agents);
 				System.out.println();
 
 			}
-	
+
 		}
-		
-	/*
-		List<Agent> agents = getAgentsForCalReal(m);
-		List<Neighbors> neighbors = getNeighborsForCalReal(agents);
-		int ans = 0;
-		*/
+
+		/*
+		 * List<Agent> agents = getAgentsForCalReal(m); List<Neighbors> neighbors =
+		 * getNeighborsForCalReal(agents); int ans = 0;
+		 */
 		for (Neighbors n : neighbors) {
 			int costPerN = calCostPerNeighborForDebug(n);
-			ans+=costPerN;
+			ans += costPerN;
 		}
-		
-		
-		
-		
-		return ans*2;
+
+		return ans * 2;
 
 	}
 
@@ -285,8 +386,8 @@ public class Dcop {
 	}
 
 	public int calCostPerNeighborForDebug(Neighbors n) {
-		Agent an1 =  n.getA1();
-		Agent an2 =  n.getA2();
+		Agent an1 = n.getA1();
+		Agent an2 = n.getA2();
 		for (Constraint c : constraints) {
 
 			Agent ac1 = c.getNeighbors().getA1();
@@ -306,8 +407,8 @@ public class Dcop {
 	}
 
 	public int calCostPerNeighbor(Neighbors n, boolean real) {
-		Agent an1 =  n.getA1();
-		Agent an2 =  n.getA2();
+		Agent an1 = n.getA1();
+		Agent an2 = n.getA2();
 
 		for (Constraint c : constraints) {
 
@@ -329,30 +430,28 @@ public class Dcop {
 		return 0;
 
 	}
-	
-	// Function select an element base on index and return 
-    // an element 
-    public  List<AgentField> getRandomElement(int totalItems) 
-    { 
-        Random rand = Main.rHub;
-        // create a temporary list for storing 
-        // selected element 
-        
-        List<AgentField>  list = turnAgentArrayToArrayList();
-        List<AgentField> newList = new ArrayList<AgentField>(); 
-        for (int i = 0; i < totalItems; i++) { 
-  
-            // take a random index between 0 to size of given List 
-            int randomIndex = rand.nextInt(list.size()); 
-  
-            // add element in temporary list 
-            newList.add(list.get(randomIndex)); 
-  
-            // Remove selected element from orginal list 
-            list.remove(randomIndex); 
-        } 
-        return newList; 
-    }
+
+	// Function select an element base on index and return
+	// an element
+	public List<AgentField> getRandomElement(int totalItems, Random rand) {
+		// create a temporary list for storing
+		// selected element
+
+		List<AgentField> list = turnAgentArrayToArrayList();
+		List<AgentField> newList = new ArrayList<AgentField>();
+		for (int i = 0; i < totalItems; i++) {
+
+			// take a random index between 0 to size of given List
+			int randomIndex = rand.nextInt(list.size());
+
+			// add element in temporary list
+			newList.add(list.get(randomIndex));
+
+			// Remove selected element from orginal list
+			list.remove(randomIndex);
+		}
+		return newList;
+	}
 
 	private List<AgentField> turnAgentArrayToArrayList() {
 		List<AgentField> ans = new ArrayList<AgentField>();
