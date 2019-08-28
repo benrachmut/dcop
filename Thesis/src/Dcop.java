@@ -15,8 +15,8 @@ public class Dcop {
 	private Set<Constraint> constraints;
 	private Set<Neighbors> neighbors;
 	private int iterations;
-	//1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
-	public Dcop(AgentField[] agents, int d, int iterations) {
+	//1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free 
+	public Dcop(AgentField[] agents, int d, int iterations) { //fdbdf
 		this.agentsF = agents;
 		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;

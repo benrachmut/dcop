@@ -21,7 +21,7 @@ public class Main {
 	// versions
 	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
-												// network problems.
+												// network problems.// 
 	static int dcopVersion;
 	
 	//-- memory

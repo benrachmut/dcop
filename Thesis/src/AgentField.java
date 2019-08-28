@@ -843,7 +843,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			Permutation minP = Collections.min(this.permutationsPast, new ComparatorPermutationDate());
 			this.permutationsPast.remove(minP);
 		}
-		Collection similarToInput = checkForAllSimilarPastPermutations(input);
+		Collection similarToInput = checkForAllSimilarPastPermutations(input);//dsvs
 		
 		permutationsPast.removeAll(similarToInput);
 		
