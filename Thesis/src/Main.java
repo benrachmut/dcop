@@ -21,8 +21,8 @@ public class Main {
 
 	
 	// -- Experiment time
-	static int meanReps = 30;// 10; // number of reps for every solve process
-	static int iterations = 5000;
+	static int meanReps = 30; // number of reps for every solve process
+	static int iterations = 4000;
 	static Dcop dcop;
 	
 	
@@ -35,7 +35,7 @@ public class Main {
 	// -- memory
 	static int[] memoryVersions = { 1 }; // 1=exp, 2= constant, 3= reasonable
 	static int memoryVersion;
-	static double[] constantsPower = { 3, 4, 5, 6, 7, 8, 9 };
+	static double[] constantsPower = { 2, 3, 4, 5, 6, 7};
 	static long memoryMaxConstant;
 	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
 	static double memorySimilartyRatio; // given memory version = 3
@@ -44,7 +44,7 @@ public class Main {
 	static boolean synch = false;
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs = false;
-	static String date = "MonotonicAAAI2020";// "memoryMaxConstantTrail";
+	static String date = "AAAI2020_agents_"+A;// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -62,15 +62,15 @@ public class Main {
 	public static boolean trySendSelfCounter = false;
 
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.1,0.6 }; 
-	static double[] p2sUniform = { 1 }; 
+	static double[] p1sUniform = {0.1,0.6};//{ 0.1,0.6 }; 
+	static double[] p2sUniform = { 0.7 }; 
 	static Double currentP1Uniform;
 	static Double currentP2Uniform;
 	static Random rP1Uniform = new Random();
 	static Random rP2Uniform = new Random();
 
 	// -- color dcop
-	static double[] p1sColor = { 0.1 };
+	static double[] p1sColor = { 0.05 };
 	static Double currentP1Color;
 	static Random rP1Color = new Random();
 
@@ -78,7 +78,7 @@ public class Main {
 	// -- scale free AB
 	static int[] hubs = { 7 };
 	static int[] numOfNToNotHubs = { 3 };
-	static double[] p2sScaleFree= { 1 }; 
+	static double[] p2sScaleFree= p2sUniform; 
 	static double currentP2ScaleFree;
 	static int hub;
 	static int numOfNToNotHub;
@@ -88,9 +88,9 @@ public class Main {
 	
 
 	// -- communication protocol
-	static double[] p3s = { 0 }; 
+	static double[] p3s = { 0,1 }; 
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {5,10,50};//
+	static int[] delayUBs = {5,10,25};
 	static double[] p4s = { 0 };
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();

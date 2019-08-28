@@ -416,6 +416,18 @@ public class Permutation {
 		return 1-diffrenceRatio;
 		
 	}
+
+	public int getSimilartyCounterTo(Permutation input) {
+		int counter = 0;
+		Map<Integer,Integer> inputM=input.getM();
+		Set<Integer> simInts = this.similarKeySet(input);
+		for (Integer i : simInts) {
+			if (this.m.get(i)==inputM.get(i)) {
+				counter =counter+1;
+			}
+		}
+		return counter;
+	}
 	
 
 }

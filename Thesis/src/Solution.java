@@ -80,7 +80,7 @@ public abstract class Solution {
 
 		}
 		if (Main.dcopVersion ==3) {
-			return algo + "," + Main.hubs + "," + Main.numOfNToNotHubs + "," + meanRun;
+			return algo + "," + Main.hub + "," + Main.numOfNToNotHub + "," + meanRun;
 
 		}
 		return "";

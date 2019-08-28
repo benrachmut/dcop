@@ -840,8 +840,24 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private void memoryVersionConstant(Permutation input) {
 		if (this.permutationsPast.size() > Main.memoryMaxConstant) {
-			Permutation minP = Collections.min(this.permutationsPast, new ComparatorPermutationDate());
-			this.permutationsPast.remove(minP);
+			
+			Permutation currentP = createCurrentPermutationByValue();
+			Permutation minP = Collections.min(this.permutationsPast, new ComparatorDistanceOfCurrentPermToOther(currentP));
+			
+			int minCounter = minP.getSimilartyCounterTo(currentP);
+			
+			List<Permutation> pWithMinCounter = new ArrayList<Permutation>();
+			for (Permutation p : this.permutationsPast) {
+				if (p.getSimilartyCounterTo(currentP) == minCounter) {
+					pWithMinCounter.add(p);
+				}
+			}
+			Permutation toDelete = Collections.max(pWithMinCounter, new ComparatorPermutationSizeM());
+			
+			
+			this.permutationsPast.remove(toDelete);
+			
+			//this.permutationsPast.remove(minP);
 		}
 		Collection similarToInput = checkForAllSimilarPastPermutations(input);//dsvs
 		
@@ -1132,7 +1148,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			m.put(nId, nValue);
 		}
 		m.put(this.id, this.value);
-
+/*
 		boolean x1, x2, x3, x4, x5, x6, x7;
 
 		if (Main.printSelfN) {
@@ -1149,7 +1165,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 				}
 			}
 		}
-
+*/
 		int cost = calSelfCost(m);
 
 		return new Permutation(m, cost, this);
