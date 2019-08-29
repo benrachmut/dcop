@@ -28,7 +28,7 @@ public class Main {
 	
 	// versions
 	static String algo = "unsynchMono"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 1,2,3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static int[] dcopVersions = { 3 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 										// network problems.//
 	static int dcopVersion;
 
@@ -44,7 +44,7 @@ public class Main {
 	static boolean synch = false;
 	static boolean anytimeDfs = false;
 	static boolean anytimeBfs = false;
-	static String date = "AAAI2020_agents_"+A;// "memoryMaxConstantTrail";
+	static String date = "AAAI2020_agents_"+A+"Dcop_v"+3+"hub10";// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -63,22 +63,22 @@ public class Main {
 
 	// -- uniformly random dcop
 	static double[] p1sUniform = {0.1,0.6};//{ 0.1,0.6 }; 
-	static double[] p2sUniform = { 0.7 }; 
+	static double[] p2sUniform = { 1 }; 
 	static Double currentP1Uniform;
 	static Double currentP2Uniform;
 	static Random rP1Uniform = new Random();
 	static Random rP2Uniform = new Random();
 
 	// -- color dcop
-	static double[] p1sColor = { 0.05 };
+	static double[] p1sColor = { 0.1,0.5 };
 	static Double currentP1Color;
 	static Random rP1Color = new Random();
 
 
 	// -- scale free AB
-	static int[] hubs = { 7 };
+	static int[] hubs = { 10 };
 	static int[] numOfNToNotHubs = { 3 };
-	static double[] p2sScaleFree= p2sUniform; 
+	static double[] p2sScaleFree= {1}; 
 	static double currentP2ScaleFree;
 	static int hub;
 	static int numOfNToNotHub;
