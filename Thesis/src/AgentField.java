@@ -845,7 +845,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			Permutation minP = Collections.min(this.permutationsPast, new ComparatorDistanceOfCurrentPermToOther(currentP));
 			
 			int minCounter = minP.getSimilartyCounterTo(currentP);
-			
+			/*
 			List<Permutation> pWithMinCounter = new ArrayList<Permutation>();
 			for (Permutation p : this.permutationsPast) {
 				if (p.getSimilartyCounterTo(currentP) == minCounter) {
@@ -856,8 +856,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			
 			
 			this.permutationsPast.remove(toDelete);
-			
-			//this.permutationsPast.remove(minP);
+			*/
+			this.permutationsPast.remove(minP);
 		}
 		Collection similarToInput = checkForAllSimilarPastPermutations(input);//dsvs
 		

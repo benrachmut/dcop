@@ -17,8 +17,17 @@ public class ComparatorDistanceOfCurrentPermToOther implements Comparator<Permut
 		if (p1SimilartyCounter<p2SimilartyCounter) {
 			return -1;
 		}
+		else {
+			if (p1.getM().size()<p2.getM().size()) {
+				return 1;
+			}
+			if (p1.getM().size()>p2.getM().size()) {
+				return -1;
+			}
+			return 0;
+		}
 
-		return 0;
+		
 	}
 
 }
