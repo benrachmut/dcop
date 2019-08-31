@@ -137,7 +137,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	}
 
 	public void resetBestPermutation() {
-		this.permutationsPast = null;
+		this.bestPermuation = null;
 	}
 
 	public void resettopHasAnytimeNews() {
@@ -1183,6 +1183,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			this.currentAnyTimeDate = mad.getDate();
 		}
 
+	}
+
+	public void restartAnytimeValue() {
+		this.anytimeValue = -1;
+		
 	}
 
 }

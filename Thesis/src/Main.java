@@ -15,27 +15,27 @@ import java.util.Set;
 public class Main {
 
 	// -- variables of dcop problem
-	static int A = 15;//50;// 50; // 50 number of agents
+	static int A = 50;//50;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
 	static int costMax = 100; // 100 the max value of cost
 
 	
 	// -- Experiment time
-	static int meanReps = 1; // number of reps for every solve process
-	static int iterations = 700;//4000;
+	static int meanReps = 30; // number of reps for every solve process
+	static int iterations = 3000;//300;//700;//4000;
 	static Dcop dcop;
 	
 	
 	// versions
-	static String algo = "unsynchMono"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static int[] dcopVersions = {1}; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 										// network problems.//
 	static int dcopVersion;
 
 	// -- memory
-	static int[] memoryVersions = { 1 }; // 1=exp, 2= constant, 3= reasonable
+	static int[] memoryVersions = { 2 }; // 1=exp, 2= constant, 3= reasonable
 	static int memoryVersion;
-	static double[] constantsPower = { 3, 4, 5, 6, 7};
+	static double[] constantsPower = {3,4};
 	static long memoryMaxConstant;
 	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
 	static double memorySimilartyRatio; // given memory version = 3
@@ -44,7 +44,7 @@ public class Main {
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
 	static boolean anytimeBfs = false;
-	static String date = "memoryGames_AAAI";//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0];// "memoryMaxConstantTrail";
+	static String date = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparator_del_short"; //"memoryMaxConstantTrail_bfs_changeComparator"; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparatorDel";//"memoryMaxConstantTrail_dfs_changeComparator";//"mgm_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";//"dsa_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -62,15 +62,15 @@ public class Main {
 	public static boolean trySendSelfCounter = false;
 
 	// -- uniformly random dcop
-	static double[] p1sUniform = {0.2};//{ 0.1,0.6 }; 
-	static double[] p2sUniform = { 1 }; 
+	static double[] p1sUniform = { 0.1 }; //{0.2};//{ 0.1,0.6 }; //{0.2};//
+	static double[] p2sUniform = {0.7};//{1};//{ 0.7 }; 
 	static Double currentP1Uniform;
 	static Double currentP2Uniform;
 	static Random rP1Uniform = new Random();
 	static Random rP2Uniform = new Random();
 
 	// -- color dcop
-	static double[] p1sColor = { 0.1,0.6 };
+	static double[] p1sColor = {0.1, 0.6};//{ 0.1,0.6 };
 	static Double currentP1Color;
 	static Random rP1Color = new Random();
 
@@ -90,7 +90,7 @@ public class Main {
 	// -- communication protocol
 	static double[] p3s = {1};//{ 0,1 }; 
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {5};//{5,10,25};
+	static int[] delayUBs = {5};//{5,10,25};//{5};//
 	static double[] p4s = { 0 };
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
@@ -120,7 +120,7 @@ public class Main {
 
 
 	public static void main(String[] args) {
-
+		System.out.println(date);
 		for (int i : dcopVersions) {
 			dcopVersion = i;
 
@@ -435,9 +435,19 @@ public class Main {
 
 		}
 
-		if (anytimeBfs) {
+		else if (anytimeBfs) {
 			Tree bfs = new Tree(agents);
 			bfs.bfs();
+		}
+		else if (anytimeDfs) {
+			Tree psaduoTree = new Tree(agents);
+			psaduoTree.dfs();
+			//psaduoTree.setIsAboveBelow();
+
+			for (AgentField a : agents) {
+				a.setAnytimeFather(a.getDfsFather());
+				a.setAnytimeSons(a.getDfsSons());
+			}
 		}
 		return dcop;
 	}
@@ -487,7 +497,7 @@ public class Main {
 			agents[i].restartAnytimeUpRecieved();
 			agents[i].restartPermutationsPast();
 			agents[i].restartAnytimeToSend();
-
+			agents[i].restartAnytimeValue();
 		}
 
 	}
