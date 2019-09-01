@@ -73,7 +73,7 @@ public class Main {
 	static double[] p1sColor = {0.1, 0.6};//{ 0.1,0.6 };
 	static Double currentP1Color;
 	static Random rP1Color = new Random();
-
+	static int x;
 
 	// -- scale free AB
 	static int[] hubs = { 10 };
@@ -92,6 +92,9 @@ public class Main {
 	static boolean[] dateKnowns = { true };
 	static int[] delayUBs = {5,10,25};//{5,10,25};//{5};//
 	static double[] p4s = { 0 };
+	
+	
+
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
 	static Random rDelay = new Random();
@@ -194,10 +197,8 @@ public class Main {
 
 					} // means run
 				}
-				
 			}
 		}
-
 	}
 	/*
 	 * private static void setSynchBoolean() { boolean unsynchMono =
