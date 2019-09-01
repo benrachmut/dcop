@@ -44,7 +44,7 @@ public class Main {
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
 	static boolean anytimeBfs = false;
-	static String date = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparator_del_short"; //"memoryMaxConstantTrail_bfs_changeComparator"; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparatorDel";//"memoryMaxConstantTrail_dfs_changeComparator";//"mgm_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";//"dsa_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";// "memoryMaxConstantTrail";
+	static String date = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs!!!"; //"memoryMaxConstantTrail_bfs_changeComparator"; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparatorDel";//"memoryMaxConstantTrail_dfs_changeComparator";//"mgm_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";//"dsa_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";// "memoryMaxConstantTrail";
 	// debug
 
 	// static boolean debug = false;
@@ -88,9 +88,9 @@ public class Main {
 	
 
 	// -- communication protocol
-	static double[] p3s = {1};//{ 0,1 }; 
+	static double[] p3s = {0,1};//{ 0,1 }; 
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {5};//{5,10,25};//{5};//
+	static int[] delayUBs = {5,10,25};//{5,10,25};//{5};//
 	static double[] p4s = { 0 };
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
