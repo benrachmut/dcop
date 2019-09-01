@@ -46,19 +46,10 @@ public class Main {
 	static boolean anytimeBfs = false;
 	static String date = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs!!!"; //"memoryMaxConstantTrail_bfs_changeComparator"; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparatorDel";//"memoryMaxConstantTrail_dfs_changeComparator";//"mgm_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";//"dsa_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";// "memoryMaxConstantTrail";
 	// debug
-
-	// static boolean debug = false;
-	// static boolean debugCombineWith = true;
 	static boolean printCompletePermutationOfTop = true;
-	static boolean printCentralPOVPermutations = false;
-	static boolean printSelfN = false;
-	static boolean foundPermutationDebug = false;
-
 	// different versions
 	public static boolean tryAllMailBox = false;
 	public static boolean trySendValueAsPermutation = true;
-	// public static boolean tryAllMailBoxImproved = false;
-	// public static boolean tryAgentRememberSequence = true;
 	public static boolean trySendSelfCounter = false;
 
 	// -- uniformly random dcop

@@ -151,23 +151,9 @@ public abstract class Unsynch extends Solution {
 	}
 
 	private void addToPermutationsList() {
-		/*
-		 * boolean x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
-		 * 
-		 * if (Main.printSelfN) {
-		 * 
-		 * x0 = agents[0].getValue() == 0; x1 = agents[1].getValue() == 7; x2 =
-		 * agents[2].getValue() == 8; x3 = agents[3].getValue() == 9; x4 =
-		 * agents[4].getValue() == 9; x5 = agents[5].getValue() == 8; x6 =
-		 * agents[6].getValue() == 4; x7 = agents[7].getValue() == 7; x8 =
-		 * agents[8].getValue() == 5; x9 = agents[9].getValue() == 4; if (x0 && x1 && x2
-		 * && x3 && x4 && x5 && x6 && x7 && x8 && x9) { Main.foundPermutationDebug =
-		 * true; } }
-		 */
+
 		int cost = dcop.calCost(true);
-		/*
-		 * if (Main.printSelfN) { Main.foundPermutationDebug = false; }
-		 */
+		
 
 		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
 		for (AgentField a : agents) {
@@ -177,9 +163,7 @@ public abstract class Unsynch extends Solution {
 		}
 		Permutation p = new Permutation(m, cost);
 		this.permutations.add(p);
-		if (Main.printCentralPOVPermutations) {
-			System.out.println(p);
-		}
+		
 
 	}
 

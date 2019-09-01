@@ -238,15 +238,14 @@ public class Dcop {
 		Agent aj = hubs.get(j);
 		Agent a1;
 		Agent a2;
-		if (ai.getId()<aj.getId()) {
-			a1=ai;
-			a2=aj;		
-		}else {
-			a1=aj;
-			a2=ai;
+		if (ai.getId() < aj.getId()) {
+			a1 = ai;
+			a2 = aj;
+		} else {
+			a1 = aj;
+			a2 = ai;
 		}
-		
-		
+
 		Neighbors n = new Neighbors(a1, a2);
 		this.neighbors.add(n);
 
@@ -399,61 +398,10 @@ public class Dcop {
 
 	public int calRealSolForDebug(Map<Integer, Integer> m) {
 
-		boolean x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
-
-		if (Main.printSelfN) {
-			x0 = m.get(0) == 0;
-			x1 = m.get(1) == 7;
-			x2 = m.get(2) == 8;
-			x3 = m.get(3) == 9;
-			x4 = m.get(4) == 9;
-			x5 = m.get(5) == 8;
-			x6 = m.get(6) == 4;
-			x7 = m.get(7) == 7;
-			x8 = m.get(8) == 5;
-			x9 = m.get(9) == 4;
-
-			if (x0 && x1 && x2 && x3 && x4 && x5 && x6 && x7 && x8 && x9) {
-				Main.foundPermutationDebug = true;
-			}
-		}
-
 		List<Agent> agents = getAgentsForCalReal(m);
 		List<Neighbors> neighbors = getNeighborsForCalReal(agents);
 		int ans = 0;
-		if (Main.foundPermutationDebug) {
-			for (AgentField a : agentsF) {
-				ans = 0;
-				int id = a.getId();
-				if (id == 0) {
-					System.out.println();
-				}
-				Iterator<Neighbors> it = neighbors.iterator();
-				while (it.hasNext()) {
-					Neighbors next = it.next();
-					int id1 = next.getA1().getId();
-					int id2 = next.getA2().getId();
-					if (!(id1 == id || id2 == id)) {
-						it.remove();
-					}
-				}
-				for (Neighbors n : neighbors) {
-					int costPerN = calCostPerNeighborForDebug(n);
-					System.out.println(n + "| " + costPerN);
-					ans += costPerN;
-				}
-				agents = getAgentsForCalReal(m);
-				neighbors = getNeighborsForCalReal(agents);
-				System.out.println();
 
-			}
-
-		}
-
-		/*
-		 * List<Agent> agents = getAgentsForCalReal(m); List<Neighbors> neighbors =
-		 * getNeighborsForCalReal(agents); int ans = 0;
-		 */
 		for (Neighbors n : neighbors) {
 			int costPerN = calCostPerNeighborForDebug(n);
 			ans += costPerN;

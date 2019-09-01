@@ -584,9 +584,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		for (Neighbors n : myNeighbors) {
 			int costOfN = Main.dcop.calCostPerNeighbor(n, true);
 			ans = ans + costOfN;
-			if (Main.printSelfN) {
-				System.out.println(n + "| " + costOfN);
-			}
+			
 		}
 
 		return ans;
@@ -883,8 +881,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 			if (this.bestPermuation == null || this.bestPermuation.getCost() > input.getCost()) {
 				recieveBetterPermutation(input);
-				System.out.println(input.getCost() + " permutation past size: " + this.permutationsPast.size());
 				iHaveAnytimeNews = true;
+				System.out.println(input.getCost() + " permutation past size: " + this.permutationsPast.size());
 			}
 
 		} else {
