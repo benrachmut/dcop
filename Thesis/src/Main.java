@@ -15,14 +15,14 @@ import java.util.Set;
 public class Main {
 
 	// -- variables of dcop problem
-	static int A = 50;//50;// 50; // 50 number of agents
+	static int A = 15;//50;// 50; // 50 number of agents
 	static int D = 10; // 10 size of domain for each agent
 	static int costMax = 100; // 100 the max value of cost
 
 	
 	// -- Experiment time
-	static int meanReps = 30; // number of reps for every solve process
-	static int iterations = 3000;//300;//700;//4000;
+	static int meanReps = 1; // number of reps for every solve process
+	static int iterations = 700;//300;//700;//4000;
 	static Dcop dcop;
 	
 	
@@ -35,7 +35,7 @@ public class Main {
 	// -- memory
 	static int[] memoryVersions = { 2 }; // 1=exp, 2= constant, 3= reasonable
 	static int memoryVersion;
-	static double[] constantsPower = {3,4};
+	static double[] constantsPower = {3};
 	static long memoryMaxConstant;
 	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
 	static double memorySimilartyRatio; // given memory version = 3
@@ -46,11 +46,9 @@ public class Main {
 	static boolean anytimeBfs = false;
 	static String date = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs!!!"; //"memoryMaxConstantTrail_bfs_changeComparator"; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparatorDel";//"memoryMaxConstantTrail_dfs_changeComparator";//"mgm_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";//"dsa_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";// "memoryMaxConstantTrail";
 	// debug
-	static boolean printCompletePermutationOfTop = true;
 	// different versions
-	public static boolean tryAllMailBox = false;
+
 	public static boolean trySendValueAsPermutation = true;
-	public static boolean trySendSelfCounter = false;
 
 	// -- uniformly random dcop
 	static double[] p1sUniform = { 0.1 }; //{0.2};//{ 0.1,0.6 }; //{0.2};//

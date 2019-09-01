@@ -307,10 +307,10 @@ public class AgentZero {
 			int senderValue = msg.getSenderValue();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
 
-			if (!Main.tryAllMailBox) {
-				Permutation p = reciever.createCurrentPermutationByValue();
-				updateRecieverUponPermutationOneByOne(p, reciever);
-			}
+			// if (!Main.tryAllMailBox) {
+			Permutation p = reciever.createCurrentPermutationByValue();
+			updateRecieverUponPermutationOneByOne(p, reciever);
+			// }
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
@@ -329,12 +329,12 @@ public class AgentZero {
 		if (msgIsNotAnytime(msg)) {
 			int senderValue = msg.getSenderValue();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-			updateCounterOfReciever(reciever, senderId, msg);
+			// updateCounterOfReciever(reciever, senderId, msg);
 
-			if (!Main.tryAllMailBox) {
-				Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
-				updateRecieverUponPermutationOneByOne(currPermutation, reciever);
-			}
+			// if (!Main.tryAllMailBox) {
+			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
+			updateRecieverUponPermutationOneByOne(currPermutation, reciever);
+			// }
 			/*
 			 * if (Main.tryAgentRememberSequence) {
 			 * reciever.recieveMsgAndPlaceItInSequence(msg); }
@@ -364,15 +364,6 @@ public class AgentZero {
 			reciever.tryToCombinePermutation(currPermutation);
 		}
 		reciever.addToPermutationPast(currPermutation);
-
-	}
-
-	private void updateCounterOfReciever(AgentField reciever, int senderId, MessageNormal msg) {
-		if (Main.trySendSelfCounter) {
-			reciever.updateCounterNonMonoWithSelfCounterSent(senderId, msg.getSenderSelfCounter());
-		} else {
-			reciever.updateCounterNonMono(senderId);
-		}
 
 	}
 
@@ -419,14 +410,15 @@ public class AgentZero {
 
 		List<AgentField> neighborsAgents = getNeighborsAgents(currentAgent);
 		for (AgentField n : neighborsAgents) {
-			MessageNormal m;
-
+			MessageNormal m= createUnsynchOneMsg(currentAgent, n, currentIteration);;
+/*
 			if (Main.trySendSelfCounter) {
 				int selfCounter = currentAgent.getDecisonCounter();
 				m = createUnsynchOneMsgTrySendSelfCounter(currentAgent, n, currentIteration, selfCounter);
 			} else {
 				m = createUnsynchOneMsg(currentAgent, n, currentIteration);
 			}
+			*/
 
 			this.messageBox.add(m);
 		}
@@ -454,7 +446,7 @@ public class AgentZero {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
 					int delay = this.createDelay();
-					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay,currentIteration, p);
+					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay, currentIteration, p);
 					this.messageBox.add(m);
 				}
 				a.removeAllPermutationToSend();
@@ -480,15 +472,15 @@ public class AgentZero {
 	}
 
 	public void createAnyTimeDownUnsynchMono(int date) {
-		
+
 		for (AgentField a : this.agents) {
 			if (a.isAnytimeTop()) {
 				if (a.isTopHasAnytimeNews()) {
 					a.resettopHasAnytimeNews();
 					placeAnytimeDownMessageInBox(a, date);
 				}
-			}else {
-				MessageAnyTimeDown m = a.moveDownToSend(); // take msg from msg to send down and deliever it 
+			} else {
+				MessageAnyTimeDown m = a.moveDownToSend(); // take msg from msg to send down and deliever it
 				if (!a.isAnytimeLeaf()) {
 					if (m != null) {
 						placeAnytimeDownMessageInBox(a, date);
@@ -496,27 +488,15 @@ public class AgentZero {
 				}
 			}
 		}
-		
-		
-		
-		
-		/*
-		for (AgentField top : fathers) {
-			if (top.isTopHasAnytimeNews()) {
-				top.resettopHasAnytimeNews();
-				placeAnytimeDownMessageInBox(top, date);
-			}
-		}
 
-		for (AgentField a : this.agents) {
-			if (!a.isAnytimeTop()) {
-				MessageAnyTimeDown m = a.moveDownToSend();
-				if (m != null) {
-					placeAnytimeDownMessageInBox(a, date);
-				}
-			}
-		}
-		*/
+		/*
+		 * for (AgentField top : fathers) { if (top.isTopHasAnytimeNews()) {
+		 * top.resettopHasAnytimeNews(); placeAnytimeDownMessageInBox(top, date); } }
+		 * 
+		 * for (AgentField a : this.agents) { if (!a.isAnytimeTop()) {
+		 * MessageAnyTimeDown m = a.moveDownToSend(); if (m != null) {
+		 * placeAnytimeDownMessageInBox(a, date); } } }
+		 */
 	}
 
 	private void placeAnytimeDownMessageInBox(AgentField from, int date) {
@@ -577,24 +557,20 @@ public class AgentZero {
 	public void sendUnsynchNonMonotonicByValueMsgs(List<MessageNormal> msgToSend) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
 
-
 		Collections.sort(msgToSend, new ComparatorMsgDate());
 		Collections.reverse(msgToSend);
-	
-		//debugToSeeSequence(msgToSend);
-		
-		
+
+		// debugToSeeSequence(msgToSend);
 
 		for (MessageNormal msg : msgToSend) {
 			sendUnsynchNonMonotonicByValueMsg(msg);
 			integerRecieved.add(msg.getReciever().getId());
 		}
-
-		if (Main.tryAllMailBox) {
-			Set<AgentField> agentsRecieved = getAgents(integerRecieved);
-			anytimeMechanismAfterRecieveMsgByValue(agentsRecieved);
-		}
-
+		/*
+		 * if (Main.tryAllMailBox) { Set<AgentField> agentsRecieved =
+		 * getAgents(integerRecieved);
+		 * anytimeMechanismAfterRecieveMsgByValue(agentsRecieved); }
+		 */
 	}
 
 	private void debugToSeeSequence(List<MessageNormal> msgToSend) {
@@ -604,14 +580,14 @@ public class AgentZero {
 			MessageNormal m = Collections.min(msgToSend, new ComparatorMsgDate());
 			minDate = m.getDate();
 		}
-		
+
 		if (msgToSend.size() > 2 && minDate == 2) {
 			for (int i = 0; i < msgToSend.size(); i++) {
 				System.out.println("location: " + i + ", date:" + msgToSend.get(i).getDate());
 
 			}
 		}
-		
+
 	}
 
 	private void anytimeMechanismAfterRecieveMsgByValue(Set<AgentField> agentsRecieved) {
@@ -628,10 +604,20 @@ public class AgentZero {
 			sendUnsynchNonMonotonicMsg(msg);
 			integerRecieved.add(msg.getReciever().getId());
 		}
-
-		if (Main.tryAllMailBox) {
-			Set<AgentField> agentsRecieved = getAgents(integerRecieved);
-			anytimeMechanismAfterRecieveMsg(agentsRecieved);
-		}
+		/*
+		 * if (Main.tryAllMailBox) { Set<AgentField> agentsRecieved =
+		 * getAgents(integerRecieved); anytimeMechanismAfterRecieveMsg(agentsRecieved);
+		 * }
+		 */
 	}
+
+	/*
+	 * private void updateCounterOfReciever(AgentField reciever, int senderId,
+	 * MessageNormal msg) { if (Main.trySendSelfCounter) {
+	 * reciever.updateCounterNonMonoWithSelfCounterSent(senderId,
+	 * msg.getSenderSelfCounter()); } else {
+	 * reciever.updateCounterNonMono(senderId); }
+	 * 
+	 * }
+	 */
 }// class
