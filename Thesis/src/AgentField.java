@@ -888,18 +888,18 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		} else {
 			addToSet(input, permutationsToSend);
 		}
-
+/*
 		if (Main.memoryVersion == 3) {
 			incaseMemoryVersion3Reasonable(input);
 		}
-
+*/
 	}
 
 	public void addToPermutationToSend(Permutation input) {
 		addToSet(input, permutationsToSend);
 
 	}
-
+/*
 	private void incaseMemoryVersion3Reasonable(Permutation input) {
 
 		Collection<Permutation> toRemove = new ArrayList<Permutation>();
@@ -913,7 +913,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		permutationsPast.removeAll(toRemove);
 
 	}
-
+*/
 	private void recieveBetterPermutation(Permutation input) {
 		bestPermuation = input;
 		this.anytimeValue = input.getM().get(this.id);

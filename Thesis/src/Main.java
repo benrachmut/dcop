@@ -14,76 +14,76 @@ import java.util.Set;
 
 public class Main {
 
+	
+	// ------- VARIABLES TO CHECK BEFORE STARTING A RUN
 	// -- variables of dcop problem
-	static int A = 15;//50;// 50; // 50 number of agents
-	static int D = 10; // 10 size of domain for each agent
-	static int costMax = 100; // 100 the max value of cost
-
-	
+	static int A = 15; //  number of agents
+	static int D = 10; //  size of domain for each agent
+	static int costMax = 100; // the max value of cost
 	// -- Experiment time
-	static int meanReps = 1; // number of reps for every solve process
-	static int iterations = 700;//300;//700;//4000;
-	static Dcop dcop;
-	
-	
+	static int meanRepsStart=0;
+	static int meanRepsEnd = 1; // number of reps for every solve process
+	static int iterations = 700;
 	// versions
 	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static int[] dcopVersions = {1}; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
-										// network problems.//
-	static int dcopVersion;
-
 	// -- memory
-	static int[] memoryVersions = { 2 }; // 1=exp, 2= constant, 3= reasonable
-	static int memoryVersion;
+	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
 	static double[] constantsPower = {3};
-	static long memoryMaxConstant;
-	static double[] similarRatios = { 0.5, 0.8, 0.9, 0.95, 1 };
-	static double memorySimilartyRatio; // given memory version = 3
-
 	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
 	static boolean anytimeBfs = false;
-	static String date = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs!!!"; //"memoryMaxConstantTrail_bfs_changeComparator"; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs_comparatorDel";//"memoryMaxConstantTrail_dfs_changeComparator";//"mgm_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";//"dsa_synch_perfect_comm_v"+dcopVersions[0];//"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs,WithMemoryLimit";// "memoryMaxConstantTrail";
-	// debug
-	// different versions
-
-	public static boolean trySendValueAsPermutation = true;
-
+	static String fileName = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs!!!"; 
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.1 }; //{0.2};//{ 0.1,0.6 }; //{0.2};//
-	static double[] p2sUniform = {0.7};//{1};//{ 0.7 }; 
-	static Double currentP1Uniform;
-	static Double currentP2Uniform;
-	static Random rP1Uniform = new Random();
-	static Random rP2Uniform = new Random();
-
+	static double[] p1sUniform = { 0.1 }; 
+	static double[] p2sUniform = {0.7};	
 	// -- color dcop
-	static double[] p1sColor = {0.1, 0.6};//{ 0.1,0.6 };
-	static Double currentP1Color;
-	static Random rP1Color = new Random();
-	static int x;
-
+	static double[] p1sColor = {0.1, 0.6};
 	// -- scale free AB
 	static int[] hubs = { 10 };
 	static int[] numOfNToNotHubs = { 3 };
 	static double[] p2sScaleFree= {1}; 
+	// -- communication protocol
+	static double[] p3s = {0,1};
+	static boolean[] dateKnowns = { true };
+	static int[] delayUBs = {5,10,25};
+	static double[] p4s = { 0 };
+		
+	
+	// ------- GENERAL VARIABLES NO NEED TO CHANGE
+	// -- characters
+	static AgentField[] agents;
+	static AgentZero agentZero;
+	// -- other
+	static List<String> solutions = new ArrayList<String>();
+	static List<String> fatherSolutions = new ArrayList<String>();
+	// -- random variables
+	static Random rFirstValue = new Random();
+	static Random rCost = new Random();
+	static Random rDsa = new Random();
+	static Dcop dcop;
+	static int dcopVersion;
+	//-- memory version
+	static int memoryVersion;
+	static long memoryMaxConstant;
+	public static boolean trySendValueAsPermutation = true;
+	//-- uniformly random dcop 
+	static Double currentP1Uniform;
+	static Double currentP2Uniform;
+	static Random rP1Uniform = new Random();
+	static Random rP2Uniform = new Random();
+	// -- color dcop
+	static Double currentP1Color;
+	static Random rP1Color = new Random();
+	// -- scale free AB
 	static double currentP2ScaleFree;
 	static int hub;
 	static int numOfNToNotHub;
 	static Random rHub = new Random();
 	static Random rNotHub = new Random();
 	static Random rP2ScaleFree = new Random();
-	
-
 	// -- communication protocol
-	static double[] p3s = {0,1};//{ 0,1 }; 
-	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {5,10,25};//{5,10,25};//{5};//
-	static double[] p4s = { 0 };
-	
-	
-
 	static Random rP3 = new Random();
 	static Random rP4 = new Random();
 	static Random rDelay = new Random();
@@ -92,32 +92,13 @@ public class Main {
 	static Double currentP4;
 	static int currentUb;
 
-
-
-	// -- characters
-	static AgentField[] agents;
-	static AgentZero agentZero;
-
-	// -- other
-	static List<String> solutions = new ArrayList<String>();
-	static List<String> fatherSolutions = new ArrayList<String>();
-
-	// -- random variables
 	
-	static Random rFirstValue = new Random();
-	static Random rCost = new Random();
-	static Random rDsa = new Random();
-
-
-
-
 	public static void main(String[] args) {
-		System.out.println(date);
+
+		System.out.println(fileName);
 		for (int i : dcopVersions) {
 			dcopVersion = i;
-
 			if (algo == "dsaUnsynch7") {
-
 				for (int j : memoryVersions) {
 					memoryVersion = j;
 					runDifferentMemoryVersions();
@@ -126,7 +107,6 @@ public class Main {
 				runDifferentDcop();
 			}
 			printDcops();
-
 		}
 	}
 
@@ -141,13 +121,8 @@ public class Main {
 				runDifferentDcop();
 			}
 		}
-		if (memoryVersion == 3) {
-			for (double i : similarRatios) { // for parameter tuning
-				memorySimilartyRatio = i;
-				runDifferentDcop();
-			}
-		}
-
+		
+		
 	}
 
 	private static void runDifferentDcop() {
@@ -179,7 +154,7 @@ public class Main {
 				for (double k : p2sScaleFree) {
 					currentP2ScaleFree = k;
 					
-					for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+					for (int meanRun = meanRepsStart ; meanRun < meanRepsEnd; meanRun++) {
 						dcopSeeds(meanRun);
 						dcop = createDcop();
 						differentCommunicationProtocols(dcop, meanRun);
@@ -201,7 +176,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter(algo + date + ".csv");
+			FileWriter s = new FileWriter(algo + fileName + ".csv");
 			out = new BufferedWriter(s);
 			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,";
 			if (!synch) {
@@ -227,7 +202,7 @@ public class Main {
 		for (Double p1 : p1sColor) {
 			currentP1Color = p1;
 
-			for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+			for (int meanRun = meanRepsStart; meanRun < meanRepsEnd; meanRun++) {
 				// only here change the tree
 				dcopSeeds(meanRun);
 				dcop = createDcop();
@@ -245,7 +220,7 @@ public class Main {
 			for (Double p2 : p2sUniform) {
 				currentP2Uniform = p2;
 
-				for (int meanRun = 0; meanRun < meanReps; meanRun++) {
+				for (int meanRun = meanRepsStart; meanRun < meanRepsEnd; meanRun++) {
 					dcopSeeds(meanRun);
 					dcop = createDcop();
 					differentCommunicationProtocols(dcop, meanRun);
@@ -286,16 +261,9 @@ public class Main {
 	private static void afterHavingAllPrameters(Double p3, Boolean dK, Integer delayUB, Double p4, Dcop dcop,
 			int meanRun) {
 		// ---- protocol ----
-		// agentZero.changeCommunicationProtocol(p3, delayUB, p4);
 		String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
 		// ---- find solution ----
 		Solution algo = selectedAlgo(dcop, meanRun);
-		/*
-		for (Integer i: algo.getRealCosts()){
-			System.out.println(i);
-		}
-		*/
-		
 		System.out.println(dcop+","+protocol + "," + algo);
 		// ---- restart ----
 		restartBetweenAlgo(algo, protocol);
@@ -358,17 +326,7 @@ public class Main {
 		}
 
 		ans.solve();
-		/*
-		 * if (Main.printCompletePermutationOf9) {
-		 * 
-		 * Set<Permutation> perms = ans.agents[9].getPermutationsToSend(); for
-		 * (Permutation p : perms) { int realCost =
-		 * Solution.dcopS.calRealSolForDebug(p.getM()); if (p.getCost() == realCost) {
-		 * System.out.println(p); } else { System.err.println("cost should be: " +
-		 * realCost + " |" + p);
-		 * 
-		 * } } }
-		 */
+		
 		return ans;
 
 	}
@@ -396,9 +354,7 @@ public class Main {
 				if (memoryVersion == 2) {
 					s = s + memoryMaxConstant;
 				}
-				if (memoryVersion == 3) {
-					s = s + memorySimilartyRatio;
-				}
+			
 
 			}
 			solutions.add(s);
@@ -412,8 +368,14 @@ public class Main {
 			a.restartNeighborCounter();
 		}
 		agentZero = new AgentZero(iterations, dcop.getNeighbors(), agents);
+		orgenizeTrees();	
+		return dcop;
+	}
 
-		if (algo.equals("unsynchMono")) {
+	
+
+	private static void orgenizeTrees() {
+		if (algo.equals("unsynchMono") || anytimeDfs) {
 			Tree psaduoTree = new Tree(agents);
 			psaduoTree.dfs();
 			psaduoTree.setIsAboveBelow();
@@ -429,31 +391,22 @@ public class Main {
 			Tree bfs = new Tree(agents);
 			bfs.bfs();
 		}
+		/*
 		else if (anytimeDfs) {
 			Tree psaduoTree = new Tree(agents);
 			psaduoTree.dfs();
-			//psaduoTree.setIsAboveBelow();
 
 			for (AgentField a : agents) {
 				a.setAnytimeFather(a.getDfsFather());
 				a.setAnytimeSons(a.getDfsSons());
 			}
 		}
-		return dcop;
+		*/
 	}
-
-	/*
-	 * private static void agentFieldMeetAgentZero() { for (AgentField aF : agents)
-	 * { aF.setAgentZero(agentZero); }
-	 * 
-	 * }
-	 */
 
 	private static void restartBetweenAlgo(Solution sol, String protocol) {
 		addToSolutionString(sol, protocol);
-
 		restartOther();
-
 	}
 
 	private static void restartOther() {
@@ -469,9 +422,6 @@ public class Main {
 			agents[i].changeValOfAllNeighbor();
 			agents[i].changeValR();
 			agents[i].setFirstValueToValue();
-			// agents[i].setReciveAll(false);
-			// agents[i].setTimeStemp(0);
-			// agents[i].resetNumOfInterationForChange();
 			agents[i].setAllBelowMap(0);
 			agents[i].setAllAboveMap(0);
 			agents[i].resetMsgUpAndDown();
