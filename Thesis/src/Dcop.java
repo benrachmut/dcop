@@ -44,6 +44,7 @@ public class Dcop {
 
 	private void initConstraintGivenDcopVersion() {
 		if (Main.dcopVersion == 1) {
+			this.neighbors = createNeighborsGivenP1
 			this.constraints = createConstraintsUniformlyRandomDCOP();
 		}
 		if (Main.dcopVersion == 2) {
@@ -410,7 +411,7 @@ public class Dcop {
 		return ans * 2;
 
 	}
-
+	
 	private List<Neighbors> getNeighborsForCalReal(List<Agent> agents) {
 		List<Neighbors> ans = new ArrayList<Neighbors>();
 
