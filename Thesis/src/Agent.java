@@ -48,5 +48,7 @@ public class Agent {
 	public int getAnytimeValue () {
 		return this.anytimeValue;
 	}
+
+	
 	
 }

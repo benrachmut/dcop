@@ -13,16 +13,18 @@ import java.util.Vector;
 public class Dcop {
 
 	private AgentField[] agentsF;
-	private Set<Constraint> constraints;
+	// private Set<Constraint> constraints;
+	private Map<Neighbors, Set<Constraint>> constraints;
 	private Set<Neighbors> neighbors;
 	private int iterations;
 
 	// 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	public Dcop(AgentField[] agents, int d, int iterations) {
 		this.agentsF = agents;
-		this.neighbors = new HashSet<Neighbors>();
 		this.iterations = iterations;
-		initConstraintGivenDcopVersion();
+		this.neighbors = new HashSet<Neighbors>();
+		this.constraints = new HashMap<Neighbors, Set<Constraint>>();
+		initGivenDcopVersion();
 
 	}
 
@@ -42,55 +44,50 @@ public class Dcop {
 		return super.toString();
 	}
 
-	private void initConstraintGivenDcopVersion() {
+	private void initGivenDcopVersion() {
 		if (Main.dcopVersion == 1) {
-			this.neighbors = createNeighborsGivenP1
-			this.constraints = createConstraintsUniformlyRandomDCOP();
+			createNeighborsGivenP1(Main.currentP1Uniform, Main.rP1Uniform);
+			initConstMap();
+			createConstraintsGivenP2(Main.currentP2Uniform, Main.rP2Uniform);
 		}
 		if (Main.dcopVersion == 2) {
-			this.constraints = createConstraintsGraphColor();
+			createNeighborsGivenP1(Main.currentP1Color, Main.rP1Color);
+			initConstMap();
+			createConstraintsGraphColor();
 		}
 
 		if (Main.dcopVersion == 3) {
-			this.constraints = createConstraintsScaleFreeAB();
+			createNeighborsGivenFreeScale();
+			initConstMap();
+			createConstraintsGivenP2(Main.currentP2ScaleFree, Main.rP2ScaleFree);
 		}
 	}
 
-	private Set<Constraint> createConstraintsScaleFreeAB() {
+	private void createNeighborsGivenFreeScale() {
 		Map<Integer, Boolean> marked = initColored();
 		createHubs(marked);
 		findNeighborsToOtherAgentsWhoAreNotHubs(marked);
-
-		return createConstraintsGivenNeigbors();
 	}
 
-	private Set<Constraint> createConstraintsGivenNeigbors() {
-		// this.constraints.add(new Constraint(new Neighbors(a1, a2), cost));
-		// af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-
-		Set<Constraint> ans = new HashSet<Constraint>();
+	private void initConstMap() {
 		for (Neighbors n : this.neighbors) {
-			AgentField af1 = getAgentField(n.getA1().getId());
-			AgentField af2 = getAgentField(n.getA2().getId());
-
-			for (int d1 : af1.getDomain()) {
-				for (int d2 : af2.getDomain()) {
-					double rnd = Main.rP2ScaleFree.nextDouble();
-					if (rnd < Main.currentP2ScaleFree) {
-						Agent a1 = new Agent(n.getA1().getId(), d1);
-						Agent a2 = new Agent(n.getA2().getId(), d2);
-						int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
-						Constraint c = new Constraint(new Neighbors(a1, a2), cost);
-						ans.add(c);
-						af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
-						af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
-					}
-				}
-			}
-
+			this.constraints.put(n, new HashSet<Constraint>());
 		}
 
-		return ans;
+	}
+
+	private void createNeighborsGivenP1(Double currentP1, Random rP1) {
+		// Set<Neighbors> ans = new HashSet<Neighbors>();
+		for (int i = 0; i < agentsF.length; i++) {
+			for (int j = i + 1; j < agentsF.length; j++) {
+				double p1Max = rP1.nextDouble();
+				if (p1Max < currentP1) {
+					AgentField af1 = agentsF[i];
+					AgentField af2 = agentsF[j];
+					this.neighbors.add(new Neighbors(af1, af2));
+				} // if neighbors
+			} // for j
+		} // for i
 	}
 
 	private void findNeighborsToOtherAgentsWhoAreNotHubs(Map<Integer, Boolean> marked) {
@@ -103,9 +100,7 @@ public class Dcop {
 				marked.put(af.getId(), true);
 			}
 		}
-
 		checkIfMarkedMakeSense(marked);
-
 	}
 
 	private void checkIfMarkedMakeSense(Map<Integer, Boolean> marked) {
@@ -119,7 +114,7 @@ public class Dcop {
 
 	private void findNeighborsToSingleAgentNotHub(AgentField af) {
 		List<Integer> idsOfANeighbor = selectNToNotHubs(af);
-		if (idsOfANeighbor.size() != Main.numOfNToNotHub) {
+		if (idsOfANeighbor.size() != Main.currentNumOfNToNotHub) {
 			System.err.println("something in selectNToNotHubs in dcop is wrong");
 		}
 		declareNeighborsOfIteratedAgentField(idsOfANeighbor, af);
@@ -153,7 +148,7 @@ public class Dcop {
 		Map<Integer, Double> probs = initProbs(af);
 
 		int counter = 0;
-		while (counter < Main.numOfNToNotHub) {
+		while (counter < Main.currentNumOfNToNotHub) {
 			int idOfNeighborShuffled = getFromProbsShuffledNeighbor(af, probs);
 			if (idOfNeighborShuffled == -1) {
 				System.err.println("logical bug in creating prob map");
@@ -214,7 +209,7 @@ public class Dcop {
 	}
 
 	private void createHubs(Map<Integer, Boolean> marked) {
-		List<AgentField> hubs = getRandomElement(Main.hub, Main.rHub);
+		List<AgentField> hubs = getRandomElement(Main.currentHub, Main.rHub);
 		hubNeighborsToOneAnother(hubs);
 		for (AgentField a : hubs) {
 			marked.put(a.getId(), true);
@@ -266,67 +261,52 @@ public class Dcop {
 		return ans;
 	}
 
-	private Set<Constraint> createConstraintsGraphColor() {
-		Set<Constraint> ans = new HashSet<Constraint>();
-		for (int i = 0; i < agentsF.length; i++) {
-			for (int j = i + 1; j < agentsF.length; j++) {
-				double p1Max = Main.rP1Color.nextDouble();
-				if (p1Max < Main.currentP1Color) {
-					AgentField af1 = agentsF[i];
-					AgentField af2 = agentsF[j];
+	private void createConstraintsGraphColor() {
 
-					for (int k = 0; k < af1.getDomainSize(); k++) {
-						int d1 = af1.getDomain()[k];
-						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
-							int d2 = af2.getDomain()[k2];
-							if (d1 == d2) {
-								Agent a1 = new Agent(i, d1);
-								Agent a2 = new Agent(j, d2);
-								int cost = Main.costMax;
-								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
-								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
-								ans.add(c);
-							}
-
-						}
-					}
-				}
-			}
-		}
-		return ans;
-
+		for (Entry<Neighbors, Set<Constraint>> e : this.constraints.entrySet()) {
+			int id1 = e.getKey().getA1().getId();
+			AgentField af1 = getAgentField(id1);
+			int id2 = e.getKey().getA2().getId();
+			AgentField af2 = getAgentField(id2);
+			for (int k = 0; k < af1.getDomainSize(); k++) {
+				int d1 = af1.getDomain()[k];
+				for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
+					int d2 = af2.getDomain()[k2];
+					if (d1 == d2) {
+						Agent a1 = new Agent(id1, d1);
+						Agent a2 = new Agent(id2, d2);
+						int cost = Main.costMax;
+						informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, id1, id2, cost);
+						e.getValue().add(new Constraint(new Neighbors(a1, a2), cost));
+					} // if domain is equal
+				} // for k2
+			} // for k
+		} // for map
 	}
 
-	private Set<Constraint> createConstraintsUniformlyRandomDCOP() {
-		Set<Constraint> ans = new HashSet<Constraint>();
-		for (int i = 0; i < agentsF.length; i++) {
-			for (int j = i + 1; j < agentsF.length; j++) {
-				double p1Max = Main.rP1Uniform.nextDouble();
-				if (p1Max < Main.currentP1Uniform) {
-					AgentField af1 = agentsF[i];
-					AgentField af2 = agentsF[j];
+	private void createConstraintsGivenP2(double currentP2, Random r) {
 
-					for (int k = 0; k < af1.getDomainSize(); k++) {
-						int d1 = af1.getDomain()[k];
-						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
-							int d2 = af2.getDomain()[k2];
-							double p2Max = Main.rP2Uniform.nextDouble();
-							if (p2Max < Main.currentP2Uniform) {
+		for (Entry<Neighbors, Set<Constraint>> e : this.constraints.entrySet()) {
+			int id1 = e.getKey().getA1().getId();
+			AgentField af1 = getAgentField(id1);
+			int id2 = e.getKey().getA2().getId();
+			AgentField af2 = getAgentField(id2);
 
-								Agent a1 = new Agent(i, d1);
-								Agent a2 = new Agent(j, d2);
-								int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
-								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
-
-								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
-								ans.add(c);
-							}
-						}
-					}
-				}
-			}
-		}
-		return ans;
+			for (int k = 0; k < af1.getDomainSize(); k++) {
+				int d1 = af1.getDomain()[k];
+				for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
+					int d2 = af2.getDomain()[k2];
+					double p2Max = r.nextDouble();
+					if (p2Max < currentP2) {
+						Agent a1 = new Agent(id1, d1);
+						Agent a2 = new Agent(id2, d2);
+						int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
+						informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, id1, id2, cost);
+						e.getValue().add(new Constraint(new Neighbors(a1, a2), cost));
+					} // p2
+				} // for domain k2
+			} // for domain k
+		} // for map constraints
 	}
 
 	private void informFieldAgentOnConstraint(int d1, int d2, Agent a1, Agent a2, AgentField af1, AgentField af2, int i,
@@ -336,23 +316,17 @@ public class Dcop {
 
 		af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
 		addToMapsAgents(af2, i);
-
-		boolean flag = false;
-
-		int id1 = af1.getId();
-		int id2 = af2.getId();
-
-		for (Neighbors n : neighbors) {
-			if (id1 == n.getA1().getId() && id2 == n.getA2().getId()) {
-				flag = true;
-				break;
-			}
-		}
-
-		if (!flag) {
-			this.neighbors.add(new Neighbors(af1, af2, this.iterations));
-		}
-
+		/*
+		 * //boolean flag = false;
+		 * 
+		 * 
+		 * int id1 = af1.getId(); int id2 = af2.getId();
+		 * 
+		 * for (Neighbors n : neighbors) { if (id1 == n.getA1().getId() && id2 ==
+		 * n.getA2().getId()) { //flag = true; break; } }
+		 * 
+		 * if (!flag) { this.neighbors.add(new Neighbors(af1, af2, this.iterations)); }
+		 */
 	}
 
 	private void addToMapsAgents(AgentField agentInput, int idOther) {
@@ -369,7 +343,7 @@ public class Dcop {
 		return agentsF;
 	}
 
-	public Set<Constraint> getConstraints() {
+	public Map<Neighbors, Set<Constraint>> getConstraints() {
 		return constraints;
 	}
 
@@ -389,20 +363,18 @@ public class Dcop {
 
 	public int calCost(boolean real) {
 		int ans = 0;
-
+		// neighbors are pointed to original
 		for (Neighbors n : neighbors) {
 			ans = ans + calCostPerNeighbor(n, real);
 		}
-
 		return ans * 2;
 	}
 
 	public int calRealSolForDebug(Map<Integer, Integer> m) {
 
-		List<Agent> agents = getAgentsForCalReal(m);
-		List<Neighbors> neighbors = getNeighborsForCalReal(agents);
+		List<Agent> agents = getFieldAgentsForCalReal(m);
+		List<Neighbors> neighbors = getFieldNeighborsForCalReal(agents);
 		int ans = 0;
-
 		for (Neighbors n : neighbors) {
 			int costPerN = calCostPerNeighborForDebug(n);
 			ans += costPerN;
@@ -411,19 +383,70 @@ public class Dcop {
 		return ans * 2;
 
 	}
-	
-	private List<Neighbors> getNeighborsForCalReal(List<Agent> agents) {
+
+	private List<Neighbors> getFieldNeighborsForCalReal(List<Agent> agents) {
 		List<Neighbors> ans = new ArrayList<Neighbors>();
+		/*
+		 * for (int i = 0; i < agents.size(); i++) { for (int j = i + 1; j <
+		 * agents.size(); j++) { for (Neighbors neighbors : neighbors) {
+		 * 
+		 * } } }
+		 */
 
 		for (int i = 0; i < agents.size(); i++) {
+			int iId = agents.get(i).getId();
+			AgentField af1 = getAgentField(iId);
 			for (int j = i + 1; j < agents.size(); j++) {
-				Neighbors n = new Neighbors(agents.get(i), agents.get(j));
-				ans.add(n);
+				int jId = agents.get(j).getId();
+				if (af1.isNeighbor(jId)) {
+					Neighbors n = new Neighbors(agents.get(i), agents.get(j));
+					//Neighbors n = getNeighborFromSet(iId, jId);
+					ans.add(n);
+				}
+
 			}
 		}
 		return ans;
 	}
 
+	private Neighbors getNeighborFromSet(int iId, int jId) {
+		for (Neighbors n : neighbors) {
+			int nId1 = n.getA1().getId();
+			int nId2 = n.getA2().getId();
+
+			if ((iId == nId1 && jId == nId2) || (iId == nId2 && jId == nId1)) {
+				return n;
+			}
+
+		}
+		return null;
+	}
+
+	private List<Agent> getFieldAgentsForCalReal(Map<Integer, Integer> m) {
+
+		List<Agent> ans = new ArrayList<Agent>();
+
+		for (Entry<Integer, Integer> e : m.entrySet()) {
+			Agent a = new Agent(e.getKey(), e.getValue());
+			ans.add(a);
+
+		}
+
+		return ans;
+	}
+
+	/*
+	 * private List<Neighbors> getNeighborsForCalReal(List<Agent> agents) {
+	 * List<Neighbors> ans = new ArrayList<Neighbors>();
+	 * 
+	 * for (int i = 0; i < agents.size(); i++) { for (int j = i + 1; j <
+	 * agents.size(); j++) { if (agents.get(i).isNeighbor(j)) {
+	 * 
+	 * }
+	 * 
+	 * Neighbors n = new Neighbors(agents.get(i), agents.get(j)); ans.add(n); } }
+	 * return ans; }
+	 */
 	private List<Agent> getAgentsForCalReal(Map<Integer, Integer> m) {
 
 		List<Agent> ans = new ArrayList<Agent>();
@@ -435,49 +458,94 @@ public class Dcop {
 	}
 
 	public int calCostPerNeighborForDebug(Neighbors n) {
-		Agent an1 = n.getA1();
-		Agent an2 = n.getA2();
-		for (Constraint c : constraints) {
+		return calCostPerNeighbor(n, true);
 
-			Agent ac1 = c.getNeighbors().getA1();
-			Agent ac2 = c.getNeighbors().getA2();
-			boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
-			boolean sameValue;
-
-			sameValue = an1.getValue() == ac1.getValue() && an2.getValue() == ac2.getValue();
-
-			if (sameValue && sameId) {
-				return c.getCost();
-			}
-		}
-
-		return 0;
+		/*
+		 * Agent an1 = n.getA1(); Agent an2 = n.getA2(); for (Constraint c :
+		 * constraints) {
+		 * 
+		 * Agent ac1 = c.getNeighbors().getA1(); Agent ac2 = c.getNeighbors().getA2();
+		 * boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
+		 * boolean sameValue;
+		 * 
+		 * sameValue = an1.getValue() == ac1.getValue() && an2.getValue() ==
+		 * ac2.getValue();
+		 * 
+		 * if (sameValue && sameId) { return c.getCost(); } }
+		 * 
+		 * return 0;
+		 */
 
 	}
 
 	public int calCostPerNeighbor(Neighbors n, boolean real) {
-		Agent an1 = n.getA1();
-		Agent an2 = n.getA2();
 
-		for (Constraint c : constraints) {
+		int idN1 = n.getA1().getId();
+		int idN2 = n.getA2().getId();
 
-			Agent ac1 = c.getNeighbors().getA1();
-			Agent ac2 = c.getNeighbors().getA2();
-			boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
-			boolean sameValue;
+		Neighbors nFromSet = getPointNeighbor(idN1, idN2);
+		/*
+		 * if (nFromSet == null) { System.out.
+		 * println("there is a bug in getPointNeighbor because it returns a null"); }
+		 */
+
+		// if n from input are actually neighbors
+		if (nFromSet != null) {
+			Set<Constraint> cs = this.constraints.get(nFromSet);
+			int valA1 = 0;
+			int valA2 = 0;
 			if (real) {
-				sameValue = an1.getValue() == ac1.getValue() && an2.getValue() == ac2.getValue();
-			} else {// any time
-				sameValue = an1.getAnytimeValue() == ac1.getValue() && an2.getAnytimeValue() == ac2.getValue();
+				valA1 = n.getA1().getValue();
+				valA2 = n.getA2().getValue();
+			} else {
+				valA1 = n.getA1().getAnytimeValue();
+				valA2 = n.getA2().getAnytimeValue();
 			}
-
-			if (sameValue && sameId) {
-				return c.getCost();
-			}
-		}
-
+			for (Constraint c : cs) {
+				Agent aN1 = c.getNeighbors().getA1();
+				Agent aN2 = c.getNeighbors().getA2();
+				if (idN1 == aN1.getId()) {
+					if (valA1 == aN1.getValue() && valA2 == aN2.getValue()) {
+						return c.getCost();
+					}
+				} else {
+					if (valA1 == aN2.getValue() && valA2 == aN1.getValue()) {
+						return c.getCost();
+					}
+				}
+			} // for constraints
+		} // if n from input are actually neighbors
 		return 0;
 
+		/*
+		 * Agent an1 = n.getA1(); Agent an2 = n.getA2();
+		 * 
+		 * for (Constraint c : constraints) {
+		 * 
+		 * Agent ac1 = c.getNeighbors().getA1(); Agent ac2 = c.getNeighbors().getA2();
+		 * boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
+		 * boolean sameValue; if (real) { sameValue = an1.getValue() == ac1.getValue()
+		 * && an2.getValue() == ac2.getValue(); } else {// any time sameValue =
+		 * an1.getAnytimeValue() == ac1.getValue() && an2.getAnytimeValue() ==
+		 * ac2.getValue(); }
+		 * 
+		 * if (sameValue && sameId) { return c.getCost(); } }
+		 * 
+		 * return 0;
+		 */
+
+	}
+
+	private Neighbors getPointNeighbor(int idN1, int idN2) {
+		for (Neighbors n : this.neighbors) {
+			if (n.getA1().getId() == idN1 && n.getA2().getId() == idN2) {
+				return n;
+			}
+			if (n.getA2().getId() == idN1 && n.getA1().getId() == idN2) {
+				return n;
+			}
+		}
+		return null;
 	}
 
 	// Function select an element base on index and return
@@ -510,5 +578,125 @@ public class Dcop {
 
 		return ans;
 	}
+
+	private Set<Constraint> createConstraintsGraphColorWithSetConstraint() {
+		Set<Constraint> ans = new HashSet<Constraint>();
+		for (int i = 0; i < agentsF.length; i++) {
+			for (int j = i + 1; j < agentsF.length; j++) {
+				double p1Max = Main.rP1Color.nextDouble();
+				if (p1Max < Main.currentP1Color) {
+					AgentField af1 = agentsF[i];
+					AgentField af2 = agentsF[j];
+					for (int k = 0; k < af1.getDomainSize(); k++) {
+						int d1 = af1.getDomain()[k];
+						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
+							int d2 = af2.getDomain()[k2];
+							if (d1 == d2) {
+								Agent a1 = new Agent(i, d1);
+								Agent a2 = new Agent(j, d2);
+								int cost = Main.costMax;
+								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
+								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
+								ans.add(c);
+							}
+						}
+					}
+				}
+			}
+		}
+		return ans;
+
+	}
+
+	private Set<Constraint> createNeighborsAndConstraintsUniformlyRandomDCOP() {
+		Set<Constraint> ans = new HashSet<Constraint>();
+
+		for (int i = 0; i < agentsF.length; i++) {
+			for (int j = i + 1; j < agentsF.length; j++) {
+				double p1Max = Main.rP1Uniform.nextDouble();
+				if (p1Max < Main.currentP1Uniform) {
+					AgentField af1 = agentsF[i];
+					AgentField af2 = agentsF[j];
+					for (int k = 0; k < af1.getDomainSize(); k++) {
+						int d1 = af1.getDomain()[k];
+						for (int k2 = 0; k2 < af2.getDomainSize(); k2++) {
+							int d2 = af2.getDomain()[k2];
+							double p2Max = Main.rP2Uniform.nextDouble();
+							if (p2Max < Main.currentP2Uniform) {
+
+								Agent a1 = new Agent(i, d1);
+								Agent a2 = new Agent(j, d2);
+								int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
+								informFieldAgentOnConstraint(d1, d2, a1, a2, af1, af2, i, j, cost);
+
+								Constraint c = new Constraint(new Neighbors(a1, a2), cost);
+								ans.add(c);
+							}
+						}
+					}
+
+				} // p2
+			} // for domain k2
+		} // for domain k
+		return ans;
+
+	}
+
+	private Set<Constraint> createConstraintsScaleFreeAB() {
+		Map<Integer, Boolean> marked = initColored();
+		createHubs(marked);
+		findNeighborsToOtherAgentsWhoAreNotHubs(marked);
+
+		return createConstraintsGivenNeigbors();
+	}
+
+	private Set<Constraint> createConstraintsGivenNeigbors() {
+		// this.constraints.add(new Constraint(new Neighbors(a1, a2), cost));
+		// af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
+
+		Set<Constraint> ans = new HashSet<Constraint>();
+		for (Neighbors n : this.neighbors) {
+			AgentField af1 = getAgentField(n.getA1().getId());
+			AgentField af2 = getAgentField(n.getA2().getId());
+
+			for (int d1 : af1.getDomain()) {
+				for (int d2 : af2.getDomain()) {
+					double rnd = Main.rP2ScaleFree.nextDouble();
+					if (rnd < Main.currentP2ScaleFree) {
+						Agent a1 = new Agent(n.getA1().getId(), d1);
+						Agent a2 = new Agent(n.getA2().getId(), d2);
+						int cost = Main.getRandomInt(Main.rCost, 1, Main.costMax);
+						Constraint c = new Constraint(new Neighbors(a1, a2), cost);
+						ans.add(c);
+						af1.addConstraintNeighbor(d1, new ConstraintNeighbor(a2, cost));
+						af2.addConstraintNeighbor(d2, new ConstraintNeighbor(a1, cost));
+					}
+				}
+			}
+
+		}
+
+		return ans;
+	}
+
+	/*
+	 * public int calCostPerNeighborConstraintsIsSet(Neighbors n, boolean real) {
+	 * Agent an1 = n.getA1(); Agent an2 = n.getA2();
+	 * 
+	 * for (Constraint c : constraints) {
+	 * 
+	 * Agent ac1 = c.getNeighbors().getA1(); Agent ac2 = c.getNeighbors().getA2();
+	 * boolean sameId = an1.getId() == ac1.getId() && an2.getId() == ac2.getId();
+	 * boolean sameValue; if (real) { sameValue = an1.getValue() == ac1.getValue()
+	 * && an2.getValue() == ac2.getValue(); } else {// any time sameValue =
+	 * an1.getAnytimeValue() == ac1.getValue() && an2.getAnytimeValue() ==
+	 * ac2.getValue(); }
+	 * 
+	 * if (sameValue && sameId) { return c.getCost(); } }
+	 * 
+	 * return 0;
+	 * 
+	 * }
+	 */
 
 }

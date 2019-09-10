@@ -51,7 +51,9 @@ public class Neighbors {
 		Agent na1 = n.getA1();
 		Agent na2 = n.getA2();
 
-		return na1.getId() == a1.getId() && na2.getId() == a2.getId();
+		return (na1.getId() == a1.getId() && na2.getId() == a2.getId()) 
+				|| 
+				(na1.getId() == a2.getId() && na2.getId() == a1.getId());
 
 		// return false;
 	}

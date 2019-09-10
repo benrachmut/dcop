@@ -17,37 +17,37 @@ public class Main {
 	
 	// ------- VARIABLES TO CHECK BEFORE STARTING A RUN
 	// -- variables of dcop problem
-	static int A = 15; //  number of agents
+	static int A = 50; //  number of agents
 	static int D = 10; //  size of domain for each agent
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
 	static int meanRepsStart=0;
-	static int meanRepsEnd = 1; // number of reps for every solve process
-	static int iterations = 700;
+	static int meanRepsEnd = 100; // number of reps for every solve process not include
+	static int iterations = 5000;
 	// versions
-	static String algo = "dsaUnsynch7"; // "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = {1}; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static String algo = "unsynchMono"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
+	static int[] dcopVersions = {3}; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
-	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
+	static int[] memoryVersions = {1}; // 1=exp, 2= constant, 3= reasonable
 	static double[] constantsPower = {3};
 	// -- synch
 	static boolean synch = false;
-	static boolean anytimeDfs = true;
+	static boolean anytimeDfs = false;
 	static boolean anytimeBfs = false;
-	static String fileName = "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"tryDfs!!!"; 
+	static String fileName; //"AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"_memoryV"+memoryVersions[0]+"3000_iterations"; 
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.1 }; 
-	static double[] p2sUniform = {0.7};	
+	static double[] p1sUniform = {0.1}; //0.1,0.7
+	static double[] p2sUniform = {1 };	
 	// -- color dcop
-	static double[] p1sColor = {0.1, 0.6};
+	static double[] p1sColor = {0.1}; //0.1,0.7
 	// -- scale free AB
-	static int[] hubs = { 10 };
+	static int[] hubs = { 5 }; //10
 	static int[] numOfNToNotHubs = { 3 };
 	static double[] p2sScaleFree= {1}; 
 	// -- communication protocol
 	static double[] p3s = {0,1};
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {5,10,25};
+	static int[] delayUBs = {5,10,20,40};
 	static double[] p4s = { 0 };
 		
 	
@@ -78,8 +78,8 @@ public class Main {
 	static Random rP1Color = new Random();
 	// -- scale free AB
 	static double currentP2ScaleFree;
-	static int hub;
-	static int numOfNToNotHub;
+	static int currentHub;
+	static int currentNumOfNToNotHub;
 	static Random rHub = new Random();
 	static Random rNotHub = new Random();
 	static Random rP2ScaleFree = new Random();
@@ -94,6 +94,8 @@ public class Main {
 
 	
 	public static void main(String[] args) {
+		
+		fileName = getFileName();
 
 		System.out.println(fileName);
 		for (int i : dcopVersions) {
@@ -108,6 +110,26 @@ public class Main {
 			}
 			printDcops();
 		}
+	}
+
+	private static String getFileName() {
+		String meanRunRange = "start_"+meanRepsStart+",end_"+meanRepsEnd;
+		String addOn = addOnPerProb();
+		return algo+",A_"+A+","+addOn+","+meanRunRange;
+	}
+
+	private static String addOnPerProb() {
+		String addOn="";
+		if (dcopVersions[0] == 1) {
+			addOn = "uniform,p1_"+p1sUniform[0]+",p2_"+p2sUniform[0];
+		}
+		if (dcopVersions[0] == 2) {
+			addOn = "color,p1_"+p1sColor[0];
+		}
+		if (dcopVersions[0] == 3) {
+			addOn = "scaleFree,hub_"+hubs[0]+",links_"+numOfNToNotHubs[0]+",p2_"+p2sScaleFree[0];
+		}
+		return addOn;
 	}
 
 	private static void runDifferentMemoryVersions() {
@@ -148,9 +170,9 @@ public class Main {
 		
 	
 		for (int i : hubs) {
-			hub = i;
+			currentHub = i;
 			for (int j : numOfNToNotHubs) {
-				numOfNToNotHub = j;
+				currentNumOfNToNotHub= j;
 				for (double k : p2sScaleFree) {
 					currentP2ScaleFree = k;
 					
@@ -176,7 +198,7 @@ public class Main {
 	private static void printDcops() {
 		BufferedWriter out = null;
 		try {
-			FileWriter s = new FileWriter(algo + fileName + ".csv");
+			FileWriter s = new FileWriter(fileName + ".csv");
 			out = new BufferedWriter(s);
 			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,";
 			if (!synch) {
@@ -249,7 +271,7 @@ public class Main {
 		for (Double p3 : p3s) {
 			currentP3 = p3;
 			if (p3 == 0) {
-				afterHavingAllPrameters(p3, true, -1, -1.0, dcop, meanRun);
+				afterHavingAllPrameters(p3, true, -1, 0.0, dcop, meanRun);
 			} else {
 				diffCommunicationGivenP3(communicationSeed, dcop, meanRun, p3);
 			}
@@ -261,13 +283,26 @@ public class Main {
 	private static void afterHavingAllPrameters(Double p3, Boolean dK, Integer delayUB, Double p4, Dcop dcop,
 			int meanRun) {
 		// ---- protocol ----
-		String protocol = p3 + "," + dK + "," + delayUB + "," + p4;
+		String protocol = "p3="+currentP3+", ub="+currentUb+", mean run="+meanRun;
 		// ---- find solution ----
 		Solution algo = selectedAlgo(dcop, meanRun);
-		System.out.println(dcop+","+protocol + "," + algo);
+		printHeader(protocol);
 		// ---- restart ----
-		restartBetweenAlgo(algo, protocol);
+		String useInExcel = p3 + "," + dK + "," + delayUB + "," + p4;
+		restartBetweenAlgo(algo, useInExcel);
+	}
 
+	private static void printHeader(String protocol) {
+		if (dcopVersion == 1) {
+			System.out.println(algo+"_"+dcop+", p1="+currentP1Uniform+", p2="+currentP2Uniform+", "+ protocol);
+		}
+		if (dcopVersion == 2) {
+			System.out.println(algo+"_"+dcop+", p1="+currentP1Color+", "+ protocol);
+		}
+		if (dcopVersion == 3) {
+			System.out.println(algo+"_"+dcop+", hubs="+ currentHub+", p2="+currentP2ScaleFree+", links="+currentNumOfNToNotHub+ protocol);
+		}
+		
 	}
 
 	private static void diffCommunicationGivenP3(int communicationSeed, Dcop dcop, int meanRun, Double p3) {
@@ -375,6 +410,13 @@ public class Main {
 	
 
 	private static void orgenizeTrees() {
+		
+		
+		
+		if (algo.equals("unsynchMono") ||algo.equals("dsa7") || algo.equals("mgm")) {
+			anytimeDfs = false;
+			anytimeBfs = false;
+		}
 		if (algo.equals("unsynchMono") || anytimeDfs) {
 			Tree psaduoTree = new Tree(agents);
 			psaduoTree.dfs();

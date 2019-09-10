@@ -13,6 +13,7 @@ public class UnsynchDsa extends Unsynch {
 		this.stochastic = stochastic;
 		this.didDecide = new HashSet<AgentField>();
 		Main.rDsa.setSeed(meanRun);
+		this.algo = "DSA"+stochastic+"asynch";
 	}
 
 	// ---- 1

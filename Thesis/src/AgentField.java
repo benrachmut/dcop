@@ -578,13 +578,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			return Integer.MAX_VALUE;
 		}
 		List<Neighbors> myNeighbors = createNeighborsFromM(m);
-		// here is the bug!!!! need to take my neighbors from somewhere else!!!! since
-		// dcop has a pointer to the real agent!!!!
+		
 		int ans = 0;
-		for (Neighbors n : myNeighbors) {
+		for (Neighbors n : myNeighbors) {	
 			int costOfN = Main.dcop.calCostPerNeighbor(n, true);
-			ans = ans + costOfN;
-			
+			ans = ans + costOfN;	
 		}
 
 		return ans;
@@ -599,14 +597,18 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			Agent a1;
 			Agent a2;
 			if (this.id < nId) {
-				a1 = new Agent(this.id, this.value);
+				a1 = new Agent(this.id, m.get(this.id));
 				a2 = new Agent(nId, nValue);
 			} else {
 				a1 = new Agent(nId, nValue);
-				a2 = new Agent(this.id, this.value);
+				a2 = new Agent(this.id, m.get(this.id));
 			}
-			Neighbors n = new Neighbors(a1, a2);
-			ans.add(n);
+			
+			if (this.id != nId) {
+				Neighbors n = new Neighbors(a1, a2);
+				ans.add(n);
+			}
+		
 
 		}
 
@@ -916,6 +918,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 */
 	private void recieveBetterPermutation(Permutation input) {
 		bestPermuation = input;
+		printTopCompletePermutation (input);
 		this.anytimeValue = input.getM().get(this.id);
 
 	}
@@ -1146,26 +1149,12 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			m.put(nId, nValue);
 		}
 		m.put(this.id, this.value);
-/*
-		boolean x1, x2, x3, x4, x5, x6, x7;
 
-		if (Main.printSelfN) {
-			if (this.id == 6) {
-				x1 = neighbor.get(0).getValue() == 0;
-				x2 = neighbor.get(1).getValue() == 7;
-				x3 = neighbor.get(5).getValue() == 8;
-				// x4=neighbor.get(6).getValue() ==4;
-				// x5=neighbor.get(7).getValue() ==7;
-				// x6=neighbor.get(8).getValue() ==5;
-				x4 = this.value == 4;
-				if (x1 && x2 && x3 && x4) {
-					System.out.println();
-				}
-			}
+		
+		if (!neighborIsMinusOne(m)) {
+			int x = 3;
 		}
-*/
 		int cost = calSelfCost(m);
-
 		return new Permutation(m, cost, this);
 	}
 
@@ -1186,6 +1175,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void restartAnytimeValue() {
 		this.anytimeValue = -1;
 		
+	}
+
+	public boolean isNeighbor(int inputId) {
+		// TODO Auto-generated method stub
+		return this.neighbor.containsKey(inputId);
 	}
 
 }

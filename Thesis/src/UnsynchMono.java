@@ -6,7 +6,7 @@ public class UnsynchMono extends Unsynch {
 
 	public UnsynchMono(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
-		this.algo = "unsynchMono";
+		this.algo = "monotonic";
 
 	}
 	public void updateWhoCanDecide(int i) {
