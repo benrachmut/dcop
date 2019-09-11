@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -578,11 +579,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			return Integer.MAX_VALUE;
 		}
 		List<Neighbors> myNeighbors = createNeighborsFromM(m);
-		
+
 		int ans = 0;
-		for (Neighbors n : myNeighbors) {	
+		for (Neighbors n : myNeighbors) {
 			int costOfN = Main.dcop.calCostPerNeighbor(n, true);
-			ans = ans + costOfN;	
+			ans = ans + costOfN;
 		}
 
 		return ans;
@@ -603,12 +604,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 				a1 = new Agent(nId, nValue);
 				a2 = new Agent(this.id, m.get(this.id));
 			}
-			
+
 			if (this.id != nId) {
 				Neighbors n = new Neighbors(a1, a2);
 				ans.add(n);
 			}
-		
 
 		}
 
@@ -828,7 +828,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			addToSet(input, permutationsPast);
 		}
 		if (Main.memoryVersion == 2) {
-			//addToSet(input, permutationsPast);
+			// addToSet(input, permutationsPast);
 
 			memoryVersionConstant(input);
 
@@ -838,34 +838,52 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	private void memoryVersionConstant(Permutation input) {
-		if (this.permutationsPast.size() > Main.memoryMaxConstant) {
-			
-			Permutation currentP = createCurrentPermutationByValue();
-			Permutation minP = Collections.min(this.permutationsPast, new ComparatorDistanceOfCurrentPermToOther(currentP));
-			
-			int minCounter = minP.getSimilartyCounterTo(currentP);
-			/*
-			List<Permutation> pWithMinCounter = new ArrayList<Permutation>();
-			for (Permutation p : this.permutationsPast) {
-				if (p.getSimilartyCounterTo(currentP) == minCounter) {
-					pWithMinCounter.add(p);
-				}
+	private void memoryVersionConstant(Permutation input) {	
+		boolean inputAlreadyInSet = checkIfInputAlreadyInSet(input);	
+		if (!inputAlreadyInSet) {
+			if (this.permutationsPast.size() > Main.memoryMaxConstant) {		
+				Permutation currentP = createCurrentPermutationByValue();
+				Comparator<Permutation> c = getComparatorAccordingToIndex(currentP);
+				Permutation minP = Collections.min(this.permutationsPast, c);	
+				this.permutationsPast.remove(minP);
 			}
-			Permutation toDelete = Collections.max(pWithMinCounter, new ComparatorPermutationSizeM());
-			
-			
-			this.permutationsPast.remove(toDelete);
-			*/
-			this.permutationsPast.remove(minP);
-		}
-		Collection similarToInput = checkForAllSimilarPastPermutations(input);//dsvs
-		
-		permutationsPast.removeAll(similarToInput);
-		
+		}	
 		permutationsPast.add(input);
 	}
 
+	private boolean checkIfInputAlreadyInSet(Permutation input) {
+		for (Permutation pPast : this.permutationsPast) {
+			if (input.equals(pPast)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Comparator<Permutation> getComparatorAccordingToIndex(Permutation currentP) {
+		int comparatorIndex = Main.currentComparatorForMemory;
+		
+		
+		// 1=DistanceAndTrueCounter, 2=DistanceAndTrueRatio, 3=TrueCounter, 4=TrueRatio
+		
+		if (comparatorIndex == 1) {
+			return new ComparatorPermutationDistanceAndTrueCounter(currentP);
+		}
+		if (comparatorIndex == 2) {
+			return  new ComparatorPermutationDistanceAndTrueRatio(currentP);
+
+		}
+		if (comparatorIndex == 3) {
+			return  new ComparatorPermutationTrueCounter();
+
+		}
+		if (comparatorIndex == 4) {
+			return  new ComparatorPermutationTrueRatio();
+		}
+		
+		return null;
+	}
+/*
 	private Collection checkForAllSimilarPastPermutations(Permutation input) {
 
 		Collection ans = new TreeSet(new ComparatorPermutationDate());
@@ -876,7 +894,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		return ans;
 	}
-
+*/
 	public void addToPermutationToSendUnsynchNonMonoByValue(Permutation input) {
 
 		if (this.isAnytimeTop()) {
@@ -890,35 +908,31 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		} else {
 			addToSet(input, permutationsToSend);
 		}
-/*
-		if (Main.memoryVersion == 3) {
-			incaseMemoryVersion3Reasonable(input);
-		}
-*/
+		/*
+		 * if (Main.memoryVersion == 3) { incaseMemoryVersion3Reasonable(input); }
+		 */
 	}
 
 	public void addToPermutationToSend(Permutation input) {
 		addToSet(input, permutationsToSend);
 
 	}
-/*
-	private void incaseMemoryVersion3Reasonable(Permutation input) {
 
-		Collection<Permutation> toRemove = new ArrayList<Permutation>();
-		for (Permutation pPast : permutationsPast) {
-			double similar = input.checkSimilarty(pPast);
-			if (similar < Main.memorySimilartyRatio) {
-				toRemove.add(pPast);
-			}
-		}
-
-		permutationsPast.removeAll(toRemove);
-
-	}
-*/
+	/*
+	 * private void incaseMemoryVersion3Reasonable(Permutation input) {
+	 * 
+	 * Collection<Permutation> toRemove = new ArrayList<Permutation>(); for
+	 * (Permutation pPast : permutationsPast) { double similar =
+	 * input.checkSimilarty(pPast); if (similar < Main.memorySimilartyRatio) {
+	 * toRemove.add(pPast); } }
+	 * 
+	 * permutationsPast.removeAll(toRemove);
+	 * 
+	 * }
+	 */
 	private void recieveBetterPermutation(Permutation input) {
 		bestPermuation = input;
-		printTopCompletePermutation (input);
+		printTopCompletePermutation(input);
 		this.anytimeValue = input.getM().get(this.id);
 
 	}
@@ -1150,7 +1164,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		m.put(this.id, this.value);
 
-		
 		if (!neighborIsMinusOne(m)) {
 			int x = 3;
 		}
@@ -1174,7 +1187,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	public void restartAnytimeValue() {
 		this.anytimeValue = -1;
-		
+
 	}
 
 	public boolean isNeighbor(int inputId) {

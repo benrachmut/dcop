@@ -77,17 +77,21 @@ public class Permutation {
 
 		if (obj instanceof Permutation) {
 			Permutation input = (Permutation) obj;
-			boolean sameValueInMap = checkSameValuesInMap(input);
 			boolean sameCost = input.getCost() == this.getCost();
+			if (!sameCost) {
+				return false;
+			}
 			boolean sameInclude = checkIfSameInclude(input);
-
-			if (sameCost && sameValueInMap && sameInclude) {
+			if (!sameInclude) {
+				return false;
+			}
+			boolean sameValueInMap = checkSameValuesInMap(input);
+			if (!sameValueInMap) {
+				return false;
+			}	
+			else {
 				return true;
 			}
-			/*
-			 * if (sameCost && sameValueInMap) { return true; }
-			 */
-
 		} // instance of
 		return false;
 	}
@@ -428,6 +432,20 @@ public class Permutation {
 			}
 		}
 		return counter;
+	}
+
+	public int trueCounter() {
+		int ans = 0;
+		for (Boolean b : this.included.values()) {
+			if (b) {
+				ans=ans+1;
+			}
+		}
+		return ans;
+	}
+
+	public double trueRatio() {
+		return this.trueCounter()/this.m.size();
 	}
 	
 

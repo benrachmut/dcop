@@ -23,7 +23,7 @@ public abstract class Unsynch extends Solution {
 		findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {
 			iter = i;
-			if (i % 100 == 0 ) {
+			if (i % 500 == 0 ) {
 				System.out.println("---start iteration: " + i + "---");
 			}
 			updateWhoCanDecide(i); // abstract

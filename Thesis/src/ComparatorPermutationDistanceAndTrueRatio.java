@@ -1,11 +1,17 @@
 import java.util.Comparator;
 
-public class ComparatorDistanceOfCurrentPermToOther implements Comparator<Permutation> {
+public class ComparatorPermutationDistanceAndTrueRatio implements Comparator<Permutation> {
 
 	private Permutation currentP;
-	public ComparatorDistanceOfCurrentPermToOther (Permutation currentP) {
+	public ComparatorPermutationDistanceAndTrueRatio (Permutation currentP) {
 		this.currentP = currentP;
 	}
+
+	@Override
+	public String toString() {
+		return "ComparatorDistanceAndTrueRatio";
+	}
+	
 	@Override
 	public int compare(Permutation p1, Permutation p2) {
 		int p1SimilartyCounter = currentP.getSimilartyCounterTo(p1);
@@ -18,10 +24,11 @@ public class ComparatorDistanceOfCurrentPermToOther implements Comparator<Permut
 			return -1;
 		}
 		else {
-			if (p1.getM().size()<p2.getM().size()) {
+			
+			if (p1.trueRatio()>p2.trueRatio()){
 				return 1;
 			}
-			if (p1.getM().size()>p2.getM().size()) {
+			if (p1.trueRatio()<p2.trueRatio()){
 				return -1;
 			}
 			return 0;
@@ -29,5 +36,4 @@ public class ComparatorDistanceOfCurrentPermToOther implements Comparator<Permut
 
 		
 	}
-
 }
