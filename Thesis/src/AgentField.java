@@ -847,8 +847,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 				Permutation minP = Collections.min(this.permutationsPast, c);	
 				this.permutationsPast.remove(minP);
 			}
+			permutationsPast.add(input);
 		}	
-		permutationsPast.add(input);
+		
 	}
 
 	private boolean checkIfInputAlreadyInSet(Permutation input) {
@@ -908,9 +909,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		} else {
 			addToSet(input, permutationsToSend);
 		}
-		/*
-		 * if (Main.memoryVersion == 3) { incaseMemoryVersion3Reasonable(input); }
-		 */
 	}
 
 	public void addToPermutationToSend(Permutation input) {
@@ -918,18 +916,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	/*
-	 * private void incaseMemoryVersion3Reasonable(Permutation input) {
-	 * 
-	 * Collection<Permutation> toRemove = new ArrayList<Permutation>(); for
-	 * (Permutation pPast : permutationsPast) { double similar =
-	 * input.checkSimilarty(pPast); if (similar < Main.memorySimilartyRatio) {
-	 * toRemove.add(pPast); } }
-	 * 
-	 * permutationsPast.removeAll(toRemove);
-	 * 
-	 * }
-	 */
+
 	private void recieveBetterPermutation(Permutation input) {
 		bestPermuation = input;
 		printTopCompletePermutation(input);

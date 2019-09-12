@@ -17,27 +17,27 @@ public class Main {
 
 	// ------- VARIABLES TO CHECK BEFORE STARTING A RUN
 	// -- variables of dcop problem
-	static int A = 10; // number of agents
+	static int A = 30; // number of agents
 	static int D = 10; // size of domain for each agent
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
 	static int meanRepsStart = 0;
 	static int meanRepsEnd = 100; // number of reps for every solve process not include
-	static int iterations = 10000;
+	static int iterations =2000;//10000;
 	// versions
 	static String algo = "dsaUnsynch7"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
-	static int[] memoryVersions = { 2 }; // 1=exp, 2= constant, 3= reasonable
-	static double[] constantsPower = { 3 };
-	static int[] comparatorsForMemory = {1}; // 1=DistanceAndTrueCounter, 2=DistanceAndTrueRatio, 3=TrueCounter, 4=TrueRatio
+	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
+	static double[] constantsPower = { 1,1.5,2,2.5,3,3.5,4,4.5,5 };
+	static int[] comparatorsForMemory = {4}; // 1=DistanceAndTrueCounter, 2=DistanceAndTrueRatio, 3=TrueCounter, 4=TrueRatio
 	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
 	static boolean anytimeBfs = false;
 	static String fileName; // "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"_memoryV"+memoryVersions[0]+"3000_iterations";
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.1 }; // 0.1,0.7
+	static double[] p1sUniform = { 0.7 }; // 0.1,0.7
 	static double[] p2sUniform = { 1 };
 	// -- color dcop
 	static double[] p1sColor = { 0.1 }; // 0.1,0.7
@@ -46,9 +46,9 @@ public class Main {
 	static int[] numOfNToNotHubs = { 3 };
 	static double[] p2sScaleFree = { 1 };
 	// -- communication protocol
-	static double[] p3s = { 0, 1 };
+	static double[] p3s = {1};
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = { 5, 10, 20, 40 };
+	static int[] delayUBs = {10};//{ 5, 10, 20, 40 };
 	static double[] p4s = { 0 };
 
 	// ------- GENERAL VARIABLES NO NEED TO CHANGE
@@ -119,9 +119,9 @@ public class Main {
 
 		String meanRunRange = "start_" + meanRepsStart + ",end_" + meanRepsEnd;
 		if (algo.equals("dsaUnsynch7")) {
-			meanRunRange =meanRunRange+",memoryV_"+memoryVersions[0];
+			meanRunRange =meanRunRange;
 			if (memoryVersions[0] == 2) {
-				meanRunRange =meanRunRange+",memoryParameter_"+constantsPower[0]+",comparator_"+comparatorsForMemory[0];
+				meanRunRange =meanRunRange+",comparator_"+comparatorsForMemory[0];
 			}
 		}
 		
