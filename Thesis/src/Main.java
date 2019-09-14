@@ -17,28 +17,32 @@ public class Main {
 
 	// ------- VARIABLES TO CHECK BEFORE STARTING A RUN
 	// -- variables of dcop problem
-	static int A = 30; // number of agents
+	static int A = 50; // number of agents
 	static int D = 10; // size of domain for each agent
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
 	static int meanRepsStart = 0;
 	static int meanRepsEnd = 100; // number of reps for every solve process not include
-	static int iterations =2000;//10000;
+	static int iterations = 10000;//10000, 2000;
 	// versions
 	static String algo = "dsaUnsynch7"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static int[] dcopVersions = { 2 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
-	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
-	static double[] constantsPower = { 1,1.5,2,2.5,3,3.5,4,4.5,5 };
-	static int[] comparatorsForMemory = {4}; // 1=DistanceAndTrueCounter, 2=DistanceAndTrueRatio, 3=TrueCounter, 4=TrueRatio
+	static int[] memoryVersions = {1}; // 1=exp, 2= constant, 3= reasonable
+	static double[] constantsPower = { 1,2,3,4,5 };
+	
+
+	// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
+	// 5 = maxTrueCounter,minDistance;6=maxRatio,minDistance;7=maxMsize,minDistance; 8=minMsize,minDistance
+	static int[] comparatorsForMemory = {8}; 
 	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
 	static boolean anytimeBfs = false;
 	static String fileName; // "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"_memoryV"+memoryVersions[0]+"3000_iterations";
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.7 }; // 0.1,0.7
-	static double[] p2sUniform = { 1 };
+	static double[] p1sUniform = { 0.1 }; // 0.1,0.7
+	static double[] p2sUniform = { 1};
 	// -- color dcop
 	static double[] p1sColor = { 0.1 }; // 0.1,0.7
 	// -- scale free AB
@@ -46,9 +50,9 @@ public class Main {
 	static int[] numOfNToNotHubs = { 3 };
 	static double[] p2sScaleFree = { 1 };
 	// -- communication protocol
-	static double[] p3s = {1};
+	static double[] p3s = {0,1};
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {10};//{ 5, 10, 20, 40 };
+	static int[] delayUBs = {5, 10, 20, 40};//{ 5, 10, 20, 40 };
 	static double[] p4s = { 0 };
 
 	// ------- GENERAL VARIABLES NO NEED TO CHANGE
@@ -104,9 +108,9 @@ public class Main {
 				for (int j : memoryVersions) {
 					memoryVersion = j;
 					for (int k : comparatorsForMemory) {
-						currentComparatorForMemory = k;					
+						currentComparatorForMemory = k;		
+						runDifferentMemoryVersions();
 					}
-					runDifferentMemoryVersions();
 				}
 			} else {
 				runDifferentDcop();
@@ -252,6 +256,7 @@ public class Main {
 				currentP2Uniform = p2;
 
 				for (int meanRun = meanRepsStart; meanRun < meanRepsEnd; meanRun++) {
+					
 					dcopSeeds(meanRun);
 					dcop = createDcop();
 					differentCommunicationProtocols(dcop, meanRun);
@@ -269,8 +274,10 @@ public class Main {
 		rP2ScaleFree.setSeed(meanRun);
 		rHub.setSeed(meanRun);
 		rNotHub.setSeed(meanRun);
-		rFirstValue.setSeed(meanRun);
 		rCost.setSeed(meanRun);
+		rFirstValue.setSeed(meanRun);
+
+
 	}
 
 	private static void differentCommunicationProtocols(Dcop dcop, int meanRun) {
@@ -302,17 +309,24 @@ public class Main {
 	}
 
 	private static void printHeader(String protocol) {
+		
+		String toPrint = "";
 		if (dcopVersion == 1) {
-			System.out.println(
-					algo + "_" + dcop + ", p1=" + currentP1Uniform + ", p2=" + currentP2Uniform + ", " + protocol);
+			toPrint = 
+					algo + "_" + dcop + ", p1=" + currentP1Uniform + ", p2=" + currentP2Uniform + ", " + protocol;
 		}
 		if (dcopVersion == 2) {
-			System.out.println(algo + "_" + dcop + ", p1=" + currentP1Color + ", " + protocol);
+			toPrint =
+					algo + "_" + dcop + ", p1=" + currentP1Color + ", " + protocol;
 		}
 		if (dcopVersion == 3) {
-			System.out.println(algo + "_" + dcop + ", hubs=" + currentHub + ", p2=" + currentP2ScaleFree + ", links="
-					+ currentNumOfNToNotHub + protocol);
+			toPrint =algo + "_" + dcop + ", hubs=" + currentHub + ", p2=" + currentP2ScaleFree + ", links="
+					+ currentNumOfNToNotHub + protocol;
 		}
+		if (algo.equals("dsaUnsynch7")) {
+			toPrint=toPrint+", comparator: "+currentComparatorForMemory+", parameter:"+ memoryMaxConstant;
+		}
+		System.out.println(toPrint);
 
 	}
 
@@ -323,7 +337,8 @@ public class Main {
 				currentUb = delayUB;
 				for (Double p4 : p4s) {
 					communicationSeed = communicationSeed + 1;
-					communicationSeeds(communicationSeed);
+					//System.out.println("here!!!");
+					communicationSeeds(communicationSeed, meanRun);
 					currentP4 = p4;
 					afterHavingAllPrameters(p3, dK, delayUB, p4, dcop, meanRun);
 
@@ -333,11 +348,11 @@ public class Main {
 
 	}
 
-	private static void communicationSeeds(int input) {
-		rP3.setSeed(input);
-		rP4.setSeed(input);
-		rDelay.setSeed(input);
-		rDsa.setSeed(input);
+	private static void communicationSeeds(int communicationSeed, int meanRun) {
+		rP3.setSeed(communicationSeed);
+		rP4.setSeed(communicationSeed);
+		rDelay.setSeed(communicationSeed);
+		rDsa.setSeed(communicationSeed);
 
 	}
 

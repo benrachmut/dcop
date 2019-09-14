@@ -21,6 +21,10 @@ public class MessageNormal implements Comparable<MessageNormal> {
 		this.senderSelfCounter = senderSelfCounter;
 	}
 
+	@Override
+	public String toString() {
+		return "sender:"+sender+", reciver:"+reciever+", sender value:"+senderValue+", delay:"+this.delay;
+	}
 	public MessageNormal(MessageNormal m) {
 		super();
 		this.sender = m.getSender();

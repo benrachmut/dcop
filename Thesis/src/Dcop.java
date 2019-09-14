@@ -8,7 +8,10 @@ import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
+
+import javax.xml.bind.PrintConversionEvent;
 
 public class Dcop {
 
@@ -22,10 +25,22 @@ public class Dcop {
 	public Dcop(AgentField[] agents, int d, int iterations) {
 		this.agentsF = agents;
 		this.iterations = iterations;
-		this.neighbors = new HashSet<Neighbors>();
-		this.constraints = new HashMap<Neighbors, Set<Constraint>>();
+		this.neighbors = new TreeSet<Neighbors>();
+		this.constraints = new TreeMap<Neighbors, Set<Constraint>>();
 		initGivenDcopVersion();
+		//printConst();
 
+	}
+
+	public void printConst() {
+		for (Entry<Neighbors, Set<Constraint>> e : constraints.entrySet()) {
+			System.out.println(e.getKey()+":");
+			for (Constraint c : e.getValue()) {
+				System.out.print(c.getNeighbors()+":"+c.getCost()+",");
+			}
+			System.out.println();
+		}
+		
 	}
 
 	@Override
@@ -71,7 +86,7 @@ public class Dcop {
 
 	private void initConstMap() {
 		for (Neighbors n : this.neighbors) {
-			this.constraints.put(n, new HashSet<Constraint>());
+			this.constraints.put(n, new TreeSet<Constraint>());
 		}
 
 	}
@@ -365,7 +380,14 @@ public class Dcop {
 		int ans = 0;
 		// neighbors are pointed to original
 		for (Neighbors n : neighbors) {
-			ans = ans + calCostPerNeighbor(n, real);
+			int t = calCostPerNeighbor(n, real);
+			/*
+			if (Unsynch.iter==5) {
+				System.out.println(n+" cost: "+t);
+			}
+			*/
+			
+			ans = ans + t;
 		}
 		return ans * 2;
 	}

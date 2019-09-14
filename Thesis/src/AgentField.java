@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class AgentField extends Agent implements Comparable<AgentField> {
@@ -69,9 +70,9 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		}
 		decisonCounter = 0;
 		this.setFirstValueToValue();
-		this.constraint = new HashMap<Integer, Set<ConstraintNeighbor>>();
-		this.neighbor = new HashMap<Integer, MessageRecieve>();
-		this.neighborR = new HashMap<Integer, MessageRecieve>();
+		this.constraint = new TreeMap<Integer, Set<ConstraintNeighbor>>();
+		this.neighbor = new TreeMap<Integer, MessageRecieve>();
+		this.neighborR = new TreeMap<Integer, MessageRecieve>();
 		// --- tree stuff
 		this.dfsFather = null;
 		this.dfsSons = new ArrayList<AgentField>();
@@ -227,8 +228,13 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			shouldChange = true;
 		}
 
-		return maybeChange(shouldChange, minPotentialCost, stochastic);
-
+		boolean didChange = maybeChange(shouldChange, minPotentialCost, stochastic);
+		/*
+		 * if (Unsynch.iter == 5 && this.id==3) {
+		 * System.out.println("currentPersonalCost:"+currentPersonalCost+", minCost:"+
+		 * minCost+", shouldChange:"+ shouldChange+", didChange:"+ didChange); }
+		 */
+		return didChange;
 	}
 
 	public void unsynchDecide() {
@@ -838,18 +844,18 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	private void memoryVersionConstant(Permutation input) {	
-		boolean inputAlreadyInSet = checkIfInputAlreadyInSet(input);	
+	private void memoryVersionConstant(Permutation input) {
+		boolean inputAlreadyInSet = checkIfInputAlreadyInSet(input);
 		if (!inputAlreadyInSet) {
-			if (this.permutationsPast.size() > Main.memoryMaxConstant) {		
+			if (this.permutationsPast.size() > Main.memoryMaxConstant) {
 				Permutation currentP = createCurrentPermutationByValue();
 				Comparator<Permutation> c = getComparatorAccordingToIndex(currentP);
-				Permutation minP = Collections.min(this.permutationsPast, c);	
+				Permutation minP = Collections.min(this.permutationsPast, c);
 				this.permutationsPast.remove(minP);
 			}
 			permutationsPast.add(input);
-		}	
-		
+		}
+
 	}
 
 	private boolean checkIfInputAlreadyInSet(Permutation input) {
@@ -863,39 +869,55 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private Comparator<Permutation> getComparatorAccordingToIndex(Permutation currentP) {
 		int comparatorIndex = Main.currentComparatorForMemory;
-		
-		
-		// 1=DistanceAndTrueCounter, 2=DistanceAndTrueRatio, 3=TrueCounter, 4=TrueRatio
-		
-		if (comparatorIndex == 1) {
-			return new ComparatorPermutationDistanceAndTrueCounter(currentP);
-		}
-		if (comparatorIndex == 2) {
-			return  new ComparatorPermutationDistanceAndTrueRatio(currentP);
 
-		}
-		if (comparatorIndex == 3) {
-			return  new ComparatorPermutationTrueCounter();
 
+		// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
+		// 5 = maxTrueCounter,minDistance;6=maxRatio,minDistance;7=maxMsize,minDistance; 8=minMsize,minDistance
+
+		boolean oppositeFlag;
+		boolean max;
+
+		if (comparatorIndex <= 4) {
+			oppositeFlag = false;
+			return comparatorGivenOppositeFlag(currentP, comparatorIndex, oppositeFlag);
+
+		}else {
+			oppositeFlag = true;
+			return comparatorGivenOppositeFlag(currentP, comparatorIndex, oppositeFlag);
 		}
-		if (comparatorIndex == 4) {
-			return  new ComparatorPermutationTrueRatio();
-		}
-		
-		return null;
+
+	
+
 	}
-/*
-	private Collection checkForAllSimilarPastPermutations(Permutation input) {
 
-		Collection ans = new TreeSet(new ComparatorPermutationDate());
-		for (Permutation p : permutationsPast) {
-			if (input.equals(p)) {
-				ans.add(p);
-			}
+	// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
+	// 5 = maxTrueCounter,minDistance;6=maxRatio,minDistance;7=maxMsize,minDistance; 8=minMsize,minDistance
+
+	private Comparator<Permutation> comparatorGivenOppositeFlag(Permutation currentP, int comparatorIndex, boolean oppositeFlag) {
+		boolean max;
+		if (comparatorIndex == 1 || comparatorIndex == 5 ) {
+			return new ComparatorPermutationDistanceAndTrueCounter(currentP, oppositeFlag);
 		}
-		return ans;
+		if (comparatorIndex == 2|| comparatorIndex == 6) {
+			return new ComparatorPermutationDistanceAndTrueRatio(currentP, oppositeFlag);
+		}
+		if (comparatorIndex == 3|| comparatorIndex == 7) {
+			max = true;
+			return new ComparatorPermutationDistanceAndMSize(currentP, max, oppositeFlag);
+		}
+		else {			
+			max = false;
+			return new ComparatorPermutationDistanceAndMSize(currentP, max, oppositeFlag);
+		}
 	}
-*/
+
+	/*
+	 * private Collection checkForAllSimilarPastPermutations(Permutation input) {
+	 * 
+	 * Collection ans = new TreeSet(new ComparatorPermutationDate()); for
+	 * (Permutation p : permutationsPast) { if (input.equals(p)) { ans.add(p); } }
+	 * return ans; }
+	 */
 	public void addToPermutationToSendUnsynchNonMonoByValue(Permutation input) {
 
 		if (this.isAnytimeTop()) {
@@ -903,7 +925,8 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 			if (this.bestPermuation == null || this.bestPermuation.getCost() > input.getCost()) {
 				recieveBetterPermutation(input);
 				iHaveAnytimeNews = true;
-				System.out.println(input.getCost() + " permutation past size: " + this.permutationsPast.size());
+				System.out.println(
+						"cost: " + input.getCost() + " permutation past size: " + this.permutationsPast.size());
 			}
 
 		} else {
@@ -916,7 +939,6 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-
 	private void recieveBetterPermutation(Permutation input) {
 		bestPermuation = input;
 		printTopCompletePermutation(input);
@@ -926,9 +948,11 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	private void printTopCompletePermutation(Permutation input) {
 		int realCost = Solution.dcopS.calRealSolForDebug(input.getM());
+
 		if (this.isAnytimeTop()) {
+
 			if (input.getCost() == realCost) {
-				System.out.println(input);
+				// System.out.println(input);
 			} else {
 				System.err.println("cost should be: " + realCost + " |" + input);
 

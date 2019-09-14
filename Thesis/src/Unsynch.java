@@ -23,22 +23,50 @@ public abstract class Unsynch extends Solution {
 		findHeadOfTree();
 		for (int i = 0; i < this.iteration; i++) {
 			iter = i;
+			
 			if (i % 500 == 0 ) {
 				System.out.println("---start iteration: " + i + "---");
 			}
+			
+			
+		
 			updateWhoCanDecide(i); // abstract
+			/*
+			if (iter<6 && !whoCanDecide.isEmpty()) {
+				printWhoCanDecide();
+				System.out.println();
+			}
+			*/
+			
+			
+			
 			agentDecide(i); // abstract
 			afterDecideTakeAction(i); // abstract
 			List<MessageNormal> msgToSend = agentZero.handleDelay();
+			
 			agentsSendMsgs(msgToSend); // abstract
 			createAnytimeUp(i); // abstract
 			createAnytimeDown(i);
+			/*
+			if (iter<6 && !whoCanDecide.isEmpty()) {
+				//dcop.printConst();
+				//System.out.println("agents after");
+				printAgents();
+			}
+			*/
+			
 			/*
 			if (noAgentsMinus1()) {
 				System.out.println();
 			}
 			*/
-			addCostToTables();
+			
+			addCostToTables( );
+			/*
+			if (i==0) {
+				System.out.println("cost:"+this.realCost.get(1));
+			}
+			*/
 
 			// ---- for debug
 			// printAgents();
@@ -53,6 +81,14 @@ public abstract class Unsynch extends Solution {
 			 * if (i==8) { System.out.println(); }
 			 */
 		}
+	}
+
+	private void printWhoCanDecide() {
+		System.out.println("who can decide "+iter);
+		for (AgentField a : whoCanDecide) {
+			System.out.print(a+",");
+		}
+		
 	}
 
 	private boolean noAgentsMinus1() {

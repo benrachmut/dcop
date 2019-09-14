@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class UnsynchDsa extends Unsynch {
 	private double stochastic;
@@ -48,7 +49,7 @@ public class UnsynchDsa extends Unsynch {
 
 	private void dsaDecide(int i) {
 
-		this.didDecide = new HashSet<AgentField>();
+		this.didDecide = new TreeSet<AgentField>();
 		for (AgentField a : whoCanDecide) {
 			if (i != 0) {
 

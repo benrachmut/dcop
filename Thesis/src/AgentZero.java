@@ -110,6 +110,11 @@ public class AgentZero {
 
 		while (it.hasNext()) {
 			MessageNormal msg = (MessageNormal) it.next();
+			/*
+			if (Unsynch.iter ==1) {
+				System.out.println(msg);
+			}
+			*/
 			if (msg.getDelay() == 0) {
 				msgToSend.add(msg);
 				it.remove();

@@ -1,7 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class Neighbors {
+public class Neighbors implements Comparable<Neighbors> {
 	private Agent a1;
 	private Agent a2;
 	// private double p3;
@@ -148,4 +148,23 @@ public class Neighbors {
 		// }
 	}
 
+	@Override
+	public int compareTo(Neighbors o) {
+		if (this.a1.getId()<o.a1.getId()) {
+			return 1;
+		}
+		if (this.a1.getId()>o.a1.getId()) {
+			return -1;
+		}else {
+			if (this.a2.getId()<o.a2.getId()) {
+				return 1;
+			}
+			if (this.a2.getId()>o.a2.getId()) {
+				return -1;
+			
+		}
+		return 0;
+	}
+	}
 }
+
