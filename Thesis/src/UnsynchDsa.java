@@ -30,7 +30,15 @@ public class UnsynchDsa extends Unsynch {
 			}
 
 		}
-		
+		/*
+		if ( i == 385) {
+			System.err.println("whoCanDecide");
+			for (AgentField a : whoCanDecide) {
+				System.err.println(a+",");
+			}
+		System.out.println();
+		}
+		*/
 		
 
 	}
@@ -67,14 +75,15 @@ public class UnsynchDsa extends Unsynch {
 			}
 
 		}
-		
-		if ( i == 138) {
+		/*
+		if ( i == 385) {
 			System.err.println("did dedice");
 			for (AgentField a : didDecide) {
 				System.err.println(a+",");
 			}
 		System.out.println();
 		}
+		*/
 		
 
 	}
@@ -106,9 +115,21 @@ public class UnsynchDsa extends Unsynch {
 	}
 
 	private void changeFlagForAgentsRecieveMsg(List<MessageNormal> messageSent) {
-		Set<AgentField> changeFlag = new HashSet<AgentField>();
+		SortedSet<AgentField> changeFlag = new TreeSet<AgentField>();
 		for (MessageNormal m : messageSent) {
-			changeFlag.add(m.getReciever());
+			if (!(m instanceof MessageAnyTimeDown) && !(m instanceof MessageAnyTimeUp)) {
+
+				changeFlag.add(m.getReciever());
+				/*
+				if (m.getReciever().getId() == 6) {
+					if (Unsynch.iter>300) {
+						System.out.println(m+ " "+ Unsynch.iter);
+					}
+					
+				}
+				*/
+			}
+			
 		}
 
 		for (AgentField a : changeFlag) {

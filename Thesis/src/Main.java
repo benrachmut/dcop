@@ -22,19 +22,19 @@ public class Main {
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
 	static int meanRepsStart = 0;
-	static int meanRepsEnd = 1; // number of reps for every solve process not include
-	static int iterations = 140;//10000, 2000;
+	static int meanRepsEnd = 100; // number of reps for every solve process not include
+	static int iterations = 2500;//10000, 2000;
 	// versions
 	static String algo = "dsaUnsynch7"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
 	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
-	static double[] constantsPower = {1};//1,2,3,4,5 };
+	static double[] constantsPower = {0.8,1,2,3,4};//{1,2,3,4,5};
 	
 
 	// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
 	// 5 = maxTrueCounter,minDistance;6=maxRatio,minDistance;7=maxMsize,minDistance; 8=minMsize,minDistance
-	static int[] comparatorsForMemory = {1}; 
+	static int[] comparatorsForMemory = {2}; 
 	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
@@ -341,7 +341,7 @@ public class Main {
 				currentUb = delayUB;
 				for (Double p4 : p4s) {
 					communicationSeed = communicationSeed + 1;
-					//System.out.println("here!!!");
+					//System.out.println("communicationSeed");
 					communicationSeeds(communicationSeed, meanRun);
 					currentP4 = p4;
 					afterHavingAllPrameters(p3, dK, delayUB, p4, dcop, meanRun);
