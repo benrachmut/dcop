@@ -2,17 +2,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class UnsynchDsa extends Unsynch {
 	private double stochastic;
-	private Set<AgentField> didDecide;
+	private SortedSet<AgentField> didDecide;
 
 	public UnsynchDsa(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stochastic) {
 		super(dcop, agents, aZ, meanRun);
 
 		this.stochastic = stochastic;
-		this.didDecide = new HashSet<AgentField>();
+		this.didDecide = new TreeSet<AgentField>();
 		Main.rDsa.setSeed(meanRun);
 		this.algo = "DSA"+stochastic+"asynch";
 	}
@@ -29,6 +30,8 @@ public class UnsynchDsa extends Unsynch {
 			}
 
 		}
+		
+		
 
 	}
 
@@ -64,6 +67,15 @@ public class UnsynchDsa extends Unsynch {
 			}
 
 		}
+		
+		if ( i == 138) {
+			System.err.println("did dedice");
+			for (AgentField a : didDecide) {
+				System.err.println(a+",");
+			}
+		System.out.println();
+		}
+		
 
 	}
 
@@ -77,8 +89,8 @@ public class UnsynchDsa extends Unsynch {
 			agentZero.afterDecideTakeActionUnsynchNonMonotonicByCounter(this.didDecide, i);
 		}
 
-		this.whoCanDecide = new ArrayList<AgentField>();
-		this.didDecide = new HashSet<AgentField>();
+		this.whoCanDecide = new TreeSet<AgentField>();
+		this.didDecide = new TreeSet<AgentField>();
 	}
 
 	// ---- 4

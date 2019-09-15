@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -178,12 +179,18 @@ public class AgentZero {
 
 	}
 
-	private int createDelay() {
+	private int createDelay(boolean anytimeFlag) {
 		int rndDelay;
 		rndDelay = 0;
+		
+		Random r = whichRandom(anytimeFlag);
+		
+		
 		double rnd = Main.rP3.nextDouble();
 		if (rnd < Main.currentP3) {
-			rndDelay = Main.getRandomInt(Main.rDelay, 1, Main.currentUb);
+			
+			
+			rndDelay = Main.getRandomInt(r, 1, Main.currentUb);
 			rnd = Main.rP4.nextDouble();
 			if (rnd < Main.currentP4) {
 				rndDelay = Integer.MAX_VALUE;
@@ -191,6 +198,13 @@ public class AgentZero {
 
 		}
 		return rndDelay;
+	}
+
+	private Random whichRandom(boolean anytimeFlag) {
+		if (anytimeFlag) {
+			return Main.rDelayAnytime;
+		}
+		return Main.rDelay;
 	}
 
 	private List<AgentField> getNeighborsAgents(AgentField a) {
@@ -548,7 +562,7 @@ public class AgentZero {
 		}
 	}
 
-	public void afterDecideTakeActionUnsynchNonMonotonicByValue(Set<AgentField> agentsThatChanged, int date) {
+	public void afterDecideTakeActionUnsynchNonMonotonicByValue(SortedSet<AgentField> agentsThatChanged, int date) {
 		for (AgentField a : agentsThatChanged) {
 
 			Permutation myPermutation = a.createCurrentPermutationByValue();

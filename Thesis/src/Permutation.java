@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class Permutation {
+public class Permutation implements Comparable<Permutation>{
 	// private Set<Map<Integer, Integer>> pastPermutation;
 	private Map<Integer, Integer> m;
 	private int cost;
@@ -446,6 +446,35 @@ public class Permutation {
 
 	public double trueRatio() {
 		return this.trueCounter()/this.m.size();
+	}
+
+	@Override
+	public int compareTo(Permutation o) {
+		if (this.cost<o.cost) {
+			return 1;
+		}
+		if (this.cost>o.cost) {
+			return -1;
+		}
+		
+		
+		if (this.trueCounter()>o.trueCounter()) {
+			return 1;
+		}
+		if (this.trueCounter()<o.trueCounter()) {
+			return -1;
+		}
+		
+		
+		if (this.m.size()>o.m.size()) {
+			return 1;
+		}
+		if (this.m.size()>o.m.size()) {
+			return -1;
+		}
+		
+		
+		return 0;
 	}
 	
 

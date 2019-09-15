@@ -3,18 +3,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public abstract class Unsynch extends Solution {
-	protected List<AgentField> whoCanDecide;
+	protected SortedSet<AgentField> whoCanDecide;
 	public static int iter;
-	protected List<Permutation> permutations;
-	protected List<AgentField> fathers;
+	protected SortedSet<Permutation> permutations;
+	protected SortedSet<AgentField> fathers;
 
 	public Unsynch(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
-		this.whoCanDecide = new ArrayList<AgentField>();
-		this.permutations = new ArrayList<Permutation>();
-		this.fathers = new ArrayList<AgentField>();
+		this.whoCanDecide = new TreeSet<AgentField>();
+		this.permutations = new TreeSet<Permutation>();
+		this.fathers = new TreeSet<AgentField>();
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public abstract class Unsynch extends Solution {
 	}
 
 	private void findHeadOfTree() {
-		List<AgentField> ans = new ArrayList<AgentField>();
+		SortedSet<AgentField> ans = new TreeSet<AgentField>();
 		for (AgentField a : agents) {
 			if (a.isAnytimeTop()) {
 				ans.add(a);

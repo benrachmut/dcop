@@ -227,12 +227,14 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		if (this.value == -1) {
 			shouldChange = true;
 		}
-
+		
+		
+		
 		boolean didChange = maybeChange(shouldChange, minPotentialCost, stochastic);
 		/*
-		 * if (Unsynch.iter == 5 && this.id==3) {
-		 * System.out.println("currentPersonalCost:"+currentPersonalCost+", minCost:"+
-		 * minCost+", shouldChange:"+ shouldChange+", didChange:"+ didChange); }
+		 if (Unsynch.iter == 138 && this.id==13) {
+		 System.out.println("currentPersonalCost:"+currentPersonalCost+", minCost:"+
+		 minCost+", shouldChange:"+ shouldChange+", didChange:"+ didChange); }
 		 */
 		return didChange;
 	}

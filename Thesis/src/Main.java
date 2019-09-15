@@ -22,26 +22,27 @@ public class Main {
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
 	static int meanRepsStart = 0;
-	static int meanRepsEnd = 100; // number of reps for every solve process not include
-	static int iterations = 10000;//10000, 2000;
+	static int meanRepsEnd = 1; // number of reps for every solve process not include
+	static int iterations = 140;//10000, 2000;
 	// versions
 	static String algo = "dsaUnsynch7"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
-	static int[] dcopVersions = { 2 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
+	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
-	static int[] memoryVersions = {1}; // 1=exp, 2= constant, 3= reasonable
-	static double[] constantsPower = { 1,2,3,4,5 };
+	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
+	static double[] constantsPower = {1};//1,2,3,4,5 };
 	
 
 	// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
 	// 5 = maxTrueCounter,minDistance;6=maxRatio,minDistance;7=maxMsize,minDistance; 8=minMsize,minDistance
-	static int[] comparatorsForMemory = {8}; 
+	static int[] comparatorsForMemory = {1}; 
 	// -- synch
 	static boolean synch = false;
 	static boolean anytimeDfs = true;
 	static boolean anytimeBfs = false;
-	static String fileName; // "AAAI2020_agents_"+A+"Dcop_v"+dcopVersions[0]+"_memoryV"+memoryVersions[0]+"3000_iterations";
+	static String fileName; 
+	
 	// -- uniformly random dcop
-	static double[] p1sUniform = { 0.1 }; // 0.1,0.7
+	static double[] p1sUniform = { 0.7 }; // 0.1,0.7
 	static double[] p2sUniform = { 1};
 	// -- color dcop
 	static double[] p1sColor = { 0.1 }; // 0.1,0.7
@@ -50,9 +51,9 @@ public class Main {
 	static int[] numOfNToNotHubs = { 3 };
 	static double[] p2sScaleFree = { 1 };
 	// -- communication protocol
-	static double[] p3s = {0,1};
+	static double[] p3s = {1};
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {5, 10, 20, 40};//{ 5, 10, 20, 40 };
+	static int[] delayUBs = {10};//{ 5, 10, 20, 40 };
 	static double[] p4s = { 0 };
 
 	// ------- GENERAL VARIABLES NO NEED TO CHANGE
@@ -96,12 +97,15 @@ public class Main {
 	static Double currentP3;
 	static Double currentP4;
 	static int currentUb;
+	static Random rDelayAnytime= new Random();
 
 	public static void main(String[] args) {
 
 		fileName = getFileName();
 
 		System.out.println(fileName);
+		
+		
 		for (int i : dcopVersions) {
 			dcopVersion = i;
 			if (algo == "dsaUnsynch7") {
@@ -123,9 +127,9 @@ public class Main {
 
 		String meanRunRange = "start_" + meanRepsStart + ",end_" + meanRepsEnd;
 		if (algo.equals("dsaUnsynch7")) {
-			meanRunRange =meanRunRange;
+			//meanRunRange =meanRunRange;
 			if (memoryVersions[0] == 2) {
-				meanRunRange =meanRunRange+",comparator_"+comparatorsForMemory[0];
+				meanRunRange =meanRunRange+",comparator_"+comparatorsForMemory[0]+",constant_"+constantsPower[0];
 			}
 		}
 		
@@ -349,9 +353,11 @@ public class Main {
 	}
 
 	private static void communicationSeeds(int communicationSeed, int meanRun) {
+		//communicationSeed =0;
 		rP3.setSeed(communicationSeed);
 		rP4.setSeed(communicationSeed);
 		rDelay.setSeed(communicationSeed);
+		rDelayAnytime.setSeed(communicationSeed);
 		rDsa.setSeed(communicationSeed);
 
 	}

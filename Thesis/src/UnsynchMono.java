@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class UnsynchMono extends Unsynch {
 
@@ -10,7 +12,7 @@ public class UnsynchMono extends Unsynch {
 
 	}
 	public void updateWhoCanDecide(int i) {
-		List<AgentField> temp = new ArrayList<AgentField>();
+		SortedSet<AgentField> temp = new TreeSet<AgentField>();
 		if (i == 0) {
 			temp = findHeadOfTree();
 		} else {
@@ -49,8 +51,8 @@ public class UnsynchMono extends Unsynch {
 
 	
 
-	private List<AgentField> iterateAgentsWhoCan() {
-		List<AgentField> ans = new ArrayList<AgentField>();
+	private SortedSet<AgentField> iterateAgentsWhoCan() {
+		SortedSet<AgentField> ans = new TreeSet<AgentField>();
 		for (AgentField a : agents) {
 			if (a.unsynchAbilityToDecide()) {
 				ans.add(a);
@@ -63,7 +65,6 @@ public class UnsynchMono extends Unsynch {
 
 	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
 		agentZero.sendUnsynchMonotonicMsgs(msgToSend);
-		//-------------------
 
 	}
 
@@ -73,8 +74,8 @@ public class UnsynchMono extends Unsynch {
 
 	
 
-	public List<AgentField> findHeadOfTree() {
-		List<AgentField> ans = new ArrayList<AgentField>();
+	public SortedSet<AgentField> findHeadOfTree() {
+		SortedSet<AgentField> ans = new TreeSet<AgentField>();
 		for (AgentField a : agents) {
 			if (a.getDfsFather() == null) {
 				ans.add(a);
