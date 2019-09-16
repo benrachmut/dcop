@@ -29,7 +29,7 @@ public class Main {
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
 	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
-	static double[] constantsPower = {3};//{0.8,1,2,3,4};//{1,2,3,4,5};
+	static double[] constantsPower = {2};//{0.8,1,2,3,4};//{1,2,3,4,5};
 	
 
 	// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
