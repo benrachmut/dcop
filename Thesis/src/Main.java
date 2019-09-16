@@ -17,7 +17,7 @@ public class Main {
 
 	// ------- VARIABLES TO CHECK BEFORE STARTING A RUN
 	// -- variables of dcop problem
-	static int A = 50; // number of agents
+	static int A = 30; // number of agents
 	static int D = 10; // size of domain for each agent
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
@@ -29,7 +29,7 @@ public class Main {
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
 	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
-	static double[] constantsPower = {0.8,1,2,3,4};//{1,2,3,4,5};
+	static double[] constantsPower = {3};//{0.8,1,2,3,4};//{1,2,3,4,5};
 	
 
 	// 1 = minDistance,maxTrueCounter;2=minDistance,maxRatio;3=minDistance,maxMsize; 4=minDistance,minMsize
@@ -37,8 +37,8 @@ public class Main {
 	static int[] comparatorsForMemory = {2}; 
 	// -- synch
 	static boolean synch = false;
-	static boolean anytimeDfs = true;
-	static boolean anytimeBfs = false;
+	static boolean anytimeDfs = false;
+	static boolean anytimeBfs = true;
 	static String fileName; 
 	
 	// -- uniformly random dcop
@@ -53,7 +53,7 @@ public class Main {
 	// -- communication protocol
 	static double[] p3s = {1};
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {10};//{ 5, 10, 20, 40 };
+	static int[] delayUBs = {2};//10};//{ 5, 10, 20, 40 };
 	static double[] p4s = { 0 };
 
 	// ------- GENERAL VARIABLES NO NEED TO CHANGE
