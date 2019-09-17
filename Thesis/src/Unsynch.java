@@ -12,11 +12,14 @@ public abstract class Unsynch extends Solution {
 	protected SortedSet<Permutation> permutations;
 	protected SortedSet<AgentField> fathers;
 
+
+
 	public Unsynch(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		super(dcop, agents, aZ, meanRun);
 		this.whoCanDecide = new TreeSet<AgentField>();
 		this.permutations = new TreeSet<Permutation>();
 		this.fathers = new TreeSet<AgentField>();
+
 	}
 
 	@Override
@@ -33,15 +36,7 @@ public abstract class Unsynch extends Solution {
 			
 		
 			updateWhoCanDecide(i); // abstract
-			/*
-			if (iter<6 && !whoCanDecide.isEmpty()) {
-				printWhoCanDecide();
-				System.out.println();
-			}
-			*/
-			
-			
-			
+		
 			agentDecide(i); // abstract
 			afterDecideTakeAction(i); // abstract
 			List<MessageNormal> msgToSend = agentZero.handleDelay();
@@ -49,39 +44,9 @@ public abstract class Unsynch extends Solution {
 			agentsSendMsgs(msgToSend); // abstract
 			createAnytimeUp(i); // abstract
 			createAnytimeDown(i);
-			/*
-			if (iter<6 && !whoCanDecide.isEmpty()) {
-				//dcop.printConst();
-				//System.out.println("agents after");
-				printAgents();
-			}
-			*/
-			
-			/*
-			if (noAgentsMinus1()) {
-				System.out.println();
-			}
-			*/
-			
 			addCostToTables( );
-			/*
-			if (i==0) {
-				System.out.println("cost:"+this.realCost.get(1));
-			}
-			*/
-
-			// ---- for debug
-			// printAgents();
-			// printDecisionCounter(i);
-
-			// printPersonalPermutations(i);
-
-			// printCreatedAnytimeMsgUp(i);
-
-			// System.out.println("---finish iteration: "+i+"---");
-			/*
-			 * if (i==8) { System.out.println(); }
-			 */
+			addRatioCounterTopCounterChanges();
+			
 		}
 	}
 

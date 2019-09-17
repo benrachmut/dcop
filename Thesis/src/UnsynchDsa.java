@@ -8,7 +8,12 @@ import java.util.TreeSet;
 public class UnsynchDsa extends Unsynch {
 	private double stochastic;
 	private SortedSet<AgentField> didDecide;
+	protected List<Double> ratioCounterTopCounterChanges;
 
+	public static int counterPermutationAtTop;
+	public static int counterCentralisticChanges;
+	
+	
 	public UnsynchDsa(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun, double stochastic) {
 		super(dcop, agents, aZ, meanRun);
 
@@ -16,6 +21,8 @@ public class UnsynchDsa extends Unsynch {
 		this.didDecide = new TreeSet<AgentField>();
 		Main.rDsa.setSeed(meanRun);
 		this.algo = "DSA"+stochastic+"asynch";
+		counterPermutationAtTop = 0;
+		counterCentralisticChanges=0;
 	}
 
 	// ---- 1
@@ -30,17 +37,6 @@ public class UnsynchDsa extends Unsynch {
 			}
 
 		}
-		/*
-		if ( i == 385) {
-			System.err.println("whoCanDecide");
-			for (AgentField a : whoCanDecide) {
-				System.err.println(a+",");
-			}
-		System.out.println();
-		}
-		*/
-		
-
 	}
 
 	// ---- 2
@@ -75,17 +71,6 @@ public class UnsynchDsa extends Unsynch {
 			}
 
 		}
-		/*
-		if ( i == 385) {
-			System.err.println("did dedice");
-			for (AgentField a : didDecide) {
-				System.err.println(a+",");
-			}
-		System.out.println();
-		}
-		*/
-		
-
 	}
 
 	// ---- 3
@@ -118,16 +103,7 @@ public class UnsynchDsa extends Unsynch {
 		SortedSet<AgentField> changeFlag = new TreeSet<AgentField>();
 		for (MessageNormal m : messageSent) {
 			if (!(m instanceof MessageAnyTimeDown) && !(m instanceof MessageAnyTimeUp)) {
-
 				changeFlag.add(m.getReciever());
-				/*
-				if (m.getReciever().getId() == 6) {
-					if (Unsynch.iter>300) {
-						System.out.println(m+ " "+ Unsynch.iter);
-					}
-					
-				}
-				*/
 			}
 			
 		}
@@ -142,23 +118,6 @@ public class UnsynchDsa extends Unsynch {
 	public void createAnytimeUp(int i) {
 		agentZero.createAnyTimeUpUnsynchNonMonotonic(i);
 	}
-/*
-	@Override
-	public void createAnytimeDown(int date) {
-		// TODO Auto-generated method stub
 
-	}
-	/*
-	@Override
-	public List<AgentField> findHeadOfTree() {
-		List<AgentField> ans = new ArrayList<AgentField>();
-		for (AgentField a : agents) {
-			if (a.getAnytimeFather() == null) {
-				ans.add(a);
-			}
-		}
-		return ans;
-	}
-	*/
 	
 }

@@ -98,6 +98,8 @@ public class Main {
 	static Double currentP4;
 	static int currentUb;
 	static Random rDelayAnytime= new Random();
+	
+	
 
 	public static void main(String[] args) {
 
