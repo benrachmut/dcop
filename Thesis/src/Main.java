@@ -17,18 +17,18 @@ public class Main {
 
 	// ------- VARIABLES TO CHECK BEFORE STARTING A RUN
 	// -- variables of dcop problem
-	static int A = 30; // number of agents
+	static int A = 10; // number of agents
 	static int D = 10; // size of domain for each agent
 	static int costMax = 100; // the max value of cost
 	// -- Experiment time
 	static int meanRepsStart = 0;
-	static int meanRepsEnd = 100; // number of reps for every solve process not include
+	static int meanRepsEnd = 2; // number of reps for every solve process not include
 	static int iterations = 2500;//10000, 2000;
 	// versions
 	static String algo = "dsaUnsynch7"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
 	// -- memory
-	static int[] memoryVersions = {2}; // 1=exp, 2= constant, 3= reasonable
+	static int[] memoryVersions = {1}; // 1=exp, 2= constant, 3= reasonable
 	static double[] constantsPower = {2};//{0.8,1,2,3,4};//{1,2,3,4,5};
 	
 
@@ -37,8 +37,8 @@ public class Main {
 	static int[] comparatorsForMemory = {2}; 
 	// -- synch
 	static boolean synch = false;
-	static boolean anytimeDfs = false;
-	static boolean anytimeBfs = true;
+	static boolean anytimeDfs = true;
+	static boolean anytimeBfs = false;
 	static String fileName; 
 	
 	// -- uniformly random dcop
@@ -53,7 +53,7 @@ public class Main {
 	// -- communication protocol
 	static double[] p3s = {1};
 	static boolean[] dateKnowns = { true };
-	static int[] delayUBs = {2};//10};//{ 5, 10, 20, 40 };
+	static int[] delayUBs = {5};//10};//{ 5, 10, 20, 40 };
 	static double[] p4s = { 0 };
 
 	// ------- GENERAL VARIABLES NO NEED TO CHANGE
@@ -219,9 +219,9 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter(fileName + ".csv");
 			out = new BufferedWriter(s);
-			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,";
+			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,cost_change_counter,";
 			if (!synch) {
-				header = header + "anytime_cost,top_cost,memory_style,hyper_parametr,comparator";
+				header = header + "top_cost_not_best,top_change_counter,top_change_ratio,anytime_cost,top_cost,memory_style,hyper_parametr,comparator,";
 			}
 			out.write(header);
 			out.newLine();
@@ -412,12 +412,13 @@ public class Main {
 
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
-			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i)
+		
+			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i)+ "," + sol.getCounterChanges(i)
 					+ ",";
 
 			if (!synch) {
 
-				s = s + new String(sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion) + ",";
+				s = s +((Unsynch)sol).getTopCostNotBest(i)+","+((Unsynch)sol).getCounterTop(i)+","+((Unsynch)sol).getCounterRatio(i)+","+sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion + ",";
 				if (memoryVersion == 1) {
 					s = s + 0;
 				}

@@ -36,7 +36,7 @@ public class MGMub extends MGM {
 				}
 				first = false;
 			}
-			addCostToList();
+			addCostToList(i);
 		}
 
 	}

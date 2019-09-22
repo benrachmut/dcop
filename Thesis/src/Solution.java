@@ -18,6 +18,11 @@ public abstract class Solution {
 	protected int currentItiration;
 	protected String algo;
 	public static Dcop dcopS;
+	
+	public static int counterCentralisticChanges;
+	protected List<Integer> counterChanges;
+
+
 
 	public Solution(Dcop dcop, AgentField[] agents, AgentZero aZ, int meanRun) {
 		this.meanRun = meanRun + 1;
@@ -33,7 +38,9 @@ public abstract class Solution {
 		this.anytimeCost = new ArrayList<Integer>();
 		topAnytimeCost = new ArrayList<Integer>();
 		this.agentThinkCost = new ArrayList<Integer>();
-		addCostToList();
+		counterChanges = new ArrayList<Integer>();
+		counterCentralisticChanges=0;
+		addCostToList(0);
 		
 
 
@@ -43,26 +50,24 @@ public abstract class Solution {
 		return dcop.calCost(true);
 	}
 
-	public void addCostToList() {
+	public void addCostToList(int i) {		
+		int currentCost = dcop.calCost(true);
+		this.realCost.add(currentCost);
+		
+		if (i == 0) {
+			counterCentralisticChanges = 0;
+		}else {
 
-		this.realCost.add(dcop.calCost(true));
+			if (currentCost!=this.realCost.get(i-1)) {
+				counterCentralisticChanges = counterCentralisticChanges+1;
+			}		
+		}	
+		counterChanges.add(counterCentralisticChanges);
 	}
 	
 	public void addAnytimeCost() {
 		this.anytimeCost.add(dcop.calCost(false));
 	}
-/*
-	private void trySelfCost() {
-		
-		int ans = 0;
-		for (AgentField a : this.agents) {
-			ans = ans+ a.calSelfCost();
-		}
-		ans = ans/2;
-		this.realCost.add(ans);
-		
-	}
-	*/
 
 	public abstract void solve();
 
@@ -123,6 +128,11 @@ public abstract class Solution {
 	public List<Integer> getRealCosts() {
 		// TODO Auto-generated method stub
 		return this.realCost;
+	}
+
+	public int getCounterChanges(int i) {
+		// TODO Auto-generated method stub
+		return this.counterChanges.get(i);
 	}
 
 

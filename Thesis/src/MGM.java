@@ -22,7 +22,7 @@ public class MGM extends Solution {
 				first = false;
 
 			}
-			addCostToList();
+			addCostToList(i);
 		}
 
 	}

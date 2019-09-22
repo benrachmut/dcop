@@ -9,8 +9,11 @@ import java.util.TreeSet;
 public abstract class Unsynch extends Solution {
 	protected SortedSet<AgentField> whoCanDecide;
 	public static int iter;
+	public static int topCost;
+
 	protected SortedSet<Permutation> permutations;
 	protected SortedSet<AgentField> fathers;
+	public static int currentPriceOfTop;
 
 
 
@@ -19,7 +22,8 @@ public abstract class Unsynch extends Solution {
 		this.whoCanDecide = new TreeSet<AgentField>();
 		this.permutations = new TreeSet<Permutation>();
 		this.fathers = new TreeSet<AgentField>();
-
+		topCost = Integer.MAX_VALUE;
+ 
 	}
 
 	@Override
@@ -44,11 +48,13 @@ public abstract class Unsynch extends Solution {
 			agentsSendMsgs(msgToSend); // abstract
 			createAnytimeUp(i); // abstract
 			createAnytimeDown(i);
-			addCostToTables( );
-			addRatioCounterTopCounterChanges();
+			addCostToTables(i );
+			addTopCountersChanges(i);
 			
 		}
 	}
+
+	protected abstract void addTopCountersChanges(int i) ;
 
 	private void printWhoCanDecide() {
 		System.out.println("who can decide "+iter);
@@ -130,8 +136,8 @@ public abstract class Unsynch extends Solution {
 
 	}
 
-	private void addCostToTables() {
-		addCostToList();
+	private void addCostToTables(int i) {
+		addCostToList(i);
 		addAnytimeCostToList();
 		addTopCost();
 		addToPermutationsList();
@@ -207,11 +213,17 @@ public abstract class Unsynch extends Solution {
 	}
 
 	@Override
-	public void addCostToList() {
+	public void addCostToList(int i ) {
+		
+		
+
+		
 		if (atlistOneAgentMinusOne(true)) {
 			this.realCost.add(Integer.MAX_VALUE);
 		} else {
-			super.addCostToList();
+			
+		
+			super.addCostToList(i);
 		}
 	}
 
@@ -224,5 +236,11 @@ public abstract class Unsynch extends Solution {
 		}
 
 	}
+
+	public abstract double getCounterRatio(int i);
+
+	protected abstract int getCounterTop(int i);
+
+	protected abstract int getTopCostNotBest(int i);
 
 }

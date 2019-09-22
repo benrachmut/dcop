@@ -83,6 +83,24 @@ public class UnsynchMono extends Unsynch {
 		}
 		return ans;
 	}
+
+	@Override
+	protected void addTopCountersChanges(int i) {}
+	@Override
+	public double getCounterRatio(int i) {
+		// TODO Auto-generated method stub
+		return 0.0;
+	}
+	@Override
+	protected int getCounterTop(int i) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	protected int getTopCostNotBest(int i) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 
 	
