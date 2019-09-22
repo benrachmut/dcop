@@ -11,13 +11,13 @@ public class MGM extends Solution {
 	public void solve() {
 		boolean first = true;
 		for (int i = 0; i < this.iteration; i++) {
+			System.out.println(i);
 			if (!first) {
 				agentsSetR();
 				sendAndRecieveRi(i);
 				agentDecide(i);
 				first = true;
 			} else {
-
 				sendAndRecieve(i);
 				first = false;
 
@@ -29,7 +29,7 @@ public class MGM extends Solution {
 
 	protected void sendAndRecieveRi(int i) {
 		this.agentZero.createRiMsgs(i);
-		this.agentZero.sendRiMsgs();
+		this.agentZero.sendMsgs(true);
 
 	}
 

@@ -93,7 +93,7 @@ public class UnsynchDsa extends Unsynch {
 	// ---- 4
 
 	@Override
-	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
+	public void agentsSendMsgs(List<Message> msgToSend) {
 		if (Main.trySendValueAsPermutation) {
 			agentZero.sendUnsynchNonMonotonicByValueMsgs(msgToSend);
 		} else {
@@ -102,9 +102,9 @@ public class UnsynchDsa extends Unsynch {
 		changeFlagForAgentsRecieveMsg(msgToSend);
 	}
 
-	private void changeFlagForAgentsRecieveMsg(List<MessageNormal> messageSent) {
+	private void changeFlagForAgentsRecieveMsg(List<Message> messageSent) {
 		SortedSet<AgentField> changeFlag = new TreeSet<AgentField>();
-		for (MessageNormal m : messageSent) {
+		for (Message m : messageSent) {
 			if (!(m instanceof MessageAnyTimeDown) && !(m instanceof MessageAnyTimeUp)) {
 				changeFlag.add(m.getReciever());
 			}

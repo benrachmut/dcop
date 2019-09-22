@@ -54,15 +54,7 @@ public abstract class Solution {
 		int currentCost = dcop.calCost(true);
 		this.realCost.add(currentCost);
 		
-		if (i == 0) {
-			counterCentralisticChanges = 0;
-		}else {
-
-			if (currentCost!=this.realCost.get(i-1)) {
-				counterCentralisticChanges = counterCentralisticChanges+1;
-			}		
-		}	
-		counterChanges.add(counterCentralisticChanges);
+		
 	}
 	
 	public void addAnytimeCost() {
@@ -99,7 +91,7 @@ public abstract class Solution {
 
 	public void sendAndRecieve(int i) {
 		this.agentZero.createMsgs(i);
-		this.agentZero.sendMsgs();
+		this.agentZero.sendMsgs(false);
 	}
 
 	public int getFatherCost(int i ) {
@@ -126,15 +118,14 @@ public abstract class Solution {
 	}
 
 	public List<Integer> getRealCosts() {
-		// TODO Auto-generated method stub
 		return this.realCost;
 	}
 
 	public int getCounterChanges(int i) {
-		// TODO Auto-generated method stub
 		return this.counterChanges.get(i);
 	}
 
+	
 
 
 }

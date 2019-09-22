@@ -63,7 +63,7 @@ public class UnsynchMono extends Unsynch {
 
 
 
-	public void agentsSendMsgs(List<MessageNormal> msgToSend) {
+	public void agentsSendMsgs(List<Message> msgToSend) {
 		agentZero.sendUnsynchMonotonicMsgs(msgToSend);
 
 	}
@@ -85,7 +85,9 @@ public class UnsynchMono extends Unsynch {
 	}
 
 	@Override
-	protected void addTopCountersChanges(int i) {}
+	protected void addTopCountersChanges(int i) {
+		
+	}
 	@Override
 	public double getCounterRatio(int i) {
 		// TODO Auto-generated method stub
@@ -101,9 +103,4 @@ public class UnsynchMono extends Unsynch {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-
-	
-	
-
 }

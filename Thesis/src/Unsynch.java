@@ -43,8 +43,7 @@ public abstract class Unsynch extends Solution {
 		
 			agentDecide(i); // abstract
 			afterDecideTakeAction(i); // abstract
-			List<MessageNormal> msgToSend = agentZero.handleDelay();
-			
+			List <Message> msgToSend = agentZero.handleDelay();	
 			agentsSendMsgs(msgToSend); // abstract
 			createAnytimeUp(i); // abstract
 			createAnytimeDown(i);
@@ -88,13 +87,12 @@ public abstract class Unsynch extends Solution {
 			System.out.print(a + ", ");
 		}
 		System.out.println();
-
 	}
 
 	private void printCreatedAnytimeMsgUp(int i) {
 		List<MessageAnyTimeUp> atu = new ArrayList<MessageAnyTimeUp>();
 
-		for (MessageNormal m : agentZero.getMsgBox()) {
+		for (Message m : agentZero.getMsgBox()) {
 			if (m instanceof MessageAnyTimeUp) {
 				atu.add((MessageAnyTimeUp) m);
 			}
@@ -104,7 +102,7 @@ public abstract class Unsynch extends Solution {
 		for (MessageAnyTimeUp m : atu) {
 
 			System.out.println("iteration: " + i + ", from: a" + m.getSender().getId() + ", to: a"
-					+ m.getReciever().getId() + ", " + m.getCurrentPermutation());
+					+ m.getReciever().getId() + ", " + m.getMessageInformation());
 		}
 
 	}
@@ -137,6 +135,9 @@ public abstract class Unsynch extends Solution {
 	}
 
 	private void addCostToTables(int i) {
+		
+
+		
 		addCostToList(i);
 		addAnytimeCostToList();
 		addTopCost();
@@ -183,7 +184,7 @@ public abstract class Unsynch extends Solution {
 	// protected abstract void agentDecide();
 	protected abstract void afterDecideTakeAction(int i);
 
-	public abstract void agentsSendMsgs(List<MessageNormal> msgToSend);
+	public abstract void agentsSendMsgs(List<Message> msgToSend);
 
 	public abstract void createAnytimeUp(int i);
 
@@ -214,17 +215,26 @@ public abstract class Unsynch extends Solution {
 
 	@Override
 	public void addCostToList(int i ) {
-		
-		
 
-		
 		if (atlistOneAgentMinusOne(true)) {
 			this.realCost.add(Integer.MAX_VALUE);
 		} else {
-			
-		
 			super.addCostToList(i);
 		}
+		
+		
+		if (i == 0) {
+			counterCentralisticChanges = 0;
+		}else {
+			int currentCost = this.realCost.get(i);
+			int pastCost = this.realCost.get(i-1);
+
+			if (currentCost!=pastCost) {
+				counterCentralisticChanges = counterCentralisticChanges+1;
+			}		
+		}
+
+		counterChanges.add(counterCentralisticChanges);
 	}
 
 	@Override

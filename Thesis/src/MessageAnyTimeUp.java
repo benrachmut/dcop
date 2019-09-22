@@ -1,29 +1,24 @@
 import java.util.HashSet;
 import java.util.Set;
 
-public class MessageAnyTimeUp extends MessageNormal {
+public class MessageAnyTimeUp extends Message<Permutation> {
 	//private Set<Permutation> pastPermutations;
-	private Permutation currentPermutation;
+	//private Permutation currentPermutation;
 	
-	public MessageAnyTimeUp(AgentField sender, AgentField reciever, int delay,
-			int date,Permutation p) {
-		
-		super(sender, reciever, -100, delay, date);
-		this.currentPermutation = p;
-		//this.currentPermutations.add(p);
-				
-		//this.pastPermutations = new HashSet<Permutation>();
-		//this.pastPermutations.add(p);
+	public MessageAnyTimeUp(AgentField sender, AgentField reciever,Permutation p, int delay,
+			int date) {
+		super(sender, reciever, p, delay, date);
 		
 	}
 	
 	
 
-	
+	/*
 	public Permutation getCurrentPermutation() {
 		// TODO Auto-generated method stub
 		return this.currentPermutation;
 	}
+	*/
 
 /*
 
