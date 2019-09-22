@@ -23,7 +23,7 @@ public class Main {
 	// -- Experiment time
 	static int meanRepsStart = 0;
 	static int meanRepsEnd = 2; // number of reps for every solve process not include
-	static int iterations = 2500;//10000, 2000;
+	static int iterations = 100;//10000, 2000;
 	// versions
 	static String algo = "dsaUnsynch7"; // "mgm"; "dsa7"; "dsaUnsynch7";//"unsynchMono";//"mgmUb";//"unsynch0";
 	static int[] dcopVersions = { 1 }; // 1= Uniformly random DCOPs, 2= Graph coloring problems, 3= Scale-free
@@ -219,9 +219,9 @@ public class Main {
 		try {
 			FileWriter s = new FileWriter(fileName + ".csv");
 			out = new BufferedWriter(s);
-			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,cost_change_counter,";
+			String header = "dcop,p3,date_known,ub,p4,algo,p1,p2,mean_run,iteration,real_cost,";
 			if (!synch) {
-				header = header + "top_cost_not_best,top_change_counter,top_change_ratio,anytime_cost,top_cost,memory_style,hyper_parametr,comparator,";
+				header = header + "cost_change_counter,top_cost_not_best,top_change_counter,top_change_ratio,anytime_cost,top_cost,memory_style,hyper_parametr,comparator,";
 			}
 			out.write(header);
 			out.newLine();
@@ -262,11 +262,11 @@ public class Main {
 				currentP2Uniform = p2;
 
 				for (int meanRun = meanRepsStart; meanRun < meanRepsEnd; meanRun++) {
-					
 					dcopSeeds(meanRun);
 					dcop = createDcop();
 					differentCommunicationProtocols(dcop, meanRun);
 
+					
 				} // means run
 			} // p2
 		} // p1
@@ -307,10 +307,12 @@ public class Main {
 		// ---- protocol ----
 		String protocol = "p3=" + currentP3 + ", ub=" + currentUb + ", mean run=" + meanRun;
 		// ---- find solution ----
+
 		Solution algo = selectedAlgo(dcop, meanRun);
 		printHeader(protocol);
 		// ---- restart ----
 		String useInExcel = p3 + "," + dK + "," + delayUB + "," + p4;
+
 		restartBetweenAlgo(algo, useInExcel);
 	}
 
@@ -344,8 +346,10 @@ public class Main {
 				for (Double p4 : p4s) {
 					communicationSeed = communicationSeed + 1;
 					//System.out.println("communicationSeed");
+
 					communicationSeeds(communicationSeed, meanRun);
 					currentP4 = p4;
+
 					afterHavingAllPrameters(p3, dK, delayUB, p4, dcop, meanRun);
 
 				} // p4
@@ -386,6 +390,7 @@ public class Main {
 		}
 
 		if (mgm) {
+
 			ans = new MGM(dcop, agents, agentZero, meanRun);
 
 		}
@@ -413,12 +418,11 @@ public class Main {
 	private static void addToSolutionString(Solution sol, String protocol) {
 		for (int i = 0; i < iterations; i++) {
 		
-			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i)+ "," + sol.getCounterChanges(i)
-					+ ",";
+	
+			String s = dcop.toString() + "," + protocol + "," + sol.toString() + "," + i + "," + sol.getRealCost(i)+ ",";
 
 			if (!synch) {
-
-				s = s +((Unsynch)sol).getTopCostNotBest(i)+","+((Unsynch)sol).getCounterTop(i)+","+((Unsynch)sol).getCounterRatio(i)+","+sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion + ",";
+				s = s +sol.getCounterChanges(i)+"," + ((Unsynch)sol).getTopCostNotBest(i)+","+((Unsynch)sol).getCounterTop(i)+","+((Unsynch)sol).getCounterRatio(i)+","+sol.getAnytimeCost(i) + "," + sol.getTopCost(i) + "," + memoryVersion + ",";
 				if (memoryVersion == 1) {
 					s = s + 0;
 				}
@@ -473,6 +477,7 @@ public class Main {
 	}
 
 	private static void restartBetweenAlgo(Solution sol, String protocol) {
+
 		addToSolutionString(sol, protocol);
 		restartOther();
 	}
@@ -480,7 +485,7 @@ public class Main {
 	private static void restartOther() {
 		restartAgent();
 		agentZero.emptyMessageBox();
-		agentZero.emptyRMessageBox();
+		//agentZero.emptyRMessageBox();
 		agentZero.emptyTimeStempBoxMessage();
 
 	}

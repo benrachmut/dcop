@@ -1,9 +1,9 @@
 import java.util.Comparator;
 
-public class ComparatorMsgDate implements Comparator<MessageNormal> {
+public class ComparatorMsgDate implements Comparator<Message> {
 
 	@Override
-	public int compare(MessageNormal m1, MessageNormal m2) {
+	public int compare(Message m1, Message m2) {
 		if (m1.getDate() < m2.getDate()) {
 			return 1;
 		}

@@ -16,9 +16,9 @@ import org.omg.CORBA.Current;
 
 public class AgentZero {
 
-	private List<MessageNormal> messageBox;
-	private List<MessageNormal> rMessageBox;
-	private List<MessageNormal> timeStempMessageBox;
+	private List<Message> messageBox;
+	// private List<MessageNormal> rMessageBox;
+	private List<MessageValue> timeStempMessageBox;
 
 	private Set<Neighbors> neighbors;
 	private int iteration;
@@ -29,9 +29,9 @@ public class AgentZero {
 
 	public AgentZero(int iteration, Set<Neighbors> neighbors, AgentField[] agents) {
 		this.agents = agents;
-		this.messageBox = new ArrayList<MessageNormal>();
-		rMessageBox = new ArrayList<MessageNormal>();
-		timeStempMessageBox = new ArrayList<MessageNormal>();
+		this.messageBox = new ArrayList<Message>();
+		// rMessageBox = new ArrayList<MessageNormal>();
+		timeStempMessageBox = new ArrayList<MessageValue>();
 		this.neighbors = neighbors;
 		this.iteration = iteration;
 	}
@@ -49,74 +49,65 @@ public class AgentZero {
 			// int delay12 = n.getDelay12(currentIteration);
 			// int delay21 = n.getDelay21(currentIteration);
 
-			MessageNormal msg12 = new MessageNormal(a1, a2, a1.getValue(), delay12, currentIteration);
-			MessageNormal msg21 = new MessageNormal(a2, a1, a2.getValue(), delay21, currentIteration);
+			MessageValue msg12 = new MessageValue(a1, a2, a1.getValue(), delay12, currentIteration);
+			MessageValue msg21 = new MessageValue(a2, a1, a2.getValue(), delay21, currentIteration);
 
 			this.messageBox.add(msg12);
 			this.messageBox.add(msg21);
 		}
 
 	}
-	
 
 	public void createRiMsgs(int currentIteration) {
 		for (Neighbors n : this.neighbors) {
-
 			AgentField a1 = (AgentField) n.getA1();
-
 			AgentField a2 = (AgentField) n.getA2();
 			int delay12 = createDelay(false);
-			int delay21 = createDelay(false);
-			// int delay12 = n.getDelay12(currentIteration);
-			// int delay21 = n.getDelay21(currentIteration);
+			int delay21 = createDelay(false); // int delay12 =
+			//n.getDelay12(currentIteration); // int delay21 =
+			//n.getDelay21(currentIteration);
 
-			MessageNormal msg12 = new MessageNormal(a1, a2, a1.getR(), delay12, currentIteration);
-			MessageNormal msg21 = new MessageNormal(a2, a1, a2.getR(), delay21, currentIteration);
+			Message msg12 = new MessageR(a1, a2, a1.getR(), delay12, currentIteration);
+			Message msg21 = new MessageR(a2, a1, a2.getR(), delay21, currentIteration);
 
-			this.rMessageBox.add(msg12);
-			this.rMessageBox.add(msg21);
+			this.messageBox.add(msg12);
+			this.messageBox.add(msg21);
 		}
 
 	}
 
-	public void emptyRMessageBox() {
-		this.rMessageBox.clear();
-
-	}
-
-	private List<MessageNormal> handleDelay(List<MessageNormal> input) {
+	/*
+	 * public void emptyRMessageBox() { this.rMessageBox.clear();
+	 * 
+	 * }
+	 */
+	private List<Message> handleDelay(List<Message> input) {
 		Collections.sort(input);
-		List<MessageNormal> msgToSend = new ArrayList<MessageNormal>();
-
+		List<Message> msgToSend = new ArrayList<Message>();
 		Iterator it = input.iterator();
-
 		while (it.hasNext()) {
-			MessageNormal msg = (MessageNormal) it.next();
+			Message msg = (Message) it.next();
 			if (msg.getDelay() == 0) {
 				msgToSend.add(msg);
 				it.remove();
 			} else {
 				msg.setDelay(msg.getDelay() - 1);
 			}
-
 		}
-
 		return msgToSend;
 	}
 
-	public List<MessageNormal> handleDelay() {
+	public List<Message> handleDelay() {
 		Collections.sort(this.messageBox);
-		List<MessageNormal> msgToSend = new ArrayList<MessageNormal>();
+		List<Message> msgToSend = new ArrayList<Message>();
 
 		Iterator it = this.messageBox.iterator();
 
 		while (it.hasNext()) {
-			MessageNormal msg = (MessageNormal) it.next();
+			Message msg = (Message) it.next();
 			/*
-			if (Unsynch.iter ==1) {
-				System.out.println(msg);
-			}
-			*/
+			 * if (Unsynch.iter ==1) { System.out.println(msg); }
+			 */
 			if (msg.getDelay() == 0) {
 				msgToSend.add(msg);
 				it.remove();
@@ -139,10 +130,10 @@ public class AgentZero {
 		}
 
 	}
-
+/*
 	public void sendRiMsgs() {
-		List<MessageNormal> msgToSend = handleDelay(this.rMessageBox);
-		for (MessageNormal msg : msgToSend) {
+		List<Message> msgToSend = handleDelay(this.rMessageBox);
+		for (Message msg : msgToSend) {
 			int senderId = msg.getSender().getId();
 			int senderR = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
@@ -150,15 +141,28 @@ public class AgentZero {
 		}
 
 	}
+	*/
 
-	public void sendMsgs() {
-		List<MessageNormal> msgToSend = handleDelay(this.messageBox);
-		for (MessageNormal msg : msgToSend) {
+	public void sendMsgs(boolean r) {
+		
+		List<Message> tMessage = new ArrayList<Message>();
+		for (Message m : this.messageBox) {
+			if (r) {
+				tMessage.add(m);
+			}
+			else {
+				tMessage.add(m);
+			}
+		}
+		
+		List<Message> msgToSend = handleDelay(tMessage);
+		for (Message msg : msgToSend) {
 			int senderId = msg.getSender().getId();
-			int senderValue = msg.getSenderValue();
 			AgentField reciver = msg.getReciever();
-			reciver.reciveMsg(senderId, senderValue, msg.getDate());
-
+			if (msg instanceof MessageValue) {
+				int senderValue = ((MessageValue) msg).getMessageInformation();
+				reciver.reciveMsg(senderId, senderValue, msg.getDate());
+			}
 		}
 
 	}
@@ -183,14 +187,12 @@ public class AgentZero {
 	private int createDelay(boolean anytimeFlag) {
 		int rndDelay;
 		rndDelay = 0;
-		
+
 		Random r = whichRandom(anytimeFlag);
-		
-		
+
 		double rnd = Main.rP3.nextDouble();
 		if (rnd < Main.currentP3) {
-			
-			
+
 			rndDelay = Main.getRandomInt(r, 1, Main.currentUb);
 			rnd = Main.rP4.nextDouble();
 			if (rnd < Main.currentP4) {
@@ -222,19 +224,19 @@ public class AgentZero {
 
 	// -------------- Unsynch Monotonic-------------
 
-	public void sendUnsynchMonotonicMsgs(List<MessageNormal> msgToSend) {
-		for (MessageNormal msg : msgToSend) {
+	public void sendUnsynchMonotonicMsgs(List<Message> msgToSend) {
+		for (Message msg : msgToSend) {
 			sendUnsynchMonotonicMsg(msg);
 		}
 	}
 
-	private void sendUnsynchMonotonicMsg(MessageNormal msg) {
+	private void sendUnsynchMonotonicMsg(Message msg) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
 
-		if (!(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown)) {
-
-			int senderValue = msg.getSenderValue();
+		if ((msg instanceof MessageValue)) {
+			MessageValue msg1 = (MessageValue) msg;
+			int senderValue = msg1.getMessageInformation();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
 			reciever.updateCounterAboveOrBelowMono(senderId);
 
@@ -265,19 +267,16 @@ public class AgentZero {
 		}
 	}
 
-	private Map<Integer, SortedSet<MessageNormal>> getMsgMapByReciever(List<MessageNormal> msgToSend) {
-
-		Map<Integer, SortedSet<MessageNormal>> ans = new HashMap<Integer, SortedSet<MessageNormal>>();
-		for (MessageNormal msg : msgToSend) {
-			int recieverId = msg.getReciever().getId();
-			if (!ans.containsKey(recieverId)) {
-				ans.put(recieverId, new TreeSet<MessageNormal>(new ComparatorMsgDate()));
-			}
-			ans.get(recieverId).add(msg);
-		}
-		return ans;
-	}
-
+	/*
+	 * private Map<Integer, SortedSet<MessageValue>>
+	 * getMsgMapByReciever(List<MessageValue> msgToSend) {
+	 * 
+	 * Map<Integer, SortedSet<MessageValue>> ans = new HashMap<Integer,
+	 * SortedSet<MessageValue>>(); for (MessageValue msg : msgToSend) { int
+	 * recieverId = msg.getReciever().getId(); if (!ans.containsKey(recieverId)) {
+	 * ans.put(recieverId, new TreeSet<MessageValue>(new ComparatorMsgDate())); }
+	 * ans.get(recieverId).add(msg); } return ans; }
+	 */
 	private void anytimeMechanismAfterRecieveMsg(Set<AgentField> agentsRecieved) {
 		/*
 		 * Probably need to check all possible sequence of mail pick ups
@@ -319,12 +318,13 @@ public class AgentZero {
 		return ans;
 	}
 
-	private void sendUnsynchNonMonotonicByValueMsg(MessageNormal msg) {
+	private void sendUnsynchNonMonotonicByValueMsg(Message msg) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
 
-		if (msgIsNotAnytime(msg)) {
-			int senderValue = msg.getSenderValue();
+		if (msg instanceof MessageValue) {
+
+			int senderValue = ((MessageValue) msg).getMessageInformation();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
 
 			// if (!Main.tryAllMailBox) {
@@ -342,13 +342,17 @@ public class AgentZero {
 
 	}
 
-	private void sendUnsynchNonMonotonicMsg(MessageNormal msg) {
+	private void sendUnsynchNonMonotonicMsg(Message msg) {
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
 
-		if (msgIsNotAnytime(msg)) {
-			int senderValue = msg.getSenderValue();
+		if (msg instanceof MessageValue) {
+
+			MessageValue m = (MessageValue) msg;
+			int senderValue = m.getMessageInformation();
+
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
+
 			// updateCounterOfReciever(reciever, senderId, msg);
 
 			// if (!Main.tryAllMailBox) {
@@ -370,10 +374,10 @@ public class AgentZero {
 		}
 
 	}
-
-	private boolean msgIsNotAnytime(MessageNormal msg) {
-		return !(msg instanceof MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown);
-	}
+	/*
+	 * private boolean msgIsNotAnytime(MessageValue msg) { return !(msg instanceof
+	 * MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown); }
+	 */
 
 	private void updateRecieverUponPermutationOneByOne(Permutation currPermutation, AgentField reciever) {
 		// Permutation currPermutation =
@@ -430,34 +434,34 @@ public class AgentZero {
 
 		List<AgentField> neighborsAgents = getNeighborsAgents(currentAgent);
 		for (AgentField n : neighborsAgents) {
-			MessageNormal m= createUnsynchOneMsg(currentAgent, n, currentIteration, anytimeFlag);
-/*
-			if (Main.trySendSelfCounter) {
-				int selfCounter = currentAgent.getDecisonCounter();
-				m = createUnsynchOneMsgTrySendSelfCounter(currentAgent, n, currentIteration, selfCounter);
-			} else {
-				m = createUnsynchOneMsg(currentAgent, n, currentIteration);
-			}
-			*/
+			MessageValue m = createUnsynchOneMsg(currentAgent, n, currentIteration, anytimeFlag);
+			/*
+			 * if (Main.trySendSelfCounter) { int selfCounter =
+			 * currentAgent.getDecisonCounter(); m =
+			 * createUnsynchOneMsgTrySendSelfCounter(currentAgent, n, currentIteration,
+			 * selfCounter); } else { m = createUnsynchOneMsg(currentAgent, n,
+			 * currentIteration); }
+			 */
 
 			this.messageBox.add(m);
 		}
 	}
 
-	private MessageNormal createUnsynchOneMsg(AgentField sender, AgentField reciever, int currentIteration, boolean anytimeFlag) {
+	private MessageValue createUnsynchOneMsg(AgentField sender, AgentField reciever, int currentIteration,
+			boolean anytimeFlag) {
 		int senderValue = sender.getValue();
 		int delay = this.createDelay(anytimeFlag);
-		return new MessageNormal(sender, reciever, senderValue, delay, currentIteration);
+		return new MessageValue(sender, reciever, senderValue, delay, currentIteration);
 	}
-/*
-	private MessageNormal createUnsynchOneMsgTrySendSelfCounter(AgentField sender, AgentField reciever,
-			int currentIteration, int selfCounter) {
-		int senderValue = sender.getValue();
-		int delay = this.createDelay();
-		return new MessageNormal(sender, reciever, senderValue, delay, currentIteration, selfCounter);
-
-	}
-	*/
+	/*
+	 * private MessageNormal createUnsynchOneMsgTrySendSelfCounter(AgentField
+	 * sender, AgentField reciever, int currentIteration, int selfCounter) { int
+	 * senderValue = sender.getValue(); int delay = this.createDelay(); return new
+	 * MessageNormal(sender, reciever, senderValue, delay, currentIteration,
+	 * selfCounter);
+	 * 
+	 * }
+	 */
 
 	public void createAnyTimeUpUnsynchMono(int currentIteration) {
 		// List<AgentField> agentsSendAnytime = new ArrayList<AgentField>()
@@ -467,7 +471,7 @@ public class AgentZero {
 				Set<Permutation> pToSendA = a.getPermutationsToSend();
 				for (Permutation p : pToSendA) {
 					int delay = this.createDelay(true);
-					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay, currentIteration, p);
+					Message m = new MessageAnyTimeUp(a, a.getAnytimeFather(), p, delay, currentIteration);
 					this.messageBox.add(m);
 				}
 				a.removeAllPermutationToSend();
@@ -484,7 +488,7 @@ public class AgentZero {
 				for (Permutation p : pToSendA) {
 					// p.createdIncluded(a);
 					int delay = this.createDelay(true);
-					MessageNormal m = new MessageAnyTimeUp(a, a.getAnytimeFather(), delay, currentIteration, p);
+					Message m = new MessageAnyTimeUp(a, a.getAnytimeFather(), p, delay, currentIteration);
 					this.messageBox.add(m);
 				}
 				a.removeAllPermutationToSend();
@@ -527,14 +531,13 @@ public class AgentZero {
 			int delay = this.createDelay(true);
 			int currentIteration = date;
 			Permutation permutationToSend = from.getBestPermutation();
-			MessageNormal m = new MessageAnyTimeDown(sender, reciever, -100, delay, currentIteration,
-					permutationToSend);
+			Message m = new MessageAnyTimeDown(sender, reciever, permutationToSend, delay, currentIteration);
 			this.messageBox.add(m);
 		}
 
 	}
 
-	public List<MessageNormal> getMsgBox() {
+	public List<Message> getMsgBox() {
 		return this.messageBox;
 	}
 	/*
@@ -559,7 +562,7 @@ public class AgentZero {
 			 * }
 			 * 
 			 */
-			createUnsynchMsgs(a, date,false);
+			createUnsynchMsgs(a, date, false);
 			addPermutatioToAnytimeMechanism(a, myPermutation);
 		}
 	}
@@ -569,13 +572,13 @@ public class AgentZero {
 
 			Permutation myPermutation = a.createCurrentPermutationByValue();
 
-			createUnsynchMsgs(a, date,false);
+			createUnsynchMsgs(a, date, false);
 			addPermutatioToAnytimeMechanism(a, myPermutation);
 		}
 
 	}
 
-	public void sendUnsynchNonMonotonicByValueMsgs(List<MessageNormal> msgToSend) {
+	public void sendUnsynchNonMonotonicByValueMsgs(List<Message> msgToSend) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
 
 		Collections.sort(msgToSend, new ComparatorMsgDate());
@@ -583,7 +586,7 @@ public class AgentZero {
 
 		// debugToSeeSequence(msgToSend);
 
-		for (MessageNormal msg : msgToSend) {
+		for (Message msg : msgToSend) {
 			sendUnsynchNonMonotonicByValueMsg(msg);
 			integerRecieved.add(msg.getReciever().getId());
 		}
@@ -594,11 +597,11 @@ public class AgentZero {
 		 */
 	}
 
-	private void debugToSeeSequence(List<MessageNormal> msgToSend) {
+	private void debugToSeeSequence(List<MessageValue> msgToSend) {
 		int minDate = 0;
 
 		if (!msgToSend.isEmpty()) {
-			MessageNormal m = Collections.min(msgToSend, new ComparatorMsgDate());
+			MessageValue m = Collections.min(msgToSend, new ComparatorMsgDate());
 			minDate = m.getDate();
 		}
 
@@ -618,10 +621,10 @@ public class AgentZero {
 		} // for msgs
 	}
 
-	public void sendUnsynchNonMonotonicMsgs(List<MessageNormal> msgToSend) {
+	public void sendUnsynchNonMonotonicMsgs(List<Message> msgToSend) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
 
-		for (MessageNormal msg : msgToSend) {
+		for (Message msg : msgToSend) {
 			sendUnsynchNonMonotonicMsg(msg);
 			integerRecieved.add(msg.getReciever().getId());
 		}

@@ -1,15 +1,15 @@
 
-public class MessageAnyTimeDown extends MessageNormal {
+public class MessageAnyTimeDown extends Message<Permutation> {
 
-	private Permutation permutationSent;
-	public MessageAnyTimeDown(AgentField sender, AgentField reciever, int senderValue, int delay,
-			int currentIteration, Permutation bestPermutation) {
-		super(sender, reciever, -100, delay, currentIteration);
-		this.permutationSent = bestPermutation;
+	//private Permutation permutationSent;
+	public MessageAnyTimeDown(AgentField sender, AgentField reciever, Permutation bestPermutation, int delay,
+			int currentIteration) {
+		super(sender, reciever, bestPermutation, delay, currentIteration);
+		//this.permutationSent = bestPermutation;
 	}
-	
+	/*
 	public Permutation getPermutationSent() {
 		return this.permutationSent;
 	}
-
+*/
 }

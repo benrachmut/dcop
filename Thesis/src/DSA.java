@@ -21,7 +21,7 @@ public class DSA extends Solution {
 			this.sendAndRecieve(i);
 			
 			agentDecide(i);
-			addCostToList();
+			addCostToList(i);
 
 		}
 	}

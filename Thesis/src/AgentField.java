@@ -923,13 +923,14 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public void addToPermutationToSendUnsynchNonMonoByValue(Permutation input) {
 
 		if (this.isAnytimeTop()) {
-
 			if (this.bestPermuation == null || this.bestPermuation.getCost() > input.getCost()) {
 				recieveBetterPermutation(input);
 				iHaveAnytimeNews = true;
 				System.out.println(
 						"cost: " + input.getCost() + " permutation past size: " + this.permutationsPast.size());
 			}
+			Unsynch.topCost = input.getCost();
+
 
 		} else {
 			addToSet(input, permutationsToSend);
@@ -991,10 +992,10 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	 * 
 	 * @return
 	 */
-	public void recieveAnytimeUpMonotonic(MessageNormal msg) {
+	public void recieveAnytimeUpMonotonic(Message msg) {
 		MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
 
-		Permutation p = mau.getCurrentPermutation();
+		Permutation p = mau.getMessageInformation();
 		Set<Permutation> belowCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverSon(p);
 
 		Set<Permutation> pastCoherentWithMessage = combinePermutationFromMsgWithOtherPermutationsOfReceiverPast(p);
@@ -1068,23 +1069,23 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 
 	}
 
-	public void recieveAnytimeDownMonotonic(MessageNormal input) {
+	public void recieveAnytimeDownMonotonic(Message input) {
 		//// maybe bug here
 
 		MessageAnyTimeDown mad = (MessageAnyTimeDown) input;
 
 		if (mad.getDate() > this.currentAnyTimeDate) {
 			this.msgDown = mad;
-			doPermutationToSend(mad.getPermutationSent());
+			doPermutationToSend(mad.getMessageInformation());
 			this.currentAnyTimeDate = mad.getDate();
 		}
 	}
 
-	public void recieveAnytimeUpBfs(MessageNormal msg) {
+	public void recieveAnytimeUpBfs(Message msg) {
 		if (msg instanceof MessageAnyTimeUp) {
 
 			MessageAnyTimeUp mau = (MessageAnyTimeUp) msg;
-			Permutation msgP = mau.getCurrentPermutation();
+			Permutation msgP = mau.getMessageInformation();
 			tryToCombinePermutation(msgP);
 
 		} else {
@@ -1184,14 +1185,14 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		return new Permutation(m, cost, this);
 	}
 
-	public void recieveAnytimeDownNonMonotonicByValue(MessageNormal msg) {
+	public void recieveAnytimeDownNonMonotonicByValue(Message msg) {
 		//// maybe bug here
 
 		MessageAnyTimeDown mad = (MessageAnyTimeDown) msg;
 
 		if (mad.getDate() > this.currentAnyTimeDate) {
 			this.msgDown = mad;
-			Permutation pFromMad = mad.getPermutationSent();
+			Permutation pFromMad = mad.getMessageInformation();
 			recieveBetterPermutation(pFromMad);
 			this.currentAnyTimeDate = mad.getDate();
 		}
