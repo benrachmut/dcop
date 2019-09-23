@@ -73,7 +73,7 @@ public class Main {
 	static int memoryVersion;
 	static long memoryMaxConstant;
 	static int currentComparatorForMemory;
-	public static boolean trySendValueAsPermutation = true;
+	//public static boolean trySendValueAsPermutation = true;
 	// -- uniformly random dcop
 	static Double currentP1Uniform;
 	static Double currentP2Uniform;

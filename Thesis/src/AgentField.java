@@ -20,35 +20,23 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	private Map<Integer, Set<ConstraintNeighbor>> constraint;
 	private Map<Integer, MessageRecieve> neighbor; // id and value
 	private Map<Integer, MessageRecieve> neighborR;
-
-	// private Set<Permutation>permutations;
-	// private List<Integer>numOfInterationForChange;
-	// private int numOfInterationForChangeCounter;
 	private PotentialCost minPC;
 	private int r;
-
 	// ---tree stuff
 	private AgentField dfsFather;
 	private List<AgentField> dfsSons;
-
 	private AgentField anytimeFather;
 	private List<AgentField> anytimeSons;
-
 	private Map<Integer, Integer> neigborCounter;
-
 	private Map<Integer, Integer> aboveMap;
 	private Map<Integer, Integer> belowMap;
-
 	private int anytimeFirstValue;
 	private boolean iHaveAnytimeNews;
-
 	private int decisonCounter;
 	private MessageAnyTimeDown msgDown;
 	private MessageAnyTimeUp msgUp;
-	// private Set<Permutation> permutationsBelow;
 	private HashSet<Permutation> permutationsPast;
 	private HashSet<Permutation> permutationsToSend;
-
 	private Set<Permutation> sonsAnytimePermutations;
 	private Map<Integer, Integer> counterAndValue;
 	private Permutation bestPermuation;
@@ -59,15 +47,7 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 	public AgentField(int domainSize, int id) {
 		super(id);
 		this.domain = createDomain(domainSize);
-
-		if (Main.synch) {
-			this.firstValue = createRandFirstValue();
-
-			this.anytimeFirstValue = firstValue;
-		} else {
-			this.firstValue = -1;
-			this.anytimeFirstValue = -1;
-		}
+		setValues();
 		decisonCounter = 0;
 		this.setFirstValueToValue();
 		this.constraint = new TreeMap<Integer, Set<ConstraintNeighbor>>();
@@ -76,31 +56,35 @@ public class AgentField extends Agent implements Comparable<AgentField> {
 		// --- tree stuff
 		this.dfsFather = null;
 		this.dfsSons = new ArrayList<AgentField>();
-
 		this.anytimeFather = null;
 		this.anytimeSons = new ArrayList<AgentField>();
-
-		aboveMap = new HashMap<Integer, Integer>();
-		belowMap = new HashMap<Integer, Integer>();
-
-		msgDown = null;
-		msgUp = null;
+		this.aboveMap = new HashMap<Integer, Integer>();
+		this.belowMap = new HashMap<Integer, Integer>();
+		this.msgDown = null;
+		this.msgUp = null;
 		this.bestPermuation = null;
-		// resetNumOfInterationForChange();
-		// numOfInterationForChangeCounter = 0;
-		currentAnyTimeDate = 0;
+		this.currentAnyTimeDate = 0;
 		setR();
-
 		initSonsAnytimeMessages();
 		this.permutationsPast = new HashSet<Permutation>();
 		this.permutationsToSend = new HashSet<Permutation>();
 		this.counterAndValue = new HashMap<Integer, Integer>();
 		this.counterAndValue.put(decisonCounter, value);
-
-		iHaveAnytimeNews = false;
-		unsynchFlag = false;
+		this.iHaveAnytimeNews = false;
+		this.unsynchFlag = false;
 		restartAnytimeUpRecieved();
+	}
 
+	private void setValues() {
+		if (Main.synch) {
+			this.firstValue = createRandFirstValue();
+
+			this.anytimeFirstValue = firstValue;
+		} else {
+			this.firstValue = -1;
+			this.anytimeFirstValue = -1;
+		}
+		
 	}
 
 	public void restartAnytimeUpRecieved() {

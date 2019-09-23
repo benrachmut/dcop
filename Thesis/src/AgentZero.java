@@ -319,18 +319,15 @@ public class AgentZero {
 	}
 
 	private void sendUnsynchNonMonotonicByValueMsg(Message msg) {
+		//---	
 		int senderId = msg.getSender().getId();
 		AgentField reciever = msg.getReciever();
-
 		if (msg instanceof MessageValue) {
-
 			int senderValue = ((MessageValue) msg).getMessageInformation();
 			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-
-			// if (!Main.tryAllMailBox) {
 			Permutation p = reciever.createCurrentPermutationByValue();
 			updateRecieverUponPermutationOneByOne(p, reciever);
-			// }
+			
 		} // normal message
 
 		if (msg instanceof MessageAnyTimeUp) {
@@ -342,46 +339,12 @@ public class AgentZero {
 
 	}
 
-	private void sendUnsynchNonMonotonicMsg(Message msg) {
-		int senderId = msg.getSender().getId();
-		AgentField reciever = msg.getReciever();
-
-		if (msg instanceof MessageValue) {
-
-			MessageValue m = (MessageValue) msg;
-			int senderValue = m.getMessageInformation();
-
-			reciever.reciveMsg(senderId, senderValue, msg.getDate());
-
-			// updateCounterOfReciever(reciever, senderId, msg);
-
-			// if (!Main.tryAllMailBox) {
-			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
-			updateRecieverUponPermutationOneByOne(currPermutation, reciever);
-			// }
-			/*
-			 * if (Main.tryAgentRememberSequence) {
-			 * reciever.recieveMsgAndPlaceItInSequence(msg); }
-			 */
-
-		} // normal message
-
-		if (msg instanceof MessageAnyTimeUp) {
-			reciever.recieveAnytimeUpBfs(msg);
-		}
-		if (msg instanceof MessageAnyTimeDown) {
-			// still need to do
-		}
-
-	}
-	/*
-	 * private boolean msgIsNotAnytime(MessageValue msg) { return !(msg instanceof
-	 * MessageAnyTimeUp) && !(msg instanceof MessageAnyTimeDown); }
-	 */
 
 	private void updateRecieverUponPermutationOneByOne(Permutation currPermutation, AgentField reciever) {
 		// Permutation currPermutation =
 		// reciever.createCurrentPermutationNonMonotonic();
+		
+		//---
 		if (reciever.isAnytimeLeaf()) {
 			reciever.addToPermutationToSendUnsynchNonMonoByValue(currPermutation);
 		} else {
@@ -540,38 +503,14 @@ public class AgentZero {
 	public List<Message> getMsgBox() {
 		return this.messageBox;
 	}
-	/*
-	 * public void selfChangeReport(Set<AgentField> didDecide) { for (AgentField a :
-	 * didDecide) { a.get }
-	 * 
-	 * }
-	 */
 
-	public void afterDecideTakeActionUnsynchNonMonotonicByCounter(Collection<AgentField> agentsThatChanged, int date) {
-		for (AgentField a : agentsThatChanged) {
-			a.setDecisionCounterNonMonotonic(a.getDecisonCounter() + 1);
-			a.setCounterAndValueHistory(); // //record in map of agent its current value and self counter
-			Permutation myPermutation = a.createCurrentPermutationNonMonotonic();
-			a.addToPermutationPast(myPermutation);
-			/*
-			 * if (Main.tryAgentRememberSequence) { a.setDateAndValueHistory(date); //record
-			 * in map of agent its current value and date
-			 * a.combineCurrentValueWithOtherMessages(); //combine current with latest }
-			 * else {
-			 * 
-			 * }
-			 * 
-			 */
-			createUnsynchMsgs(a, date, false);
-			addPermutatioToAnytimeMechanism(a, myPermutation);
-		}
-	}
+	
 
 	public void afterDecideTakeActionUnsynchNonMonotonicByValue(SortedSet<AgentField> agentsThatChanged, int date) {
+		//----
+		
 		for (AgentField a : agentsThatChanged) {
-
 			Permutation myPermutation = a.createCurrentPermutationByValue();
-
 			createUnsynchMsgs(a, date, false);
 			addPermutatioToAnytimeMechanism(a, myPermutation);
 		}
@@ -583,18 +522,10 @@ public class AgentZero {
 
 		Collections.sort(msgToSend, new ComparatorMsgDate());
 		Collections.reverse(msgToSend);
-
-		// debugToSeeSequence(msgToSend);
-
 		for (Message msg : msgToSend) {
 			sendUnsynchNonMonotonicByValueMsg(msg);
 			integerRecieved.add(msg.getReciever().getId());
 		}
-		/*
-		 * if (Main.tryAllMailBox) { Set<AgentField> agentsRecieved =
-		 * getAgents(integerRecieved);
-		 * anytimeMechanismAfterRecieveMsgByValue(agentsRecieved); }
-		 */
 	}
 
 	private void debugToSeeSequence(List<MessageValue> msgToSend) {
@@ -620,7 +551,7 @@ public class AgentZero {
 			updateRecieverUponPermutationOneByOne(currPermutation, reciever);
 		} // for msgs
 	}
-
+/*
 	public void sendUnsynchNonMonotonicMsgs(List<Message> msgToSend) {
 		Set<Integer> integerRecieved = new HashSet<Integer>();
 
@@ -633,7 +564,7 @@ public class AgentZero {
 		 * getAgents(integerRecieved); anytimeMechanismAfterRecieveMsg(agentsRecieved);
 		 * }
 		 */
-	}
+	//}
 
 	/*
 	 * private void updateCounterOfReciever(AgentField reciever, int senderId,
@@ -644,4 +575,72 @@ public class AgentZero {
 	 * 
 	 * }
 	 */
+	
+	
+	
+	/*
+	private void sendUnsynchNonMonotonicMsg(Message msg) {
+		int senderId = msg.getSender().getId();
+		AgentField reciever = msg.getReciever();
+
+		if (msg instanceof MessageValue) {
+
+			MessageValue m = (MessageValue) msg;
+			int senderValue = m.getMessageInformation();
+
+			reciever.reciveMsg(senderId, senderValue, msg.getDate());
+
+			// updateCounterOfReciever(reciever, senderId, msg);
+
+			// if (!Main.tryAllMailBox) {
+			Permutation currPermutation = reciever.createCurrentPermutationNonMonotonic();
+			updateRecieverUponPermutationOneByOne(currPermutation, reciever);
+			// }
+			/*
+			 * if (Main.tryAgentRememberSequence) {
+			 * reciever.recieveMsgAndPlaceItInSequence(msg); }
+			 */
+
+		//} // normal message
+
+	/*
+		if (msg instanceof MessageAnyTimeUp) {
+			reciever.recieveAnytimeUpBfs(msg);
+		}
+		if (msg instanceof MessageAnyTimeDown) {
+			// still need to do
+		}
+
+	}
+*/
+	
+	
+	/*
+	 * public void selfChangeReport(Set<AgentField> didDecide) { for (AgentField a :
+	 * didDecide) { a.get }
+	 * 
+	 * }
+	 */
+/*
+	public void afterDecideTakeActionUnsynchNonMonotonicByCounter(Collection<AgentField> agentsThatChanged, int date) {
+		for (AgentField a : agentsThatChanged) {
+			a.setDecisionCounterNonMonotonic(a.getDecisonCounter() + 1);
+			a.setCounterAndValueHistory(); // //record in map of agent its current value and self counter
+			Permutation myPermutation = a.createCurrentPermutationNonMonotonic();
+			a.addToPermutationPast(myPermutation);
+			/*
+			 * if (Main.tryAgentRememberSequence) { a.setDateAndValueHistory(date); //record
+			 * in map of agent its current value and date
+			 * a.combineCurrentValueWithOtherMessages(); //combine current with latest }
+			 * else {
+			 * 
+			 * }
+			 * 
+			 */
+/*
+	createUnsynchMsgs(a, date, false);
+			addPermutatioToAnytimeMechanism(a, myPermutation);
+		}
+	}
+	*/
 }// class

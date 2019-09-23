@@ -62,7 +62,6 @@ public class UnsynchDsa extends Unsynch {
 		this.didDecide = new TreeSet<AgentField>();
 		for (AgentField a : whoCanDecide) {
 			if (i != 0) {
-
 				boolean didChange = a.dsaDecide(stochastic);
 				if (didChange) {
 					this.didDecide.add(a);
@@ -80,12 +79,8 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	protected void afterDecideTakeAction(int i) {
-		if (Main.trySendValueAsPermutation) {
-			agentZero.afterDecideTakeActionUnsynchNonMonotonicByValue(this.didDecide, i);
-		} else {
-			agentZero.afterDecideTakeActionUnsynchNonMonotonicByCounter(this.didDecide, i);
-		}
-
+		//if (Main.trySendValueAsPermutation) {
+		this.agentZero.afterDecideTakeActionUnsynchNonMonotonicByValue(this.didDecide, i);
 		this.whoCanDecide = new TreeSet<AgentField>();
 		this.didDecide = new TreeSet<AgentField>();
 	}
@@ -94,11 +89,7 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	public void agentsSendMsgs(List<Message> msgToSend) {
-		if (Main.trySendValueAsPermutation) {
-			agentZero.sendUnsynchNonMonotonicByValueMsgs(msgToSend);
-		} else {
-			agentZero.sendUnsynchNonMonotonicMsgs(msgToSend);
-		}
+		agentZero.sendUnsynchNonMonotonicByValueMsgs(msgToSend);
 		changeFlagForAgentsRecieveMsg(msgToSend);
 	}
 
@@ -108,13 +99,10 @@ public class UnsynchDsa extends Unsynch {
 			if (!(m instanceof MessageAnyTimeDown) && !(m instanceof MessageAnyTimeUp)) {
 				changeFlag.add(m.getReciever());
 			}
-
 		}
-
 		for (AgentField a : changeFlag) {
 			a.setUnsynchFlag(true);
 		}
-
 	}
 
 	@Override
@@ -124,10 +112,7 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	protected void addTopCountersChanges(int i) {
-
 		this.costOfAllTops.add(topCost); 
-
-		
 		if (i>1) {
 			int before =this.costOfAllTops.get(i-1);
 			int current = this.costOfAllTops.get(i);
@@ -136,8 +121,6 @@ public class UnsynchDsa extends Unsynch {
 			}
 		}
 		this.counterTopChanges.add(counterPermutationAtTop);
-
-		
 		int currentCentralistic = Solution.counterCentralisticChanges;
 		if (currentCentralistic == 0) {
 			ratioCounterTopCounterChanges.add(0.0);
