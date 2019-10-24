@@ -46,23 +46,12 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	public void agentDecide(int i) {
-		dsaDecide(i);
-		setFlagToFalse();
-	}
-
-	private void setFlagToFalse() {
-		for (AgentField a : whoCanDecide) {
-			a.setUnsynchFlag(false);
-		}
-
-	}
-
-	private void dsaDecide(int i) {
-
+		//dsaDecide(i);
 		this.didDecide = new TreeSet<AgentField>();
 		for (AgentField a : whoCanDecide) {
 			if (i != 0) {
-				boolean didChange = a.dsaDecide(stochastic);
+				
+				boolean didChange = differentDecision(a);
 				if (didChange) {
 					this.didDecide.add(a);
 				}
@@ -71,7 +60,24 @@ public class UnsynchDsa extends Unsynch {
 				a.setValue(value);
 				didDecide.add(a);
 			}
+		}
+		changeAgentDecisionCounter(i);
+		setFlagToFalse();
+	}
 
+	private boolean differentDecision(AgentField a) {
+		return a.dsaDecide(stochastic);
+	}
+
+	private void changeAgentDecisionCounter(int i) {
+		for (AgentField af : didDecide) {
+			af.increaseDecisionCounterByOne(i);
+		}
+	}
+
+	private void setFlagToFalse() {
+		for (AgentField a : whoCanDecide) {
+			a.setUnsynchFlag(false);
 		}
 	}
 
@@ -79,8 +85,7 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	protected void afterDecideTakeAction(int i) {
-		//if (Main.trySendValueAsPermutation) {
-		this.agentZero.afterDecideTakeActionUnsynchNonMonotonicByValue(this.didDecide, i);
+		this.agentZero.afterDecideTakeActionUnsynchNonMonotonic(this.didDecide, i);
 		this.whoCanDecide = new TreeSet<AgentField>();
 		this.didDecide = new TreeSet<AgentField>();
 	}
@@ -88,8 +93,8 @@ public class UnsynchDsa extends Unsynch {
 	// ---- 4
 
 	@Override
-	public void agentsSendMsgs(List<Message> msgToSend) {
-		agentZero.sendUnsynchNonMonotonicByValueMsgs(msgToSend);
+	public void agentsSendMsgs(List<Message> msgToSend, int i ) {
+		agentZero.sendUnsynchNonMonotonicMsgs(msgToSend,i);
 		changeFlagForAgentsRecieveMsg(msgToSend);
 	}
 

@@ -15,6 +15,9 @@ public abstract class Message<T> implements Comparable<Message> {
 		this.messageInformation = messageInformation;
 	}
 
+	
+	
+	
 	@Override
 	public int compareTo(Message o) {
 		return this.delay - o.delay;
@@ -43,6 +46,12 @@ public abstract class Message<T> implements Comparable<Message> {
 
 	public T getMessageInformation() {
 		return messageInformation;
+	}
+	
+
+	@Override
+	public String toString() {
+		return "sender:"+sender+", reciver:"+reciever+", sender information:"+this.getMessageInformation()+", delay:"+this.delay;
 	}
 }
 	

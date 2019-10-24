@@ -36,15 +36,13 @@ public abstract class Unsynch extends Solution {
 			if (i % 500 == 0 ) {
 				System.out.println("---start iteration: " + i + "---");
 			}
-			
-			
-		
+
 			updateWhoCanDecide(i); // abstract
-		
 			agentDecide(i); // abstract
+			
 			afterDecideTakeAction(i); // abstract
 			List <Message> msgToSend = agentZero.handleDelay();	
-			agentsSendMsgs(msgToSend); // abstract
+			agentsSendMsgs(msgToSend, i ); // abstract
 			createAnytimeUp(i); // abstract
 			createAnytimeDown(i);
 			addCostToTables(i );
@@ -184,7 +182,7 @@ public abstract class Unsynch extends Solution {
 	// protected abstract void agentDecide();
 	protected abstract void afterDecideTakeAction(int i);
 
-	public abstract void agentsSendMsgs(List<Message> msgToSend);
+	public abstract void agentsSendMsgs(List<Message> msgToSend, int i );
 
 	public abstract void createAnytimeUp(int i);
 

@@ -511,6 +511,7 @@ public class Main {
 			agents[i].restartPermutationsPast();
 			agents[i].restartAnytimeToSend();
 			agents[i].restartAnytimeValue();
+			agents[i].restartselfCounterMap();
 		}
 
 	}

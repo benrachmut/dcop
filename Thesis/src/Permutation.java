@@ -6,21 +6,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Permutation implements Comparable<Permutation>{
 	// private Set<Map<Integer, Integer>> pastPermutation;
-	private Map<Integer, Integer> m;
+	private SortedMap<Integer, Integer> m;
 	private int cost;
-	private Map<Integer, Boolean> included;
+	private SortedMap<Integer, Boolean> included;
 	private int myIndex;
 	public static int index = 0;
 	private List<Permutation> combinedWith;
 	private AgentField creator;
 	private int iterationCreated;
 	private int date;
+	private SortedMap<Integer, Integer> counterMap;
+	private SortedMap<Integer, Integer> dateMap;
 
-	Permutation(Map<Integer, Integer> m, int cost) {
-		this.m = new HashMap<Integer, Integer>();
+	public Permutation(Map<Integer, Integer> m, int cost) {
+		this.m = new TreeMap<Integer, Integer>();
 		for (Entry<Integer, Integer> e : m.entrySet()) {
 			this.m.put(e.getKey(), e.getValue());
 		}
@@ -29,14 +33,14 @@ public class Permutation implements Comparable<Permutation>{
 		this.myIndex = index;
 		this.combinedWith = new ArrayList<Permutation>();
 		this.creator = new AgentField(10, -1);
-		this.included = new HashMap<Integer, Boolean>();
+		this.included = new TreeMap<Integer, Boolean>();
 		this.date =Unsynch.iter;
 
 	}
 
-	Permutation(Map<Integer, Integer> m, int cost, AgentField a) {
+	public Permutation(Map<Integer, Integer> m, int cost, AgentField a) {
 		this(m, cost);
-		included = new HashMap<Integer, Boolean>();
+		included = new TreeMap<Integer, Boolean>();
 		List<Integer> sonsId = getSonsId(a);
 		for (Integer nId : sonsId) {
 			included.put(nId, false);
@@ -45,23 +49,40 @@ public class Permutation implements Comparable<Permutation>{
 		this.creator = a;
 	}
 
-	public Permutation(Map<Integer, Integer> m, int cost, Map<Integer, Boolean> included, List<Permutation> comWith,
+	
+	
+	
+	public Permutation(SortedMap<Integer, Integer> m, int cost, SortedMap<Integer, Boolean> included, List<Permutation> comWith,
 			AgentField creator) {
 
 		this(m, cost);
 		this.iterationCreated = Unsynch.iter;
 		this.creator = creator;
 		this.combinedWith = comWith;
-		/*
-		if (this.myIndex ==1365) {
-			for (Permutation p : comWith) {
-				System.out.println(p);
-			}
-			System.out.println();
-		}
-		*/
 		this.included = included;
 	}
+
+
+	public Permutation(SortedMap<Integer, Integer> m, int cost, SortedMap<Integer, Boolean> included, List<Permutation> comWith,
+			AgentField creator, SortedMap<Integer, Integer> valueDateMap,
+			SortedMap<Integer, Integer> valueCounterMap) {
+
+		this(m, cost,included,comWith,creator);
+		this.dateMap = valueDateMap;
+		this.counterMap = valueCounterMap;
+	}
+	
+	public Permutation(SortedMap<Integer, Integer> valueMap, SortedMap<Integer, Integer> valueDateMap,
+			SortedMap<Integer, Integer> valueCounterMap, int cost, AgentField agentField) {
+		this(valueMap,cost, agentField);
+		this.dateMap = valueDateMap;
+		this.counterMap = valueCounterMap;
+		
+	}
+	
+	
+	
+	
 
 	private List<Integer> getSonsId(AgentField a) {
 		List<Integer> ans = new ArrayList<Integer>();
@@ -130,7 +151,6 @@ public class Permutation implements Comparable<Permutation>{
 	}
 
 	Map<Integer, Integer> getM() {
-		// TODO Auto-generated method stub
 		return this.m;
 	}
 
@@ -178,20 +198,83 @@ public class Permutation implements Comparable<Permutation>{
 	}
 
 	public static Permutation combinePermutations(Permutation p1, Permutation p2, AgentField creator) {
-
-		int cost = combineCost(p1, p2);
-		if (creator.getId() == 9 && cost == 1986) { 
-			int x =3; 
-			System.out.println(x);
-			}		
-		Map<Integer, Integer> m = combineMaps(p1, p2);
-		Map<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);
+		int cost = combineCost(p1, p2);	
+		SortedMap<Integer, Integer> m = combineMaps(p1, p2);
+		SortedMap<Integer, Boolean> toAddIncluded = combineIncluded(p1, p2);
 		List<Permutation> combineWith = createCombineWith(p1, p2);
 		
-
+		SortedMap<Integer, Integer> dates = combineDates(p1,p2);
+		SortedMap<Integer, Integer> counters = combineCounters(p1,p2);
 		
+		return new Permutation(m, cost, toAddIncluded, combineWith, creator,dates,counters);
+	}
 
-		return new Permutation(m, cost, toAddIncluded, combineWith, creator);
+	private static SortedMap<Integer, Integer> combineDates(Permutation p1, Permutation p2) {
+		SortedMap<Integer, Integer> ans = new TreeMap<Integer,Integer>();		
+		for (Integer p1Key : p1.m.keySet()) {
+			int p1Date = p1.getCounter(p1Key);
+			int p2Date = 0;
+			if (p2.m.keySet().contains(p1Key)) {
+				// im in p1 and in p2
+				p2Date = p2.getCounter(p1Key);
+				if (p1Date>p2Date) {
+					ans.put(p1Key, p1Date);
+				}else {
+					ans.put(p1Key, p2Date);
+
+				}
+			}else {
+				// im in p1 but not in p2
+				ans.put(p1Key, p1Date);
+			}
+		}	
+		for (Integer p2Key : p2.m.keySet()) {
+			if (!p1.m.keySet().contains(p2Key)) {
+				// im in p2 but not in p1
+				ans.put(p2Key, p2.getCounter(p2Key));
+			}
+		}	
+		return ans;
+	}
+
+	private Integer getCounter(Integer pKey) {
+		return this.counterMap.get(pKey);
+	}
+
+	private static SortedMap<Integer, Integer> combineCounters(Permutation p1, Permutation p2) {
+		SortedMap<Integer, Integer> ans = new TreeMap<Integer,Integer>();		
+		for (Integer p1Key : p1.m.keySet()) {
+			int p1Date = p1.getDate(p1Key);
+			int p2Date = 0;
+			if (p2.m.keySet().contains(p1Key)) {
+				// im in p1 and in p2
+				p2Date = p2.getDate(p1Key);
+				if (p1Date>p2Date) {
+					ans.put(p1Key, p1Date);
+				}else {
+					ans.put(p1Key, p2Date);
+
+				}
+			}else {
+				// im in p1 but not in p2
+				ans.put(p1Key, p1Date);
+			}
+		}
+		
+		for (Integer p2Key : p2.m.keySet()) {
+			if (!p1.m.keySet().contains(p2Key)) {
+				// im in p2 but not in p1
+				ans.put(p2Key, p2.getDate(p2Key));
+			}
+
+		}
+		
+		
+		return ans;
+	}
+
+	private int getDate(Integer pKey) {
+		return this.dateMap.get(pKey);
 	}
 
 	private static List<Permutation> createCombineWith(Permutation p1, Permutation p2) {
@@ -242,8 +325,8 @@ public class Permutation implements Comparable<Permutation>{
 		return ans;
 	}
 
-	private static Map<Integer, Integer> combineMaps(Permutation p1, Permutation p2) {
-		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+	private static SortedMap<Integer, Integer> combineMaps(Permutation p1, Permutation p2) {
+		SortedMap<Integer, Integer> m = new TreeMap<Integer, Integer>();
 		for (Entry<Integer, Integer> e : p1.getM().entrySet()) {
 			m.put(e.getKey(), e.getValue());
 		}
@@ -266,7 +349,7 @@ public class Permutation implements Comparable<Permutation>{
 	public Permutation canAdd(AgentField creator, Permutation msgP) {
 		if (this.isCoherent(msgP) && this.differentAgentsInPermutation(msgP)
 				&& this.differentComposedPermutations(msgP)) {
-
+			// permutation with most updated counters and dates
 			Permutation combineP = combinePermutations(this, msgP, creator);
 
 			return combineP;
@@ -313,10 +396,10 @@ public class Permutation implements Comparable<Permutation>{
 	 * = toAddIncluded; }
 	 */
 
-	private static Map<Integer, Boolean> combineIncluded(Permutation p1, Permutation p2) {
-		Map<Integer, Boolean> ans = new HashMap<Integer, Boolean>();
-		Map<Integer, Boolean> includeP1 = p1.getIncluded();
-		Map<Integer, Boolean> includeP2 = p2.getIncluded();
+	private static SortedMap<Integer, Boolean> combineIncluded(Permutation p1, Permutation p2) {
+		SortedMap<Integer, Boolean> ans = new TreeMap<Integer, Boolean>();
+		SortedMap<Integer, Boolean> includeP1 = p1.getIncluded();
+		SortedMap<Integer, Boolean> includeP2 = p2.getIncluded();
 
 		for (Integer i1 : includeP1.keySet()) {
 			if (!includeP2.containsKey(i1)) {
@@ -359,12 +442,12 @@ public class Permutation implements Comparable<Permutation>{
 		return ans;
 	}
 
-	public Map<Integer, Boolean> getIncluded() {
+	public SortedMap<Integer, Boolean> getIncluded() {
 		return this.included;
 	}
 
 	public void createdIncluded(AgentField sender) {
-		this.included = new HashMap<Integer, Boolean>();
+		this.included = new TreeMap<Integer, Boolean>();
 		this.included.put(sender.getId(), true);
 
 	}
@@ -389,7 +472,7 @@ public class Permutation implements Comparable<Permutation>{
 		return this.myIndex;
 	}
 
-	public int getDate() {
+	public int getDateCreated() {
 		return this.date;
 	}
 
