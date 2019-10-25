@@ -45,7 +45,7 @@ public abstract class Unsynch extends Solution {
 			agentsSendMsgs(msgToSend, i ); // abstract
 			createAnytimeUp(i); // abstract
 			createAnytimeDown(i);
-			addCostToTables(i );
+			addCostToTables(i);
 			addTopCountersChanges(i);
 			
 		}

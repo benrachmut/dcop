@@ -31,26 +31,22 @@ public class UnsynchDsa extends Unsynch {
 	// ---- 1
 	@Override
 	protected void updateWhoCanDecide(int i) {
-
 		for (AgentField a : this.agents) {
 			if (i == 0) {
 				this.whoCanDecide.add(a);
 			} else if (a.getUnsynchFlag()) {
 				this.whoCanDecide.add(a);
 			}
-
 		}
 	}
 
 	// ---- 2
-
 	@Override
 	public void agentDecide(int i) {
 		//dsaDecide(i);
 		this.didDecide = new TreeSet<AgentField>();
 		for (AgentField a : whoCanDecide) {
-			if (i != 0) {
-				
+			if (i != 0) {			
 				boolean didChange = differentDecision(a);
 				if (didChange) {
 					this.didDecide.add(a);
@@ -94,7 +90,7 @@ public class UnsynchDsa extends Unsynch {
 
 	@Override
 	public void agentsSendMsgs(List<Message> msgToSend, int i ) {
-		agentZero.sendUnsynchNonMonotonicMsgs(msgToSend,i);
+		agentZero.sendUnsynchNonMonotonicMsgs(msgToSend, i);
 		changeFlagForAgentsRecieveMsg(msgToSend);
 	}
 
